@@ -1,0 +1,15 @@
+name: "my-website"
+navbar:
+  title: "My Website"
+  left:
+    - icon: fa-home
+      href: index.html
+    - text: "About"
+      href: about.html
+
+output:
+  html_document:
+      code_download: true
+      df_print: paged
+new_session: true
+exclude: ["install.R"]
