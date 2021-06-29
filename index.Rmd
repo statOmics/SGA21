@@ -26,9 +26,9 @@ R Data Exploration: https://dodona.ugent.be/nl/courses/345/
 
 # Lecturers
 
- - [Lieven Clement](https://statomics.github.io/pages/about.html)
  - [Koen Van den Berge](https://koenvandenberge.github.io/)
-
+ - [Lieven Clement](https://statomics.github.io/pages/about.html)
+ 
 # Lecture material
 
 All lecture material will be provided on this website. Please check the 'Lectures' tab at the top of the homepage.

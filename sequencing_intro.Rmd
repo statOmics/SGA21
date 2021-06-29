@@ -84,16 +84,27 @@ Note that several variants of library preparation protocols are available. The m
 include_graphics("./images_sequencing/fastqLine.png")
 ```
 
-As you'll have noticed, the base call quality scores are encoded as ASCII characters for efficient storage. These ASCII characters can be convered into integers called Phred scores $Q$, which are logarithmically related to the probability of an erroneous base call.
-
+As you'll have noticed, the base call quality scores are encoded as ASCII characters for efficient storage. These ASCII characters can be convered into integers called Phred scores, which are logarithmically related to the probability of an erroneous base call.
 
 # Preprocessing of sequencing data
 
+After sequencing, we typically do a quality control (QC) check to verify the quality of the samples. During QC check, aberrant samples due to e.g. degraded mRNA can be detected.
+
+The sequencing reads on their own contain a lot of information, but are most useful if we would be able to assign sequencing reads to genes, i.e., for each sequencing read we will try to derive the (set of) gene(s) that could have plausibly produced the fragment through the process of gene expression. This process is called 'mapping'. 
+
+```{r, echo=FALSE, fig.cap=paste("Figure: An updated sequencing workflow. Image adapted from Van den Berge et al. (2019).")}
+include_graphics("./images_sequencing/seqWorkflow2.png")
+```
+
 ## Quality control
+
+During quality control, diagnostic plots are created for each sample in order to determine its quality. The most popular QC tool for bulk RNA-seq data is [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/). If many samples are sequenced, then [MultiQC](https://multiqc.info/) can be used to aggregate the QC checks across samples in a conveniently organized overview.
+
+The FastQC website provides interesting example reports for us to look at and compare against. Here are example reports of [high-quality Illumina data](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/good_sequence_short_fastqc.html) and [low-quality Illumina](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/bad_sequence_fastqc.html) data.
 
 ## Mapping
 
-
+Note that we are typically not able to assign each individual read uniquely to one specific gene; some reads cannot be unambiguously mapped and are compatible with multiple genes. These reads are said to be `multi-mapping'.
 
 # Terminology
 
