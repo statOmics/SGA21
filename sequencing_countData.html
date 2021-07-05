@@ -432,6 +432,9 @@ div.tocify {
     <li>
       <a href="sequencing_intro.html">Sequencing - Introduction to sequencing</a>
     </li>
+    <li>
+      <a href="sequencing_countData.html">Sequencing - Working with count data</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -468,27 +471,64 @@ div.tocify {
 </div>
 
 
-<div id="r-markdown" class="section level2">
-<h2><span class="header-section-number">0.1</span> R Markdown</h2>
-<p>This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <a href="http://rmarkdown.rstudio.com" class="uri">http://rmarkdown.rstudio.com</a>.</p>
-<p>When you click the <strong>Knit</strong> button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">summary</span>(cars)</span></code></pre></div>
-<pre><code>##      speed           dist       
-##  Min.   : 4.0   Min.   :  2.00  
-##  1st Qu.:12.0   1st Qu.: 26.00  
-##  Median :15.0   Median : 36.00  
-##  Mean   :15.4   Mean   : 42.98  
-##  3rd Qu.:19.0   3rd Qu.: 56.00  
-##  Max.   :25.0   Max.   :120.00</code></pre>
+<div id="the-poisson-distribution" class="section level1">
+<h1><span class="header-section-number">1</span> The Poisson distribution</h1>
+<ul>
+<li>The Poisson distribution is a typical count distribution that is generally popular and fairly easy to work with. It is defined by a single parameter: its mean <span class="math inline">\(\mu\)</span>. For a Poisson distributed random variable <span class="math inline">\(Y_i\)</span> with observations <span class="math inline">\(i \in \{1, \ldots, n\}\)</span>, its variance is equal to its mean. That is, if <span class="math inline">\(Y_i \sim Poi(\mu)\)</span>, then <span class="math inline">\(E(Y_i) = Var(Y_i) = \mu\)</span>.</li>
+<li>This immediately shows an important feature of count data: the <strong>mean-variance relationship</strong>. Indeed, in count data, the variance will always be a function of the mean.</li>
+<li>This is quite intuitive. Consider the following example. You have two bird cages, where in one bird cage there are <span class="math inline">\(10\)</span> birds, while in the other there are <span class="math inline">\(100\)</span> birds. You let a sample of people count the number of birds in either one of the cages. It seems unlikely that a person in front of the 10-bird cage would come up with an estimate of <span class="math inline">\(5\)</span>, while it seems quite likely that someone in front of the 100-bird cage would come up with an estimate of <span class="math inline">\(95\)</span>. Even though the difference from the true value is the same, the exact value has an impact on the plausible deviation around it.</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">set.seed</span>(<span class="dv">11</span>)</span>
+<span id="cb1-2"><a href="#cb1-2"></a>y1 &lt;-<span class="st"> </span><span class="kw">rpois</span>(<span class="dt">n=</span><span class="dv">500</span>, <span class="dt">lambda=</span><span class="dv">10</span>)</span>
+<span id="cb1-3"><a href="#cb1-3"></a>y2 &lt;-<span class="st"> </span><span class="kw">rpois</span>(<span class="dt">n=</span><span class="dv">500</span>, <span class="dt">lambda=</span><span class="dv">100</span>)</span>
+<span id="cb1-4"><a href="#cb1-4"></a></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="kw">hist</span>(y1, <span class="dt">main=</span><span class="st">&quot;Poisson(10)&quot;</span>, <span class="dt">breaks=</span><span class="dv">40</span>)</span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="kw">hist</span>(y2, <span class="dt">main=</span><span class="st">&quot;Poisson(100)&quot;</span>, <span class="dt">breaks=</span><span class="dv">40</span>)</span></code></pre></div>
+<p><img src="sequencing_countData_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<ul>
+<li>While being fairly simple, the Poisson distribution is also quite restrictive. Indeed, the restriction that the variance equals the mean rarely holds up in practice.</li>
+<li>As we will see, several extensions of the Poisson distribution have been developed, in order to circumvent its restrictive assumptions.</li>
+</ul>
 </div>
-<div id="including-plots" class="section level2">
-<h2><span class="header-section-number">0.2</span> Including Plots</h2>
-<p>You can also embed plots, for example:</p>
-<p><img src="sequencing_countData_files/figure-html/pressure-1.png" width="672" /></p>
-<p>Note that the <code>echo = FALSE</code> parameter was added to the code chunk to prevent printing of the R code that generated the plot.</p>
+<div id="properties-of-rna-seq-count-data" class="section level1">
+<h1><span class="header-section-number">2</span> Properties of (RNA-seq) count data</h1>
+<p>In this lecture, we will introduce working with count data, using a real bulk RNA-seq dataset from <a href="https://pubmed.ncbi.nlm.nih.gov/23024189/">Haglund <em>et al.</em> (2012)</a>. We will be importing this dataset using the data package <a href="https://www.bioconductor.org/packages/release/data/experiment/html/parathyroidSE.html">parathyroidSE</a> from Bioconductor.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="cf">if</span> (<span class="op">!</span><span class="kw">requireNamespace</span>(<span class="st">&quot;BiocManager&quot;</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>))</span>
+<span id="cb2-2"><a href="#cb2-2"></a>    <span class="kw">install.packages</span>(<span class="st">&quot;BiocManager&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="cf">if</span>(<span class="op">!</span><span class="st">&quot;SummarizedExperiment&quot;</span> <span class="op">%in%</span><span class="st"> </span><span class="kw">installed.packages</span>()) BiocManager<span class="op">::</span><span class="kw">install</span>(<span class="st">&quot;SummarizedExperiment&quot;</span>)</span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="co"># install package if not installed.</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="cf">if</span>(<span class="op">!</span><span class="st">&quot;parathyroidSE&quot;</span> <span class="op">%in%</span><span class="st"> </span><span class="kw">installed.packages</span>()) BiocManager<span class="op">::</span><span class="kw">install</span>(<span class="st">&quot;parathyroidSE&quot;</span>)</span>
+<span id="cb2-6"><a href="#cb2-6"></a></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="kw">library</span>(parathyroidSE)</span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="kw">library</span>(SummarizedExperiment)</span>
+<span id="cb2-9"><a href="#cb2-9"></a></span>
+<span id="cb2-10"><a href="#cb2-10"></a><span class="co"># import data</span></span>
+<span id="cb2-11"><a href="#cb2-11"></a><span class="kw">data</span>(<span class="st">&quot;parathyroidGenesSE&quot;</span>, <span class="dt">package=</span><span class="st">&quot;parathyroidSE&quot;</span>)</span>
+<span id="cb2-12"><a href="#cb2-12"></a><span class="co"># rename for convenience</span></span>
+<span id="cb2-13"><a href="#cb2-13"></a>se &lt;-<span class="st"> </span>parathyroidGenesSE</span>
+<span id="cb2-14"><a href="#cb2-14"></a><span class="kw">rm</span>(parathyroidGenesSE)</span></code></pre></div>
+<ul>
+<li>Count data are inherently</li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>y &lt;-<span class="st"> </span><span class="kw">assays</span>(se)<span class="op">$</span>counts[<span class="dv">1</span>,]</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="kw">hist</span>(y, <span class="dt">breaks =</span> <span class="kw">ncol</span>(se),</span>
+<span id="cb3-3"><a href="#cb3-3"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Gene expression&quot;</span>)</span></code></pre></div>
+<div id="mean-variance-relationship" class="section level2">
+<h2><span class="header-section-number">2.1</span> Mean-variance relationship</h2>
+</div>
+<div id="relative-uncertainty-offsets-and-count-scaling" class="section level2">
+<h2><span class="header-section-number">2.2</span> Relative uncertainty, offsets and count scaling</h2>
+</div>
+</div>
+<div id="variance-stabilizing-transformations" class="section level1">
+<h1><span class="header-section-number">3</span> Variance-stabilizing transformations</h1>
+</div>
+<div id="generalized-linear-models" class="section level1">
+<h1><span class="header-section-number">4</span> Generalized linear models</h1>
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAnU2VxdWVuY2luZzogV29ya2luZyB3aXRoIGNvdW50IGRhdGEnCmF1dGhvcjogIktvZW4gVmFuIGRlbiBCZXJnZSIKZGF0ZTogIjcvNS8yMDIxIgpvdXRwdXQ6IAogIGh0bWxfZG9jdW1lbnQ6CiAgICB0b2M6IHRydWUKICAgIHRvY19mbG9hdDogdHJ1ZQogIHBkZl9kb2N1bWVudDoKICAgIHRvYzogdHJ1ZQogICAgbnVtYmVyX3NlY3Rpb25zOiB0cnVlCiAgICBsYXRleF9lbmdpbmU6IHhlbGF0ZXgKLS0tCgpgYGB7ciBzZXR1cCwgaW5jbHVkZT1GQUxTRX0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KGVjaG8gPSBUUlVFKQpgYGAKCiMjIFIgTWFya2Rvd24KClRoaXMgaXMgYW4gUiBNYXJrZG93biBkb2N1bWVudC4gTWFya2Rvd24gaXMgYSBzaW1wbGUgZm9ybWF0dGluZyBzeW50YXggZm9yIGF1dGhvcmluZyBIVE1MLCBQREYsIGFuZCBNUyBXb3JkIGRvY3VtZW50cy4gRm9yIG1vcmUgZGV0YWlscyBvbiB1c2luZyBSIE1hcmtkb3duIHNlZSA8aHR0cDovL3JtYXJrZG93bi5yc3R1ZGlvLmNvbT4uCgpXaGVuIHlvdSBjbGljayB0aGUgKipLbml0KiogYnV0dG9uIGEgZG9jdW1lbnQgd2lsbCBiZSBnZW5lcmF0ZWQgdGhhdCBpbmNsdWRlcyBib3RoIGNvbnRlbnQgYXMgd2VsbCBhcyB0aGUgb3V0cHV0IG9mIGFueSBlbWJlZGRlZCBSIGNvZGUgY2h1bmtzIHdpdGhpbiB0aGUgZG9jdW1lbnQuIFlvdSBjYW4gZW1iZWQgYW4gUiBjb2RlIGNodW5rIGxpa2UgdGhpczoKCmBgYHtyIGNhcnN9CnN1bW1hcnkoY2FycykKYGBgCgojIyBJbmNsdWRpbmcgUGxvdHMKCllvdSBjYW4gYWxzbyBlbWJlZCBwbG90cywgZm9yIGV4YW1wbGU6CgpgYGB7ciBwcmVzc3VyZSwgZWNobz1GQUxTRX0KcGxvdChwcmVzc3VyZSkKYGBgCgpOb3RlIHRoYXQgdGhlIGBlY2hvID0gRkFMU0VgIHBhcmFtZXRlciB3YXMgYWRkZWQgdG8gdGhlIGNvZGUgY2h1bmsgdG8gcHJldmVudCBwcmludGluZyBvZiB0aGUgUiBjb2RlIHRoYXQgZ2VuZXJhdGVkIHRoZSBwbG90Lgo=</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAnU2VxdWVuY2luZzogV29ya2luZyB3aXRoIGNvdW50IGRhdGEnCmF1dGhvcjogIktvZW4gVmFuIGRlbiBCZXJnZSIKZGF0ZTogIjcvNS8yMDIxIgpvdXRwdXQ6IAogIGh0bWxfZG9jdW1lbnQ6CiAgICB0b2M6IHRydWUKICAgIHRvY19mbG9hdDogdHJ1ZQogIHBkZl9kb2N1bWVudDoKICAgIHRvYzogdHJ1ZQogICAgbnVtYmVyX3NlY3Rpb25zOiB0cnVlCiAgICBsYXRleF9lbmdpbmU6IHhlbGF0ZXgKLS0tCgpgYGB7ciBzZXR1cCwgaW5jbHVkZT1GQUxTRX0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KGVjaG8gPSBUUlVFKQpgYGAKCgojIFRoZSBQb2lzc29uIGRpc3RyaWJ1dGlvbgoKIC0gVGhlIFBvaXNzb24gZGlzdHJpYnV0aW9uIGlzIGEgdHlwaWNhbCBjb3VudCBkaXN0cmlidXRpb24gdGhhdCBpcyBnZW5lcmFsbHkgcG9wdWxhciBhbmQgZmFpcmx5IGVhc3kgdG8gd29yayB3aXRoLiBJdCBpcyBkZWZpbmVkIGJ5IGEgc2luZ2xlIHBhcmFtZXRlcjogaXRzIG1lYW4gJFxtdSQuIEZvciBhIFBvaXNzb24gZGlzdHJpYnV0ZWQgcmFuZG9tIHZhcmlhYmxlICRZX2kkIHdpdGggb2JzZXJ2YXRpb25zICRpIFxpbiBcezEsIFxsZG90cywgblx9JCwgaXRzIHZhcmlhbmNlIGlzIGVxdWFsIHRvIGl0cyBtZWFuLiBUaGF0IGlzLCBpZiAkWV9pIFxzaW0gUG9pKFxtdSkkLCB0aGVuICRFKFlfaSkgPSBWYXIoWV9pKSA9IFxtdSQuCiAtIFRoaXMgaW1tZWRpYXRlbHkgc2hvd3MgYW4gaW1wb3J0YW50IGZlYXR1cmUgb2YgY291bnQgZGF0YTogdGhlICoqbWVhbi12YXJpYW5jZSByZWxhdGlvbnNoaXAqKi4gSW5kZWVkLCBpbiBjb3VudCBkYXRhLCB0aGUgdmFyaWFuY2Ugd2lsbCBhbHdheXMgYmUgYSBmdW5jdGlvbiBvZiB0aGUgbWVhbi4KIC0gVGhpcyBpcyBxdWl0ZSBpbnR1aXRpdmUuIENvbnNpZGVyIHRoZSBmb2xsb3dpbmcgZXhhbXBsZS4gWW91IGhhdmUgdHdvIGJpcmQgY2FnZXMsIHdoZXJlIGluIG9uZSBiaXJkIGNhZ2UgdGhlcmUgYXJlICQxMCQgYmlyZHMsIHdoaWxlIGluIHRoZSBvdGhlciB0aGVyZSBhcmUgJDEwMCQgYmlyZHMuIFlvdSBsZXQgYSBzYW1wbGUgb2YgcGVvcGxlIGNvdW50IHRoZSBudW1iZXIgb2YgYmlyZHMgaW4gZWl0aGVyIG9uZSBvZiB0aGUgY2FnZXMuIEl0IHNlZW1zIHVubGlrZWx5IHRoYXQgYSBwZXJzb24gaW4gZnJvbnQgb2YgdGhlIDEwLWJpcmQgY2FnZSB3b3VsZCBjb21lIHVwIHdpdGggYW4gZXN0aW1hdGUgb2YgJDUkLCB3aGlsZSBpdCBzZWVtcyBxdWl0ZSBsaWtlbHkgdGhhdCBzb21lb25lIGluIGZyb250IG9mIHRoZSAxMDAtYmlyZCBjYWdlIHdvdWxkIGNvbWUgdXAgd2l0aCBhbiBlc3RpbWF0ZSBvZiAkOTUkLiBFdmVuIHRob3VnaCB0aGUgZGlmZmVyZW5jZSBmcm9tIHRoZSB0cnVlIHZhbHVlIGlzIHRoZSBzYW1lLCB0aGUgZXhhY3QgdmFsdWUgaGFzIGFuIGltcGFjdCBvbiB0aGUgcGxhdXNpYmxlIGRldmlhdGlvbiBhcm91bmQgaXQuCiAKYGBge3J9CnNldC5zZWVkKDExKQp5MSA8LSBycG9pcyhuPTUwMCwgbGFtYmRhPTEwKQp5MiA8LSBycG9pcyhuPTUwMCwgbGFtYmRhPTEwMCkKCnBhcihtZnJvdyA9IGMoMSwyKSkKaGlzdCh5MSwgbWFpbj0iUG9pc3NvbigxMCkiLCBicmVha3M9NDApCmhpc3QoeTIsIG1haW49IlBvaXNzb24oMTAwKSIsIGJyZWFrcz00MCkKYGBgCiAKIC0gV2hpbGUgYmVpbmcgZmFpcmx5IHNpbXBsZSwgdGhlIFBvaXNzb24gZGlzdHJpYnV0aW9uIGlzIGFsc28gcXVpdGUgcmVzdHJpY3RpdmUuIEluZGVlZCwgdGhlIHJlc3RyaWN0aW9uIHRoYXQgdGhlIHZhcmlhbmNlIGVxdWFscyB0aGUgbWVhbiByYXJlbHkgaG9sZHMgdXAgaW4gcHJhY3RpY2UuCiAtIEFzIHdlIHdpbGwgc2VlLCBzZXZlcmFsIGV4dGVuc2lvbnMgb2YgdGhlIFBvaXNzb24gZGlzdHJpYnV0aW9uIGhhdmUgYmVlbiBkZXZlbG9wZWQsIGluIG9yZGVyIHRvIGNpcmN1bXZlbnQgaXRzIHJlc3RyaWN0aXZlIGFzc3VtcHRpb25zLgoKIyBQcm9wZXJ0aWVzIG9mIChSTkEtc2VxKSBjb3VudCBkYXRhCgpJbiB0aGlzIGxlY3R1cmUsIHdlIHdpbGwgaW50cm9kdWNlIHdvcmtpbmcgd2l0aCBjb3VudCBkYXRhLCB1c2luZyBhIHJlYWwgYnVsayBSTkEtc2VxIGRhdGFzZXQgZnJvbSBbSGFnbHVuZCAqZXQgYWwuKiAoMjAxMildKGh0dHBzOi8vcHVibWVkLm5jYmkubmxtLm5paC5nb3YvMjMwMjQxODkvKS4gV2Ugd2lsbCBiZSBpbXBvcnRpbmcgdGhpcyBkYXRhc2V0IHVzaW5nIHRoZSBkYXRhIHBhY2thZ2UgW3BhcmF0aHlyb2lkU0VdKGh0dHBzOi8vd3d3LmJpb2NvbmR1Y3Rvci5vcmcvcGFja2FnZXMvcmVsZWFzZS9kYXRhL2V4cGVyaW1lbnQvaHRtbC9wYXJhdGh5cm9pZFNFLmh0bWwpIGZyb20gQmlvY29uZHVjdG9yLgoKYGBge3IsIHdhcm5pbmc9RkFMU0UsIGV2YWw9RkFMU0V9CmlmICghcmVxdWlyZU5hbWVzcGFjZSgiQmlvY01hbmFnZXIiLCBxdWlldGx5ID0gVFJVRSkpCiAgICBpbnN0YWxsLnBhY2thZ2VzKCJCaW9jTWFuYWdlciIpCmlmKCEiU3VtbWFyaXplZEV4cGVyaW1lbnQiICVpbiUgaW5zdGFsbGVkLnBhY2thZ2VzKCkpIEJpb2NNYW5hZ2VyOjppbnN0YWxsKCJTdW1tYXJpemVkRXhwZXJpbWVudCIpCiMgaW5zdGFsbCBwYWNrYWdlIGlmIG5vdCBpbnN0YWxsZWQuCmlmKCEicGFyYXRoeXJvaWRTRSIgJWluJSBpbnN0YWxsZWQucGFja2FnZXMoKSkgQmlvY01hbmFnZXI6Omluc3RhbGwoInBhcmF0aHlyb2lkU0UiKQoKbGlicmFyeShwYXJhdGh5cm9pZFNFKQpsaWJyYXJ5KFN1bW1hcml6ZWRFeHBlcmltZW50KQoKIyBpbXBvcnQgZGF0YQpkYXRhKCJwYXJhdGh5cm9pZEdlbmVzU0UiLCBwYWNrYWdlPSJwYXJhdGh5cm9pZFNFIikKIyByZW5hbWUgZm9yIGNvbnZlbmllbmNlCnNlIDwtIHBhcmF0aHlyb2lkR2VuZXNTRQpybShwYXJhdGh5cm9pZEdlbmVzU0UpCmBgYAoKCgogLSBDb3VudCBkYXRhIGFyZSBpbmhlcmVudGx5IAogCiAKYGBge3IsIGV2YWw9RkFMU0V9CnkgPC0gYXNzYXlzKHNlKSRjb3VudHNbMSxdCmhpc3QoeSwgYnJlYWtzID0gbmNvbChzZSksCiAgICAgeGxhYiA9ICJHZW5lIGV4cHJlc3Npb24iKQpgYGAKCiMjIE1lYW4tdmFyaWFuY2UgcmVsYXRpb25zaGlwCgojIyBSZWxhdGl2ZSB1bmNlcnRhaW50eSwgb2Zmc2V0cyBhbmQgY291bnQgc2NhbGluZwoKIyBWYXJpYW5jZS1zdGFiaWxpemluZyB0cmFuc2Zvcm1hdGlvbnMKCiMgR2VuZXJhbGl6ZWQgbGluZWFyIG1vZGVscwoK</div>
 
 
 </div>
