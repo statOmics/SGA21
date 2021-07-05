@@ -67,6 +67,7 @@ include_graphics("./images_sequencing/seqWorkflow1_clean.png")
 ```
 
 Note that several variants of library preparation protocols are available. The most important ones are:
+
  - Single-end vs paired-end sequecing: In single-end sequencing, a single end (3' or 5') of the cDNA fragment is sequenced. In paired-end sequencing, both ends are sequenced.
  - Strand specific protocols: Some library preparation protocols allow measuring strand specificity, where the strand information of each read can be preserved.
 
