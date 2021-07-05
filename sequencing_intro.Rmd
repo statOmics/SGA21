@@ -193,11 +193,11 @@ Below we introduce several relevant abundance metrics, but note that most data a
 
 \[ l_{fi}^{(eff)} = l_{f} - \hat{\bar{F}}_i + 1, \]
 
-  where $l_{f}$ is the total length of a feature in terms of number of nucleotides, and $\hat{\bar{F}}_i$ is the estimated average fragment length in sample $i$. We can use this to define
+    where $l_{f}$ is the total length of a feature in terms of number of nucleotides, and $\hat{\bar{F}}_i$ is the estimated average fragment length in sample $i$. We can use this to define
  
  \[ TPM_{fi} = \frac{Y_{fi}}{l_{fi}^{(eff)}} \left( \frac{1}{\sum_f \frac{Y_{fi}}{l_{fi}^{(eff)}}} \right) 10^6. \]
  
- Note that the first part of the right-hand-side (RHS), $\frac{Y_{fi}}{l_{fi}^{(eff)}}$ is the expression counts normalized for the length of the feature. This measure, however, is still affected by the sequencing depth, which is then alleviated by dividing by the sum of the length-normalized counts across all features, i.e., $\sum_f \frac{Y_{fi}}{l_{fi}^{(eff)}}$. TPMs hence normalize for the feature length as well as sequencing depth.
+    Note that the first part of the right-hand-side (RHS), $\frac{Y_{fi}}{l_{fi}^{(eff)}}$ is the expression counts normalized for the length of the feature. This measure, however, is still affected by the sequencing depth, which is then alleviated by dividing by the sum of the length-normalized counts across all features, i.e., $\sum_f \frac{Y_{fi}}{l_{fi}^{(eff)}}$. TPMs hence normalize for the feature length as well as sequencing depth.
 
 
 Once abundances have been quantified, the (estimated) counts are typically stored in a count matrix, with genes spanning the rows and samples spanning the columns. This count matrix forms the basis of most downstream analyses to interpret RNA-seq data, and it will be the main object we will be working with in the following lectures.
