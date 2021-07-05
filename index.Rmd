@@ -32,3 +32,8 @@ A primer to R and Data visualization in R can be found at:
 # Lecture material
 
 All lecture material will be provided on this website. Please check the 'Lectures' tab at the top of the homepage.
+
+
+ 1. Proteomics
+ 2. Sequencing
+        - [Introduction to sequencing](./sequencing_intro.html) [(PDF)](./sequencing_intro.pdf)
