@@ -185,11 +185,11 @@ include_graphics("./images_sequencing/abundanceEMAlgorithm.png")
 
 Below we introduce several relevant abundance metrics, but note that most data analysis methods we will discuss in this course will work with (estimated) counts. In what follows, let $Y_{fi}$ denote the random variable representing the expression counts of feature $f$ in sample $i$ (obtained either as a simple sum of fragments or estimated using lightweight approaches), and let $N_i = \sum_f Y_{fi}$ denote the sequencing depth of sample $i$.
 
- - **Counts per million (CPM)** are the counts one could expect to observe if the sample was sequenced to a depth of one million.
+ * **Counts per million (CPM)** are the counts one could expect to observe if the sample was sequenced to a depth of one million.
  
 \[ CPM_{fi} = \frac{Y_{fi}}{N_i} 10^6 \]
 
-- **Transcripts per million (TPM)** refers to the concentration or proportion of your feature in the sample. TPMs take into account the length of the feature, which is often reformulated into an *effective length* $l_{fi}^{(eff)}$, relating to the number of possible start sites that a feature may have in order to generate fragments of a typical length observed in your dataset. This typical length is often calculated using the observed fragment length distribution from the data and defined as
+* **Transcripts per million (TPM)** refers to the concentration or proportion of your feature in the sample. TPMs take into account the length of the feature, which is often reformulated into an *effective length* $l_{fi}^{(eff)}$, relating to the number of possible start sites that a feature may have in order to generate fragments of a typical length observed in your dataset. This typical length is often calculated using the observed fragment length distribution from the data and defined as
 
 \[ l_{fi}^{(eff)} = l_{f} - \hat{\bar{F}}_i + 1, \]
 
