@@ -19,10 +19,10 @@ The prerequisites for the Statistical Genomics analysis course are the successfu
 
 The basis concepts may be revisited in the online course at https://gtpb.github.io/PSLS20/ (English) and in https://statomics.github.io/statistiekCursusNotas/ (Dutch).
 
-A primer to R and Data visualisation  in R can be found in:
+A primer to R and Data visualization in R can be found at:
 
-R Basics: https://dodona.ugent.be/nl/courses/335/
-R Data Exploration: https://dodona.ugent.be/nl/courses/345/
+ - R Basics: https://dodona.ugent.be/nl/courses/335/
+ - R Data Exploration: https://dodona.ugent.be/nl/courses/345/
 
 # Lecturers
 
