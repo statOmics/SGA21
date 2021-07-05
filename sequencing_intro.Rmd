@@ -203,6 +203,10 @@ Below we introduce several relevant abundance metrics, but note that most data a
 Once abundances have been quantified, the (estimated) counts are typically stored in a count matrix, with genes spanning the rows and samples spanning the columns. This count matrix forms the basis of most downstream analyses to interpret RNA-seq data, and it will be the main object we will be working with in the following lectures.
 
 
+```{r, echo=FALSE, fig.cap=paste("Figure: An updated sequencing workflow. Image adapted from Van den Berge et al. (2019).")}
+include_graphics("./images_sequencing/seqWorkflow3.png")
+```
+
 # References
 
 
