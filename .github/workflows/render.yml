@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: Check out repo
         uses: actions/checkout@v2
+        with:
+          submodules: true
 
       - name: Set up R
         uses: r-lib/actions/setup-r@master
@@ -24,6 +26,9 @@ jobs:
 
       - name: Set up pandoc
         uses: r-lib/actions/setup-pandoc@master
+        
+      - name: Set up TinyTex
+        uses: r-lib/actions/setup-tinytex@v1
 
       - name: Install dependencies
         run: |
@@ -51,3 +56,12 @@ jobs:
           ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
           FOLDER: _site
+          
+      - name: Upload LaTeX logs
+        if: failure()
+        uses: actions/upload-artifact@main
+        with:
+          name: latex-logs
+          path: |
+            *.log
+            *.tex
