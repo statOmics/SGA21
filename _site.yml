@@ -11,6 +11,8 @@ navbar:
       menu:
       - text: Sequencing - Introduction to sequencing
         href: sequencing_intro.html
+      - text: Sequencing - Working with count data
+        href: sequencing_countData.html
   right:
     - icon: fab fa-github      
       href: https://github.com/statOmics/SGA21
