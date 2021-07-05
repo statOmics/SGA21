@@ -6,6 +6,10 @@ output:
   html_document:
     toc: true
     toc_float: true
+  pdf_document:
+    toc: true
+    number_sections: true
+    latex_engine: xelatex
 ---
 
 ```{r functions, include=FALSE}
