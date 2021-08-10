@@ -36,4 +36,5 @@ All lecture material will be provided on this website. Please check the 'Lecture
 
  1. Proteomics
  2. Sequencing
-        - [Introduction to sequencing](./sequencing_intro.html) [(PDF)](./sequencing_intro.pdf)
+   - [Introduction to sequencing](./sequencing_intro.html) [(PDF)](./sequencing_intro.pdf)
+   - [Working with count data](./sequencing_countData.html) [(PDF)](./sequencing_countData.pdf)
