@@ -1,0 +1,18 @@
+---
+title: 'Sequencing: Experimental design'
+author: "Koen Van den Berge"
+date: "7/5/2021"
+output: 
+  beamer_presentation:
+    theme: "AnnArbor"
+  pdf_document:
+    toc: true
+    number_sections: true
+    latex_engine: xelatex
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+- [Marioni *et al.* (2008)](https://genome.cshlp.org/content/18/9/1509) show that lane effects as well as run effects are small, although existant for a small proportion ($< 0.5%$) of genes.
+
