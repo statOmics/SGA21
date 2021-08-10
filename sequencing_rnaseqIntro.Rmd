@@ -3,8 +3,6 @@ title: 'Sequencing: RNA-seq data intro'
 author: "Koen Van den Berge"
 date: "8/6/2021"
 output: 
-  beamer_presentation:
-    theme: "AnnArbor"
   pdf_document:
     toc: true
     number_sections: true
