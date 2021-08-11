@@ -487,7 +487,11 @@ anova(mReduced, mFull, test = "Chisq") # note test statistic is equal
  ---
  
  - **Goodness-of-fit** (GOF) analyses serve to assess how well the model actually fit the observed data. One may view the fitting of a GLM as replacing a set of observed data points $\mathbf{y}$ by a set of fitted values $\hat{\mathbf{\mu}}$ derived from a model. In general $\hat{\mathbf{\mu}} \ne \mathbf{y}$ and the question arises as to how well $\hat{\mathbf{\mu}}$ approximates $\mathbf{y}$. This naturally raises the question of how much of a discrepancy we believe to be tolerable. Two important discrepancy measures are often used in a GLM setting. 
- - Note that the **residual deviance** was a likelihood ratio test statistic between a saturated and our current model. This saturated model actually provides us with a baseline as to how well a model can fit the observed data (even if we know that the saturated model is uninformative for summarizing the data). This motivates a statistical test with $H_0$: The current model does not fit significantly worse than the saturated model, and $H_1$: The current model fits significantly worse than a saturated model.
+ - Note that the **residual deviance** was a likelihood ratio test statistic between a saturated and our current model. This saturated model actually provides us with a baseline as to how well a model can fit the observed data (even if we know that the saturated model is uninformative for summarizing the data). This motivates a statistical test with 
+ 
+ $H_0$: The current model does not fit significantly worse than the saturated model.
+ $H_1$: The current model fits significantly worse than a saturated model.
+ 
  - The residual deviance immediately tests this hypothesis using a likelihood ratio test and is therefore a useful goodness-of-fit measure.
  - Another measure of discrepancy is the generalized Pearson $\chi^2$ statistic
  $$ X^2 = \sum_{i=1}^n \frac{(y_i - \hat{\mu}_i)^2}{Var(\hat{\mu}_i)} = \sum_{i=1}^n e_i^2,$$
