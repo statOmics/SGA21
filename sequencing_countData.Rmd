@@ -119,7 +119,7 @@ Y_i | X_i & \sim & N(\beta_0 + \beta_1 X_i, \sigma^2 \mathbf{I}).
   \left\{
   \begin{array}{ccc}
   Y_i & = & \mathbf{X}^T_i \mathbf{\beta} + \epsilon_i \\
-  Y_i | \mathbf{X}_i & \sim & N(\mathbf{X}^T_i \mathbf{\beta}, \sigma^2 \mathbf{I}),
+  Y_i | \mathbf{X}_i & \sim & N(\mathbf{X}^T_i \beta, \sigma^2 \mathbf{I}),
   \end{array}
   \right.
   $$
@@ -128,11 +128,6 @@ where $\mathbf{X}$ now represents our $n \times p$ design matrix, with row $i$ c
  ---
 
  - The variance-covariance matrix of $\mathbf{Y}$ is assumed a diagonal matrix with $\sigma^2$ on the diagonal elements and zero everywhere else. This means that the data points are uncorrelated, and that every observation has the same variance $\sigma^2$, also referred to as homoscedasticity. The latter obviously doesn't hold for count data, due to the mean-variance relationship. This makes linear models unsuitable to model count data.
-
-```{r, echo=FALSE, fig.cap=paste("")}
-# All defaults
-include_graphics("./images_sequencing/xkcd-1725-linear_regression_2x.png")
-```
 
 ## Generalized linear models
 
@@ -375,7 +370,7 @@ yhatA / yhatB # also equal to above.
  
  **Exercise**: try to derive the change in average number of bikers between (a) humidity of 0.1 above average, clear weather (`weathersit=1`), at hour 10 and (b) humidity of 0.1 below average, cloudy weather (`weathersit=2`), at hour 20, using all three methods.
 
-#### Model deviance and goodness-of-fit
+#### Model deviance, residuals and goodness-of-fit
 
  - In linear models, we often use residuals $e_i = y_i - \hat{\mu}_i$ to check model assumptions (linearity, homoscedasticity). However, in a GLM setting, we know that the variance of our residuals will depend on the mean, i.e., $Var(\epsilon_i) = f(\mu_i)$. Using ordinary residuals such as $e_i$ therefore is no longer appropriate.
  - We have seen that the objective function that is used to fit a GLM is the log-likelihood of the data under the posited model. For example, the log likelihood of a Poisson GLM with response variable $\mathbf{Y}$, with elements $Y_i, i \in \{1, \ldots, n\}$ and model matrix $\mathbf{X}$ is
@@ -409,7 +404,12 @@ plot(m)
 
 
 
-# Summary
+# A final note and summary
+
+```{r, echo=FALSE, fig.cap=paste("")}
+# All defaults
+include_graphics("./images_sequencing/xkcd-1725-linear_regression_2x.png")
+```
 
 
 
