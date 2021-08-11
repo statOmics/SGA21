@@ -397,6 +397,7 @@ yhatA / yhatB # also equal to above.
    with $c$ the number of parameters dropped in the alternative model versus the full model. If we again let $\mathbf{C}$ denote the $c \times p$ contrast matrix denoting the contrast for the parameters being dropped, the null and alternative hypothesis are as in the Wald test setting:
    $$ H_0: \mathbf{C}\hat{\beta} = 0$$
    $$ H_1: \mathbf{C}\hat{\beta} \ne 0$$
+   Finally, note that while, in this explanation, I have focussed on reducing a more complex model, but of course the LRT can also be adopted to check whether adding a covariate significantly improves the fit.
  - Statistical inference theory in GLMs always works asymptotically in terms of the sample size. Thus we need many data points in order for the theory to hold in practice and, in addition, all other assumptions such as the distributional assumption, must hold in order for the $p$-values to be correct.
  - In bulk RNA-seq, we are often working with a limited number of samples and so we typically do not expect asymptotic theory to hold yet. In single-cell RNA-seq, we often perform several preprocessing steps before calculating $p$-values for each gene and so we may be 'using the data multiple times'. Rather than attaching strong probabilistic interpretations to the $p$-values, we therefore advice to view the $p$-values simply as useful numerical summaries for ranking the genes for further inspection in genomics applications.
  
@@ -463,7 +464,6 @@ pval
 # using anova function
 anova(mReduced, mFull, test = "Chisq") # note test statistic is equal
 ```
-
  
 ## Model deviance, residuals and goodness-of-fit
 
@@ -471,19 +471,35 @@ anova(mReduced, mFull, test = "Chisq") # note test statistic is equal
  - We have seen that the objective function that is used to fit a GLM is the log-likelihood of the data under the posited model. For example, the log likelihood of a Poisson GLM with response variable $\mathbf{Y}$, with elements $Y_i, i \in \{1, \ldots, n\}$ and model matrix $\mathbf{X}$ is
  $$ \ell(\mathbf{Y};  \beta) = \log \prod_{i=1}^n \left( \frac{\exp (\mathbf{X}_i^T \beta)^{Y_i} \exp( - \exp(\mathbf{X}_i^T \beta))}{Y_i!} \right) = \sum_{i=1}^n \log \left( \frac{\exp(\mathbf{X}_i^T \beta)^{Y_i} \exp( - \exp(\mathbf{X}_i^T \beta))}{Y_i!} \right) \\ = \sum_{i=1}^n Y_i (\mathbf{X}_i^T \beta) + \exp(\mathbf{X}_i^T \beta)  - \log Y_i!. $$
  The estimates $\hat{\beta}$ are then found by maximizing $\ell(\beta | \mathbf{Y}, \mathbf{X} )$ with respect to $\beta$. This is analogous to maximizing a Gaussian likelihood in the linear model setting.
- - A goodness-of-fit measure used in the GLM setting is then the **residual deviance**, that is twice the difference in log-likelihood between a 'saturated model' and the current model. Here, a saturated model, is a model where we fit one parameter per data point and therefore fit the data perfectly, in other words $\hat{\mu}_i = y_i$. This is,
- $$ 2 * \left\{ \ell(\mathbf{Y};  \beta | \hat{\mu}_i = y_i) - \ell(\mathbf{Y};  \beta | \hat{\mu}_i = \exp(\mathbf{X}_i^T \beta)) \right\}.$$
+ - A goodness-of-fit measure used in the GLM setting is then the **residual deviance** $D$ (sometimes referred to simply as 'deviance'), that is twice the difference in log-likelihood between a 'saturated model' and the current model. Here, a saturated model, is a model where we fit one parameter per data point and therefore fit the data perfectly, in other words $\hat{\mu}_i = y_i$. This is,
+ $$ D = 2 * \left\{ \ell(\mathbf{Y};  \beta | \hat{\mu}_i = y_i) - \ell(\mathbf{Y};  \beta | \hat{\mu}_i = \exp(\mathbf{X}_i^T \beta)) \right\}.$$
+ - From the equation above it becomes clear that the residual deviance is actually a ratio in log-likelihoods and therefore a likelihood ratio test statistic! This will become important in assessing goodness of fit.
  - A low residual deviance can thus be interpreted as a model that is fitting the data well, since your current model will be close in log-likelihood to the saturated model. The deviance is a very useful statistic that is also important in statistical inference and model selection, e.g., for testing if a smaller model fits significantly worse than a larger model.
  - Finally, a **deviance residual** $D_i$ can then be defined as the square root of the contribution of the $i$th datum to the residual deviance
  $$ D_i = \sqrt{ 2* \left\{ \ell(\mathbf{Y};  \beta | \hat{\mu}_i = y_i) - \ell(\mathbf{Y};  \beta | \hat{\mu}_i = \exp(\mathbf{X}_i^T \beta)) \right\} } $$
  
  ---
  
- Pearson residuals
+ - Another type of residuals commonly used in a GLM setting are **Pearson residuals**. A Pearson residual is defined as
+ $$ e_i = \frac{y_i - \hat{\mu}_i}{\sqrt{Var(\hat{\mu}_i)}},$$
+ and we can see that it has the form of a regular residual such as used in liner models (numerator), but normalized according to the variance of the estimated mean (denominator), to correct for the mean-variance relationship.
  
- GOF: See Nelder book.
+ ---
+ 
+ - **Goodness-of-fit** (GOF) analyses serve to assess how well the model actually fit the observed data. One may view the fitting of a GLM as replacing a set of observed data points $\mathbf{y}$ by a set of fitted values $\hat{\mathbf{\mu}}$ derived from a model. In general $\hat{\mathbf{\mu}} \ne \mathbf{y}$ and the question arises as to how well $\hat{\mathbf{\mu}}$ approximates $\mathbf{y}$. This naturally raises the question of how much of a discrepancy we believe to be tolerable. Two important discrepancy measures are often used in a GLM setting. 
+ - Note that the **residual deviance** was a likelihood ratio test statistic between a saturated and our current model. This saturated model actually provides us with a baseline as to how well a model can fit the observed data (even if we know that the saturated model is uninformative for summarizing the data). This motivates a statistical test with $H_0$: The current model does not fit significantly worse than the saturated model, and $H_1$: The current model fits significantly worse than a saturated model.
+ - The residual deviance immediately tests this hypothesis using a likelihood ratio test and is therefore a useful goodness-of-fit measure.
+ - Another measure of discrepancy is the generalized Pearson $\chi^2$ statistic
+ $$ X^2 = \sum_{i=1}^n \frac{(y_i - \hat{\mu}_i)^2}{Var(\hat{\mu}_i)} = \sum_{i=1}^n e_i^2,$$
+ with $e_i$ the Pearson residual of observation $i$. 
+  - Asymptotic theory shows that both the residual deviance $D \sim \chi^2_{n-p} | H_0$ and $X^2 \sim \chi^2_{n-p} | H_0$, with $n$ the number of observations in our dataset (and, hence, the number of parameters fitted in our saturated model), and $p$ the number of parameters fitted in our current model.
+ 
+ ---
 
- **Exercise**: See if you can come up with the residual deviance that is reported in the summary of our model above. Also check if you can recover the correct deviance and Pearson residuals by calculating them yourself. You can get the deviance residuals in `R` by `resid(m, type="deviance")` and `resid(m, type="pearson")`.
+ **Exercise**: 
+ - See if you can come up with the residual deviance that is reported in the summary of our model above. 
+ - Also check if you can recover the correct deviance and Pearson residuals by calculating them yourself. You can get the deviance residuals in `R` by `resid(m, type="deviance")` and `resid(m, type="pearson")`.
+ - Does your model fit significantly worse than a saturated model?
 
 
 ## Overdispersion
