@@ -22,6 +22,7 @@ suppressPackageStartupMessages({
 })
 ```
 
+In this lecture we will introduce the main principles of working with count data, and how to model these using generalized linear models. We focus on introducing the concept of generalized linear models, and how to interpret its results. We only touch briefly upon statistical inference, providing the main results rather than the theory behind it, such that they can be applied to genomics data analysis.
 
 # The Poisson distribution
 
@@ -118,7 +119,7 @@ Y_i | X_i & \sim & N(\beta_0 + \beta_1 X_i, \sigma^2 \mathbf{I}).
   $$
   \left\{
   \begin{array}{ccc}
-  Y_i & = & \mathbf{X}^T_i \mathbf{\beta} + \epsilon_i \\
+  Y_i & = & \mathbf{X}^T_i \beta + \epsilon_i \\
   Y_i | \mathbf{X}_i & \sim & N(\mathbf{X}^T_i \beta, \sigma^2 \mathbf{I}),
   \end{array}
   \right.
@@ -133,14 +134,14 @@ where $\mathbf{X}$ now represents our $n \times p$ design matrix, with row $i$ c
 
  - As the name suggests, generalized linear models (GLMs) extend linear models. In GLMs, we extend two things with respect to the linear model:
     - The **conditional distribution of the response variable $Y_i | X_i$** can be assumed to follow any distribution that belongs to the **exponential family** of distributions, which includes the Gaussian but also other commonly known distributions, such as the Binomial, Gamma and Poisson distribution.
-    - The linear model assumed a linear relationship between $Y_i$ and $X_i$, since we assumed that $E(Y_i | X_i) = \mathbf{X}^T_i \mathbf{\beta}$. In GLMs, we will allow a **link function** $g()$ that links the conditional mean to the covariates. Hence, in GLMs we have that $g(E(Y_i | X_i)) = \mathbf{X}^T_i \mathbf{\beta}$. Note that each family has got a canonical link function, which is the identity link function $g(\mu) = \mu$ for Gaussian, the log link function $g(\mu) = \log \mu$ for Poisson, or the logit link function $g(\mu) = \log(\frac{\mu}{1-\mu})$ for Binomial.
+    - The linear model assumed a linear relationship between $Y_i$ and $X_i$, since we assumed that $E(Y_i | X_i) = \mathbf{X}^T_i \beta$. In GLMs, we will allow a **link function** $g()$ that links the conditional mean to the covariates. Hence, in GLMs we have that $g(E(Y_i | X_i)) = \mathbf{X}^T_i \beta$. Note that each family has got a canonical link function, which is the identity link function $g(\mu) = \mu$ for Gaussian, the log link function $g(\mu) = \log \mu$ for Poisson, or the logit link function $g(\mu) = \log(\frac{\mu}{1-\mu})$ for Binomial.
     
  ---
  
- - Remember that for a linear model we have a closed-form solution for estimating the regression coefficients $\mathbf{\beta}$, i.e., $\hat{\mathbf{\beta}} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y}$.
+ - Remember that for a linear model we have a closed-form solution for estimating the regression coefficients $\beta$, i.e., $\hat{\beta} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y}$.
  - Fitting a GLM is much harder, however, since for many distributions that belong to the exponential family, the variance depends on the mean, and this mean-variance relationship must be taken into account.
  - The **iterative reweighted least squares (IRLS)** algorithm is usually adopted for fitting GLMs. As the name suggests, it is an iterative algorithm (so no closed-form solutions!), where each data point is reweighted in each iteration according to its variance, which is a function of its estimated mean of the previous iteration. Indeed, observations with high variance will be downweighted and vice versa.
- - The objective function used in the IRLS algorithm is the log-likelihood of the data under the posited model. This function is being maximized with respect to the regression coefficients $\mathbf{\beta}$ to find a solution $\hat{\mathbf{\beta}}$.
+ - The objective function used in the IRLS algorithm is the log-likelihood of the data under the posited model. This function is being maximized with respect to the regression coefficients $\beta$ to find a solution $\hat{\beta}$.
  - In the absence of a mean-variance relationship (such as is the case with the Gaussian distribution), the IRLS algorithm reduces to the closed-form solutions of a linear model.
     
     
@@ -152,14 +153,14 @@ where $\mathbf{X}$ now represents our $n \times p$ design matrix, with row $i$ c
   \begin{array}{ccc}
   Y_i & \sim & Poi(\mu_i) \\
   \log \mu_i & = & \eta_i \\
-  \eta_i & = & \mathbf{X}^T_i \mathbf{\beta} \\
+  \eta_i & = & \mathbf{X}^T_i \beta \\
   \end{array}
   \right.
   $$
-where $Y_i$ is the response variable, with mean $\mu_i$, $\eta_i$ is the linear predictor, $\mathbf{X}$ is the $n \times p$ model matrix and $\mathbf{\beta}$ is the $p \times 1$ matrix of regression coefficients.
+where $Y_i$ is the response variable, with mean $\mu_i$, $\eta_i$ is the linear predictor, $\mathbf{X}$ is the $n \times p$ model matrix and $\beta$ is the $p \times 1$ matrix of regression coefficients.
   - It is insightful to compare this model to a linear model where $Y_i$ is log-transformed. Indeed, in the linear model case, we would be modeling $E(\log Y_i )$, while in the GLM we are modeling $\log E(Y_i)$.
   - This shows that in the GLM setting we are modeling a transformed version of the expected value, and after retransforming we can interpret the fit in terms of the mean of our response variable. In the transformed linear model, however, we are working with the expected value of a transformed version of our response variable, and we will not be able to interpret the fit in terms of the mean (because $E( \log Y_i) \ne \log E(Y_i)$. In this specific case, we would have to resort to interpreting changes in terms of a geometric mean.
-  - Also note that $\mathbf{X}^T_i \mathbf{\beta} \in ]-\infty, \infty[$, while $Y_i$ must be non-negative $[0, \infty[$. The link function helps with this, since the exponential function transforms any real number to a non-negative number, i.e., $\exp(\mathbf{X}^T_i \mathbf{\beta}) \in [0, \infty[$. 
+  - Also note that $\mathbf{X}^T_i \beta \in ]-\infty, \infty[$, while $Y_i$ must be non-negative $[0, \infty[$. The link function helps with this, since the exponential function transforms any real number to a non-negative number, i.e., $\exp(\mathbf{X}^T_i \beta) \in [0, \infty[$. 
  
 
 ### Generalized linear models in `R`
@@ -255,7 +256,7 @@ summary(m)
   \begin{array}{ccc}
   Y_i & \sim & Poi(\mu_i) \\
   \log \mu_i & = & \eta_i \\
-  \eta_i & = & \mathbf{X}^T_i \mathbf{\beta} \\
+  \eta_i & = & \mathbf{X}^T_i \beta \\
   \end{array}
   \right.
   $$
@@ -263,7 +264,7 @@ summary(m)
  *Interpretation of the intercept.*
   
  - We will first interpret the intercept, in terms of the average number of bikes being used. Note that the intercept corresponds to hour 0, at good weather (`weathersit` level 1), and average humidity. We will denote the intercept as $\beta_0$ and its estimate, given the data, as $\hat{\beta}_0$. All other coefficients will thus denote a relative change with respect to that reference level.
- - The model definition shows that $\log \mu_i = \mathbf{X}^T_i \mathbf{\beta}$, with $\mu$ the average number of bikes being used. Since we're only working with the intercept here, we may write $\log \mu_i = \beta_0$, and thus $\mu_i = \exp \beta_0$.
+ - The model definition shows that $\log \mu_i = \mathbf{X}^T_i \beta$, with $\mu$ the average number of bikes being used. Since we're only working with the intercept here, we may write $\log \mu_i = \beta_0$, and thus $\mu_i = \exp \beta_0$.
  - Plugging in the estimated intercept $\hat{\beta}_0$, we have $\exp \hat{\beta}_0 =$ `r round(exp(coef(m)[1]), 2)`. In other words, in clear weather with few clouds, at zero humidity and at hour 0, an average of $40.82$ bikes are being used.
  
  ---
@@ -369,20 +370,120 @@ yhatA / yhatB # also equal to above.
  ---
  
  **Exercise**: try to derive the change in average number of bikers between (a) humidity of 0.1 above average, clear weather (`weathersit=1`), at hour 10 and (b) humidity of 0.1 below average, cloudy weather (`weathersit=2`), at hour 20, using all three methods.
+ 
+## Statistical inference in GLMs
 
-#### Model deviance, residuals and goodness-of-fit
+### Wald test and likelihood ratio test
+
+ - In our interpretation above we have focussed on deriving changes in the average number of bikers between groups of interest. However, we have not yet tested whether these changes are statistically significant.
+ - In genomics applications, statistical inference in GLMs is often adopted to test for differential expression between conditions for each gene (e.g., *is gene A differently expressed in healthy versus tumoral tissue?*), which amounts to testing the null hypothesis of whether a (linear combination of) coefficient(s) equals zero.
+ - In this course, we will mainly work with two types of statistical tests for GLMs:
+   - **Wald test**: The Wald test may be viewed as being anaologous to the $t$-test we are using in linear models. The Wald test relies on the following asymptotic result
+   $$\hat{\beta} | \beta \sim N (\beta, Var(\hat{\beta}))$$.
+   The Wald test statistic for testing a single parameter $\hat{\beta}$
+   $$W = \frac{\hat{\beta}}{\hat{SE}(\hat{\beta})} \sim N(0,1) | H_0$$
+   or, equivalently, letting $\mathbf{C}$ denote the $1 \times p$ contrast matrix denoting the contrast for the single parameter $\beta$ we would like to test, and $\hat{\Sigma}_{\hat{\beta}}$  the variance-covariance matrix of the parameters,
+   $$W = \mathbf{C}\hat{\beta} (\mathbf{C} \hat{\Sigma}_{\hat{\beta}} \mathbf{C}^T)^{-1} \hat{\beta}^T \mathbf{C}^T \sim \chi^2_1 | H_0.$$
+   The null and alternative hypothesis can therefore in general be written as
+   $$ H_0: \mathbf{C}\hat{\beta} = 0$$
+   $$ H_1: \mathbf{C}\hat{\beta} \ne 0$$
+   If $c \ge 1$ contrasts are tested, then the test statistic $W \sim \chi^2_c | H_0$, provided that the $c$ contrasts are linearly independent (i.e., the contrast matrix is full rank).
+   - **Likelihood ratio test**: The likelihood ratio test (LRT) measures the discrepancy in log-likelihood between our current model (somtimes also referred to as full model) and a reduced model (sometimes also referred to as null or alternative model). The reduced model must be nested in (and therefore of lower dimension as compared to) the full model. While adding more covariates will always explain more variability in our response variable, the LRT tests whether this is actually significant.
+   For example, in the example of gene differential expression between healthy versus tumoral tissue, the full model could be a GLM where the mean is modeled according to an intercept and a tissue indicator variable (healthy / tumoral), while the alternative model could be a GLM with just an intercept. Indeed, if the gene is similarly expressed between healthy and tumoral tissue, the log-likelihood of the alternative model will decrease only a little as compared to the full model.
+   As the name suggests, the likelihood ratio test assesses whether the ratio of the log-likelihoods provides sufficient evidence for a worse fit of the alternative versus full model
+   $$L = 2 \log \left\{ \ell(\hat{\beta}_{full}) -  \ell(\hat{\beta}_{alternative}) \right\}.$$
+   Asymptotically, under the null hypothesis it can be shown that
+   $$ L \sim \chi_c^2 | H_0, $$
+   with $c$ the number of parameters dropped in the alternative model versus the full model. If we again let $\mathbf{C}$ denote the $c \times p$ contrast matrix denoting the contrast for the parameters being dropped, the null and alternative hypothesis are as in the Wald test setting:
+   $$ H_0: \mathbf{C}\hat{\beta} = 0$$
+   $$ H_1: \mathbf{C}\hat{\beta} \ne 0$$
+ - Statistical inference theory in GLMs always works asymptotically in terms of the sample size. Thus we need many data points in order for the theory to hold in practice and, in addition, all other assumptions such as the distributional assumption, must hold in order for the $p$-values to be correct.
+ - In bulk RNA-seq, we are often working with a limited number of samples and so we typically do not expect asymptotic theory to hold yet. In single-cell RNA-seq, we often perform several preprocessing steps before calculating $p$-values for each gene and so we may be 'using the data multiple times'. Rather than attaching strong probabilistic interpretations to the $p$-values, we therefore advice to view the $p$-values simply as useful numerical summaries for ranking the genes for further inspection in genomics applications.
+ 
+ **TODO: add schematic comparing Wald with LRT using log-likelihood function**
+  
+### Wald test and likelihood ratio test in `R`
+
+Let's use a Wald test and a likelihood ratio test to test whether the average number of bikers differs between a working day or a weekend day, using a simple GLM with only that variable as a covariate. 
+This amounts to testing
+
+$$H_0: \beta_{workingday} = 0$$
+$$H_1: \beta_{workingday} \ne 0$$
+
+**TODO: z-test versus Wald test**
+
+```{r waldTest}
+mSimple <- glm(bikers ~ workingday, 
+               family = "poisson", 
+               data = Bikeshare)
+summSimple <- summary(mSimple)
+summSimple$coefficients["workingday",]
+# Wald test manually
+W <- summSimple$coefficients["workingday", "Estimate"] / summSimple$coefficients["workingday", "Std. Error"]
+pval <- 2*(1 - pnorm(W))
+W
+pval
+ 
+# Wald test through a contrast
+C <- matrix(0, nrow=1, ncol=length(coef(mSimple)))
+colnames(C) <- names(coef(mSimple))
+C[, "workingday"] <- 1
+beta <- matrix(coef(mSimple), ncol=1)
+Sigma <- vcov(mSimple)
+
+W2 <- C %*% beta %*% solve(C %*% Sigma %*% t(C)) %*% t(beta) %*% t(C)
+W2
+# note this being equal to
+W^2
+pval <- 1-pchisq(W, df=1)
+pval
+
+# finally, we can also read the Wald test result from the summary of the model
+summSimple
+```
+
+```{r lrTest}
+mFull <- glm(bikers ~ workingday, 
+               family = "poisson", 
+               data = Bikeshare)
+
+mReduced <- glm(bikers ~ 1, 
+               family = "poisson", 
+               data = Bikeshare)
+
+# manual LRT
+llFull <- logLik(mFull)
+llReduced <- logLik(mReduced)
+
+lrt <- as.numeric(2 * (llFull - llReduced))
+lrt
+pval <- 1 - pchisq(lrt, df=1)
+pval
+
+# using anova function
+anova(mReduced, mFull, test = "Chisq") # note test statistic is equal
+```
+
+ 
+## Model deviance, residuals and goodness-of-fit
 
  - In linear models, we often use residuals $e_i = y_i - \hat{\mu}_i$ to check model assumptions (linearity, homoscedasticity). However, in a GLM setting, we know that the variance of our residuals will depend on the mean, i.e., $Var(\epsilon_i) = f(\mu_i)$. Using ordinary residuals such as $e_i$ therefore is no longer appropriate.
  - We have seen that the objective function that is used to fit a GLM is the log-likelihood of the data under the posited model. For example, the log likelihood of a Poisson GLM with response variable $\mathbf{Y}$, with elements $Y_i, i \in \{1, \ldots, n\}$ and model matrix $\mathbf{X}$ is
- $$ \ell(\mathbf{Y};  \mathbf{\beta}) = \log \prod_{i=1}^n \left( \frac{\exp (\mathbf{X}_i^T \mathbf{\beta})^{Y_i} \exp( - \exp(\mathbf{X}_i^T \mathbf{\beta}))}{Y_i!} \right) = \sum_{i=1}^n \log \left( \frac{\exp(\mathbf{X}_i^T \mathbf{\beta})^{Y_i} \exp( - \exp(\mathbf{X}_i^T \mathbf{\beta}))}{Y_i!} \right) \\ = \sum_{i=1}^n Y_i (\mathbf{X}_i^T \mathbf{\beta}) + \exp(\mathbf{X}_i^T \mathbf{\beta})  - \log Y_i!. $$
- The estimates $\hat{\mathbf{\beta}}$ are then found by maximizing $\ell(\mathbf{\beta} | \mathbf{Y}, \mathbf{X} )$ with respect to $\mathbf{\beta}$. This is analogous to maximizing a Gaussian likelihood in the linear model setting.
+ $$ \ell(\mathbf{Y};  \beta) = \log \prod_{i=1}^n \left( \frac{\exp (\mathbf{X}_i^T \beta)^{Y_i} \exp( - \exp(\mathbf{X}_i^T \beta))}{Y_i!} \right) = \sum_{i=1}^n \log \left( \frac{\exp(\mathbf{X}_i^T \beta)^{Y_i} \exp( - \exp(\mathbf{X}_i^T \beta))}{Y_i!} \right) \\ = \sum_{i=1}^n Y_i (\mathbf{X}_i^T \beta) + \exp(\mathbf{X}_i^T \beta)  - \log Y_i!. $$
+ The estimates $\hat{\beta}$ are then found by maximizing $\ell(\beta | \mathbf{Y}, \mathbf{X} )$ with respect to $\beta$. This is analogous to maximizing a Gaussian likelihood in the linear model setting.
  - A goodness-of-fit measure used in the GLM setting is then the **residual deviance**, that is twice the difference in log-likelihood between a 'saturated model' and the current model. Here, a saturated model, is a model where we fit one parameter per data point and therefore fit the data perfectly, in other words $\hat{\mu}_i = y_i$. This is,
- $$ 2 * \left\{ \ell(\mathbf{Y};  \mathbf{\beta} | \hat{\mu}_i = y_i) - \ell(\mathbf{Y};  \mathbf{\beta} | \hat{\mu}_i = \exp(\mathbf{X}_i^T \mathbf{\beta})) \right\}.$$
+ $$ 2 * \left\{ \ell(\mathbf{Y};  \beta | \hat{\mu}_i = y_i) - \ell(\mathbf{Y};  \beta | \hat{\mu}_i = \exp(\mathbf{X}_i^T \beta)) \right\}.$$
  - A low residual deviance can thus be interpreted as a model that is fitting the data well, since your current model will be close in log-likelihood to the saturated model. The deviance is a very useful statistic that is also important in statistical inference and model selection, e.g., for testing if a smaller model fits significantly worse than a larger model.
  - Finally, a **deviance residual** $D_i$ can then be defined as the square root of the contribution of the $i$th datum to the residual deviance
- $$ D_i = \sqrt{ 2* \left\{ \ell(\mathbf{Y};  \mathbf{\beta} | \hat{\mu}_i = y_i) - \ell(\mathbf{Y};  \mathbf{\beta} | \hat{\mu}_i = \exp(\mathbf{X}_i^T \mathbf{\beta})) \right\} } $$
+ $$ D_i = \sqrt{ 2* \left\{ \ell(\mathbf{Y};  \beta | \hat{\mu}_i = y_i) - \ell(\mathbf{Y};  \beta | \hat{\mu}_i = \exp(\mathbf{X}_i^T \beta)) \right\} } $$
+ 
+ ---
+ 
+ Pearson residuals
+ 
+ GOF: See Nelder book.
 
- **Exercise**: See if you can come up with the residual deviance that is reported in the summary of our model above. Also check if you can recover the correct deviance residuals by calculating them yourself. You can get the deviance residuals in `R` by `resid(m, type="deviance")`.
+ **Exercise**: See if you can come up with the residual deviance that is reported in the summary of our model above. Also check if you can recover the correct deviance and Pearson residuals by calculating them yourself. You can get the deviance residuals in `R` by `resid(m, type="deviance")` and `resid(m, type="pearson")`.
 
 
 ## Overdispersion
