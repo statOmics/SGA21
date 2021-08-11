@@ -416,7 +416,7 @@ plot(m)
 # References
 
  - [Marioni *et al.* (2008)](https://genome.cshlp.org/content/18/9/1509) describe the distribution of gene expression counts across technical replicates, and in addition discuss lane effects in RNA-seq, as well as a comparison between RNA-seq and array-based platforms.
- - The count data chapter of Modern Statistics for Modern Biology by Wolfgang Huber and Susan Holmes: https://www.huber.embl.de/msmb/Chap-CountData.html
+ - The count data chapter of Modern Statistics for Modern Biology by Wolfgang Huber and Susan Holmes handles similar topics also in the context of RNA-seq: https://www.huber.embl.de/msmb/Chap-CountData.html
 
 
 # Junk
