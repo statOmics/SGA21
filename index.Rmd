@@ -40,3 +40,7 @@ All lecture material will be provided on this website. Please check the 'Lecture
 | 1 | ... | ... | ... | ... | ... |
 | 7 | Bulk RNA-seq | Introduction to sequencing | [HTML](./sequencing_intro.html) | [PDF](./sequencing_countData.pdf) | ... |
 | 7 | Bulk RNA-seq | Working with count data | [HTML](./sequencing_countData.html) | [PDF](./sequencing_countData.pdf) | ... |
+| 7 | Bulk RNA-seq | Lab session 💻 | [Rmd](), [HTML]() | [PDF]() | ... |
+
+
+
