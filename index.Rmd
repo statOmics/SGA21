@@ -34,7 +34,9 @@ A primer to R and Data visualization in R can be found at:
 All lecture material will be provided on this website. Please check the 'Lectures' tab at the top of the homepage.
 
 
- 1. Proteomics
- 2. Sequencing
-   - [Introduction to sequencing](./sequencing_intro.html) [(PDF)](./sequencing_intro.pdf)
-   - [Working with count data](./sequencing_countData.html) [(PDF)](./sequencing_countData.pdf)
+| Week | Class | Topic | HTML | PDF | Details |
+|------|-------|------|----|------|-------|
+| 1 | Proteomics | Introduction | link to HTML | link to PDF | link to papers etc. |
+| 1 | ... | ... | ... | ... | ... |
+| 7 | Bulk RNA-seq | Introduction to sequencing | [HTML](./sequencing_intro.html) | [PDF](./sequencing_countData.pdf) | ... |
+| 7 | Bulk RNA-seq | Working with count data | [HTML](./sequencing_countData.html) | [PDF](./sequencing_countData.pdf) | ... |
