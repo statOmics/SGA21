@@ -488,7 +488,7 @@ anova(mReduced, mFull, test = "Chisq") # note test statistic is equal
  
  - **Goodness-of-fit** (GOF) analyses serve to assess how well the model actually fit the observed data. One may view the fitting of a GLM as replacing a set of observed data points $\mathbf{y}$ by a set of fitted values $\hat{\mathbf{\mu}}$ derived from a model. In general $\hat{\mathbf{\mu}} \ne \mathbf{y}$ and the question arises as to how well $\hat{\mathbf{\mu}}$ approximates $\mathbf{y}$. This naturally raises the question of how much of a discrepancy we believe to be tolerable. Two important discrepancy measures are often used in a GLM setting. 
  - Note that the **residual deviance** was a likelihood ratio test statistic between a saturated and our current model. This saturated model actually provides us with a baseline as to how well a model can fit the observed data (even if we know that the saturated model is uninformative for summarizing the data). This motivates a statistical test with  
- $H_0$: The current model does not fit significantly worse than the saturated model.  
+ $H_0$: The current model provides a similar fit as the saturated model.  
  $H_1$: The current model fits significantly worse than a saturated model.  
  - The residual deviance immediately tests this hypothesis using a likelihood ratio test and is therefore a useful goodness-of-fit measure.
  - Another measure of discrepancy is the generalized Pearson $\chi^2$ statistic
@@ -503,27 +503,72 @@ anova(mReduced, mFull, test = "Chisq") # note test statistic is equal
  - Also check if you can recover the correct deviance and Pearson residuals by calculating them yourself. You can get the deviance residuals in `R` by `resid(m, type="deviance")` and `resid(m, type="pearson")`.
  - Does your model fit significantly worse than a saturated model?
 
-
 ## Overdispersion
 
-
+ - Above we have always assumed that the Poisson distribution is valid for the dataset we have been using. However, we never checked for this.
+ - As a matter of fact, it often happens that the variance=mean assumption is too stringent for count data. If the variance is larger than the mean, this is referred to as **overdispersion**. Though much less common, underdispersion happens when the variance is smaller than the mean.
+ - We can use Pearson residuals to measure overdispersion using the following argument. The Poisson GLM implies that
+ $$ Y_i | X_i, \hat{\beta} \sim Poi(\hat{\mu}_i),$$
+ with $\hat{\mu}_i = \exp (\mathbf{X}_i^T \hat{\beta})$. This implies
+ $$ Var(Y_i | X, \hat{\beta}) = \hat{\mu}_i.$$
+ Since the variance is unaffected by addition we may also write
+ $$ Var(Y_i - \hat{\mu}_i | X, \hat{\beta}) = \hat{\mu}_i.$$
+ Which is also equal to
+ $$ Var(\frac{Y_i - \hat{\mu}_i}{\sqrt{Var(\hat{\mu}_i)}} | X, \hat{\beta}) = \frac{\hat{\mu}_i}{Var(\hat{\mu}_i)}.$$
+ Since we know from the Poisson distribution that $Var(\hat{\mu}_i) = \hat{\mu}_i$, we have that 
+ $$ Var(\frac{Y_i - \hat{\mu}_i}{\sqrt{\hat{\mu}_i)} | X, \hat{\beta}) = \frac{\hat{\mu}_i}{\hat{\mu}_i}.$$
+ Note that the formulation within the variance at left-hand side of the equation is our definition of Pearson residuals $E_i$. Thus, we can write
+ $$ Var(E_i | X, \hat{\beta}) = 1,$$
+ which is something we can empirically test using our fitted model. Indeed, **if the variance of our Pearson residuals is much larger than $1$, we are dealing with overdispersion**. As a rough rule, I consider overdispersion to be present if this value is larger than 1.3, but this is arbitrary and may depend on the situation (and statistician). 
+ 
+ ---
+ 
+ - Below, we apply this to the `Bikeshare` dataset. We will notice that the overdispersion is huge! The p-values and standard errors provided by the model can therefore not be trusted!
 
 ```{r}
+ePearson <- resid(m, type="pearson")
+n <- nrow(Bikeshare)
+p <- length(coef(m))
+varPearson <- sum((ePearson^2)) / (n - p)
+varPearson # HUGE!
+```
+
+### Remedies to overdispersion
+
+- The presence of overdispersion tells us that the distributional assumption we have been making does not hold. Overdispersion is a common problem, and luckily we have a few available remedies, as in alternative distributions, although choosing between them may not be trival.
+  - The **negative binomial** (NB) distribution is a popular choice for modeling data that are overdispersed with respect to the Poisson distribution. The NB can be considered as a member of the exponential family and therefore fitted using standard GLM fitting engines. Just like the Poisson distribution, it is a distribution only appropriate for modeling count data. If
+  $$ Y_i \sim NB(\mu_i, \phi), $$
+  then $E(Y_i) = \mu_i$ and $Var(Y_i) = \mu_i + \phi \mu_i^2$, with $\phi \ge 0$ the **dispersion parameter**. Since $\phi \ge 0$ the variance of the negative binomial is always larger than that of the Poisson distribution, and in fact is now a quadratic (rather than linear) function of the mean. When $\phi = 0$, the NB reduces to the Poisson distribution.
+  - The **quasi-Poisson** model is an alternative choice derived using the quasi-likelihood framework developed by [Wedderburn (1974)](https://www.jstor.org/stable/2334725?seq=1#metadata_info_tab_contents). However, only the first two moments (mean and variance) are specified, and all other moments are left unspecified. In particular if model $Y_i$ using a quasi-Poisson model, then $E(Y_i) = \mu_i$ and $Var(Y_i) = \phi \mu_i$, with $\phi \ge 0$ the **(quasi-)dispersion parameter**. Again, since $\phi \ge 0$ the variance of the quasi-Poisson is always larger than that of the Poisson distribution, however, the dispersion parameter here is on the linear scale, and so the mean-variance relationship is still linear as opposed to quadratic in the NB.
+  
+ ---
+ 
+ Below, we fit a negative binomial and quasi-Poisson model in `R`.
+
+```{r}
+## negative binomial
 library(MASS)
-m <- glm.nb(bikers ~ weathersit + hum + hr,
+mNB <- glm.nb(bikers ~ weathersit + humc + I(humc^2) + I(humc^3) + hr,
          data = Bikeshare)
+summary(mNB)
+mean(resid(mNB, type = "pearson")^2) # no more overdispersion!
 
-summary(m)
-
-plot(m)
+## quasi-Poisson
+mQP <- glm(bikers ~ weathersit + humc + I(humc^2) + I(humc^3) + hr,
+         data = Bikeshare,
+         family="quasipoisson")
+# note the dispersion parameter being estimated is equal to our overdispersion diagnostic measure. 
+# Indeed, this is the way the dispersion parameter is estimated for the QP!!
+summary(mQP) 
 ```
 
 
+# A final note
 
-
-
-
-# A final note and summary
+In this lecture, we have introduced GLMs to model data that can be assumed to follow a distribution belonging to the exponential family.
+We focussed on interpretation, statistical inference and some model goodness-of-fit diagnostics. 
+We did not consider important topics like model selection, or even whether a GLM is appropriate for your dataset! These are other important topics which, unfortuantely, we do not have the bandwidth for to include in this course.
+Therefore, a final note through an [XKCD comic](https://xkcd.com/), after finishing this long chapter!
 
 ```{r, echo=FALSE, fig.cap=paste("")}
 # All defaults
@@ -531,35 +576,8 @@ include_graphics("./images_sequencing/xkcd-1725-linear_regression_2x.png")
 ```
 
 
-
 # References
 
  - [Marioni *et al.* (2008)](https://genome.cshlp.org/content/18/9/1509) describe the distribution of gene expression counts across technical replicates, and in addition discuss lane effects in RNA-seq, as well as a comparison between RNA-seq and array-based platforms.
+ - [Wedderburn (1974)](https://www.jstor.org/stable/2334725?seq=1#metadata_info_tab_contents) introduced the (extended) quasi-likelihood framework.
  - The count data chapter of Modern Statistics for Modern Biology by Wolfgang Huber and Susan Holmes handles similar topics also in the context of RNA-seq: https://www.huber.embl.de/msmb/Chap-CountData.html
-
-
-# Junk
-
-
-```{r, eval=FALSE}
-library(dplyr)
-# downloaded from https://epistat.wiv-isp.be/covid/ 
-data <- read.csv("~/Downloads/COVID19BE_CASES_AGESEX.csv")
-# remove rows with NA
-data <- data[!apply(data, 1 , function(x) any(is.na(x))),]
-# convert to R Date format
-data$DATE <- as.Date(data$DATE)
-# convert date to day of the week
-data$day <- weekdays(data$DATE)
-
-dataGrouped <- group_by(data, DATE) %>%
-  summarize(nCases = sum(CASES),
-            day = unique(day))
-
-plot(x=dataGrouped$DATE, y=dataGrouped$nCases,
-     pch=16, cex=1/2)
-
-# less reporting on weekends
-plot(x=dataGrouped$DATE, y=dataGrouped$nCases,
-     pch=16, cex=1/2, col=factor(dataGrouped$day))
-```

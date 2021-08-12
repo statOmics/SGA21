@@ -38,7 +38,7 @@ All lecture material will be provided on this website. Please check the 'Lecture
 |------|-------|------|----|------|-------|
 | 1 | Proteomics | Introduction | link to HTML | link to PDF | link to papers etc. |
 | 1 | ... | ... | ... | ... | ... |
-| 7 | Bulk RNA-seq | Introduction to sequencing | [HTML](./sequencing_intro.html) | [PDF](./sequencing_intro.pdf) | ... |
+| 7 | Bulk RNA-seq | Introduction to sequencing | [HTML](./sequencing_intro.html) | [PDF](./sequencing_intro.pdf) | - [Van den Berge *et al.* (2019)](https://www.annualreviews.org/doi/abs/10.1146/annurev-biodatasci-072018-021255): Review paper on expression analysis. |
 | 7-8 | Bulk RNA-seq | Working with count data | [HTML](./sequencing_countData.html) | [PDF](./sequencing_countData.pdf) | ... |
 | 8 | Bulk RNA-seq | Lab session 💻 | [Rmd](), [HTML]() | [PDF]() | ... |
 
