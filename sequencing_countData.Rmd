@@ -516,7 +516,7 @@ anova(mReduced, mFull, test = "Chisq") # note test statistic is equal
  Which is also equal to
  $$ Var(\frac{Y_i - \hat{\mu}_i}{\sqrt{Var(\hat{\mu}_i)}} | X, \hat{\beta}) = \frac{\hat{\mu}_i}{Var(\hat{\mu}_i)}.$$
  Since we know from the Poisson distribution that $Var(\hat{\mu}_i) = \hat{\mu}_i$, we have that 
- $$ Var(\frac{Y_i - \hat{\mu}_i}{\sqrt{\hat{\mu}_i)} | X, \hat{\beta}) = \frac{\hat{\mu}_i}{\hat{\mu}_i}.$$
+ $$ Var(\frac{Y_i - \hat{\mu}_i}{\sqrt{\hat{\mu}_i)}} | X, \hat{\beta}) = \frac{\hat{\mu}_i}{\hat{\mu}_i}.$$
  Note that the formulation within the variance at left-hand side of the equation is our definition of Pearson residuals $E_i$. Thus, we can write
  $$ Var(E_i | X, \hat{\beta}) = 1,$$
  which is something we can empirically test using our fitted model. Indeed, **if the variance of our Pearson residuals is much larger than $1$, we are dealing with overdispersion**. As a rough rule, I consider overdispersion to be present if this value is larger than 1.3, but this is arbitrary and may depend on the situation (and statistician). 
