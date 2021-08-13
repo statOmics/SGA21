@@ -471,17 +471,147 @@ div.tocify {
 </div>
 
 
-<p>Start with challenges below, and make a section for each. This will simultaneously follow a full RNA-seq analysis pipeline.</p>
-<p>Challenges:</p>
+<p>In this lecture we will start working with a real bulk RNA-seq dataset from <a href="https://pubmed.ncbi.nlm.nih.gov/23024189/">Haglund <em>et al.</em> (2012)</a>. After importing the data, we will be working our way through four major challenges which, together, will form a full RNA-seq differential expression (DE) analysis pipeline where the result of our analysis will be a(n ordered) list of genes that we find to be differently expressed between our conditions of interest. The four main challenges we will look into are</p>
 <ul>
-<li>Choice of modeling assumptions (distribution)</li>
-<li>Normalization</li>
-<li>Parameter estimation under limited information setting</li>
-<li>High dimensionality (many genes), multiple testing</li>
+<li>Choice of modeling assumptions (distribution).</li>
+<li>Normalization.</li>
+<li>Parameter estimation under a limited information setting.</li>
+<li>Statistical inference under high dimensionality (many genes).</li>
 </ul>
+<div id="data-import" class="section level1">
+<h1><span class="header-section-number">1</span> Data import</h1>
+<p>We will be importing this dataset using the data package <a href="https://www.bioconductor.org/packages/release/data/experiment/html/parathyroidSE.html">parathyroidSE</a> from <a href="https://bioconductor.org/">Bioconductor</a>.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="cf">if</span> (<span class="op">!</span><span class="kw">requireNamespace</span>(<span class="st">&quot;BiocManager&quot;</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)){</span>
+<span id="cb1-2"><a href="#cb1-2"></a>  <span class="kw">install.packages</span>(<span class="st">&quot;BiocManager&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3"></a>}</span></code></pre></div>
+<pre><code>## Installing package into &#39;/Users/runner/work/_temp/Library&#39;
+## (as &#39;lib&#39; is unspecified)</code></pre>
+<pre><code>## 
+## The downloaded binary packages are in
+##  /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpqxXDWW/downloaded_packages</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="cf">if</span>(<span class="op">!</span><span class="st">&quot;SummarizedExperiment&quot;</span> <span class="op">%in%</span><span class="st"> </span><span class="kw">installed.packages</span>()){</span>
+<span id="cb4-2"><a href="#cb4-2"></a>  BiocManager<span class="op">::</span><span class="kw">install</span>(<span class="st">&quot;SummarizedExperiment&quot;</span>)</span>
+<span id="cb4-3"><a href="#cb4-3"></a>} </span></code></pre></div>
+<pre><code>## &#39;getOption(&quot;repos&quot;)&#39; replaces Bioconductor standard repositories, see
+## &#39;?repositories&#39; for details
+## 
+## replacement repositories:
+##     CRAN: https://cloud.r-project.org</code></pre>
+<pre><code>## Bioconductor version 3.12 (BiocManager 1.30.16), R 4.0.5 (2021-03-31)</code></pre>
+<pre><code>## Installing package(s) &#39;BiocVersion&#39;, &#39;SummarizedExperiment&#39;</code></pre>
+<pre><code>## also installing the dependencies &#39;zlibbioc&#39;, &#39;bitops&#39;, &#39;matrixStats&#39;, &#39;XVector&#39;, &#39;RCurl&#39;, &#39;GenomeInfoDbData&#39;, &#39;MatrixGenerics&#39;, &#39;GenomicRanges&#39;, &#39;Biobase&#39;, &#39;BiocGenerics&#39;, &#39;S4Vectors&#39;, &#39;IRanges&#39;, &#39;GenomeInfoDb&#39;, &#39;DelayedArray&#39;</code></pre>
+<pre><code>## 
+## The downloaded binary packages are in
+##  /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpqxXDWW/downloaded_packages</code></pre>
+<pre><code>## installing the source package &#39;GenomeInfoDbData&#39;</code></pre>
+<pre><code>## Old packages: &#39;boot&#39;, &#39;class&#39;, &#39;cluster&#39;, &#39;KernSmooth&#39;, &#39;lattice&#39;, &#39;MASS&#39;,
+##   &#39;Matrix&#39;, &#39;mgcv&#39;, &#39;nnet&#39;, &#39;spatial&#39;, &#39;survival&#39;</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="co"># install package if not installed.</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="cf">if</span>(<span class="op">!</span><span class="st">&quot;parathyroidSE&quot;</span> <span class="op">%in%</span><span class="st"> </span><span class="kw">installed.packages</span>()) BiocManager<span class="op">::</span><span class="kw">install</span>(<span class="st">&quot;parathyroidSE&quot;</span>)</span></code></pre></div>
+<pre><code>## &#39;getOption(&quot;repos&quot;)&#39; replaces Bioconductor standard repositories, see
+## &#39;?repositories&#39; for details
+## 
+## replacement repositories:
+##     CRAN: https://cloud.r-project.org</code></pre>
+<pre><code>## Bioconductor version 3.12 (BiocManager 1.30.16), R 4.0.5 (2021-03-31)</code></pre>
+<pre><code>## Installing package(s) &#39;parathyroidSE&#39;</code></pre>
+<pre><code>## installing the source package &#39;parathyroidSE&#39;</code></pre>
+<pre><code>## Old packages: &#39;boot&#39;, &#39;class&#39;, &#39;cluster&#39;, &#39;KernSmooth&#39;, &#39;lattice&#39;, &#39;MASS&#39;,
+##   &#39;Matrix&#39;, &#39;mgcv&#39;, &#39;nnet&#39;, &#39;spatial&#39;, &#39;survival&#39;</code></pre>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="kw">library</span>(parathyroidSE)</span></code></pre></div>
+<pre><code>## Loading required package: SummarizedExperiment</code></pre>
+<pre><code>## Loading required package: MatrixGenerics</code></pre>
+<pre><code>## Loading required package: matrixStats</code></pre>
+<pre><code>## 
+## Attaching package: &#39;MatrixGenerics&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:matrixStats&#39;:
+## 
+##     colAlls, colAnyNAs, colAnys, colAvgsPerRowSet, colCollapse,
+##     colCounts, colCummaxs, colCummins, colCumprods, colCumsums,
+##     colDiffs, colIQRDiffs, colIQRs, colLogSumExps, colMadDiffs,
+##     colMads, colMaxs, colMeans2, colMedians, colMins, colOrderStats,
+##     colProds, colQuantiles, colRanges, colRanks, colSdDiffs, colSds,
+##     colSums2, colTabulates, colVarDiffs, colVars, colWeightedMads,
+##     colWeightedMeans, colWeightedMedians, colWeightedSds,
+##     colWeightedVars, rowAlls, rowAnyNAs, rowAnys, rowAvgsPerColSet,
+##     rowCollapse, rowCounts, rowCummaxs, rowCummins, rowCumprods,
+##     rowCumsums, rowDiffs, rowIQRDiffs, rowIQRs, rowLogSumExps,
+##     rowMadDiffs, rowMads, rowMaxs, rowMeans2, rowMedians, rowMins,
+##     rowOrderStats, rowProds, rowQuantiles, rowRanges, rowRanks,
+##     rowSdDiffs, rowSds, rowSums2, rowTabulates, rowVarDiffs, rowVars,
+##     rowWeightedMads, rowWeightedMeans, rowWeightedMedians,
+##     rowWeightedSds, rowWeightedVars</code></pre>
+<pre><code>## Loading required package: GenomicRanges</code></pre>
+<pre><code>## Loading required package: stats4</code></pre>
+<pre><code>## Loading required package: BiocGenerics</code></pre>
+<pre><code>## Loading required package: parallel</code></pre>
+<pre><code>## 
+## Attaching package: &#39;BiocGenerics&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:parallel&#39;:
+## 
+##     clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
+##     clusterExport, clusterMap, parApply, parCapply, parLapply,
+##     parLapplyLB, parRapply, parSapply, parSapplyLB</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     IQR, mad, sd, var, xtabs</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     anyDuplicated, append, as.data.frame, basename, cbind, colnames,
+##     dirname, do.call, duplicated, eval, evalq, Filter, Find, get, grep,
+##     grepl, intersect, is.unsorted, lapply, Map, mapply, match, mget,
+##     order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,
+##     rbind, Reduce, rownames, sapply, setdiff, sort, table, tapply,
+##     union, unique, unsplit, which.max, which.min</code></pre>
+<pre><code>## Loading required package: S4Vectors</code></pre>
+<pre><code>## 
+## Attaching package: &#39;S4Vectors&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:base&#39;:
+## 
+##     expand.grid</code></pre>
+<pre><code>## Loading required package: IRanges</code></pre>
+<pre><code>## Loading required package: GenomeInfoDb</code></pre>
+<pre><code>## Loading required package: Biobase</code></pre>
+<pre><code>## Welcome to Bioconductor
+## 
+##     Vignettes contain introductory material; view with
+##     &#39;browseVignettes()&#39;. To cite Bioconductor, see
+##     &#39;citation(&quot;Biobase&quot;)&#39;, and for packages &#39;citation(&quot;pkgname&quot;)&#39;.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;Biobase&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:MatrixGenerics&#39;:
+## 
+##     rowMedians</code></pre>
+<pre><code>## The following objects are masked from &#39;package:matrixStats&#39;:
+## 
+##     anyMissing, rowMedians</code></pre>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1"></a><span class="kw">library</span>(SummarizedExperiment)</span>
+<span id="cb42-2"><a href="#cb42-2"></a></span>
+<span id="cb42-3"><a href="#cb42-3"></a><span class="co"># import data</span></span>
+<span id="cb42-4"><a href="#cb42-4"></a><span class="kw">data</span>(<span class="st">&quot;parathyroidGenesSE&quot;</span>, <span class="dt">package=</span><span class="st">&quot;parathyroidSE&quot;</span>)</span>
+<span id="cb42-5"><a href="#cb42-5"></a><span class="co"># rename for convenience</span></span>
+<span id="cb42-6"><a href="#cb42-6"></a>se &lt;-<span class="st"> </span>parathyroidGenesSE</span>
+<span id="cb42-7"><a href="#cb42-7"></a><span class="kw">rm</span>(parathyroidGenesSE)</span></code></pre></div>
+<p><strong>TODO: look into paper for exp design. Possibly take screenshot and try to decipher together with students.</strong></p>
+</div>
+<div id="choice-of-modeling-assumptions" class="section level1">
+<h1><span class="header-section-number">2</span> Choice of modeling assumptions</h1>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a>y &lt;-<span class="st"> </span><span class="kw">assays</span>(se)<span class="op">$</span>counts[<span class="dv">1</span>,]</span>
+<span id="cb43-2"><a href="#cb43-2"></a><span class="kw">hist</span>(y, <span class="dt">breaks =</span> <span class="dv">40</span>,</span>
+<span id="cb43-3"><a href="#cb43-3"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Gene expression&quot;</span>,</span>
+<span id="cb43-4"><a href="#cb43-4"></a>     <span class="dt">xaxt =</span> <span class="st">&quot;n&quot;</span>, <span class="dt">yaxt =</span> <span class="st">&quot;n&quot;</span>,</span>
+<span id="cb43-5"><a href="#cb43-5"></a>     <span class="dt">main =</span> <span class="st">&quot;Data for the first gene&quot;</span>)</span>
+<span id="cb43-6"><a href="#cb43-6"></a><span class="kw">axis</span>(<span class="dv">1</span>, <span class="dt">at =</span> <span class="kw">seq</span>(<span class="dv">200</span>, <span class="dv">1200</span>, <span class="dt">by=</span><span class="dv">200</span>))</span>
+<span id="cb43-7"><a href="#cb43-7"></a><span class="kw">axis</span>(<span class="dv">2</span>, <span class="dt">at =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">3</span>)</span></code></pre></div>
+<p><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+</div>
+<div id="junk" class="section level1">
+<h1><span class="header-section-number">3</span> junk</h1>
+<p>Start with challenges below, and make a section for each. This will simultaneously follow a full RNA-seq analysis pipeline.</p>
 <p>Following code should be part of a next file where we start working with RNA-seq data, show the mean-variance trend, discuss normalization, and introduce a DE analysis.</p>
+</div>
 <div id="properties-of-rna-seq-count-data" class="section level1">
-<h1><span class="header-section-number">1</span> Properties of (RNA-seq) count data</h1>
+<h1><span class="header-section-number">4</span> Properties of (RNA-seq) count data</h1>
 <p>Goals:</p>
 <ul>
 <li>Work with real RNA-seq count data, gene by sample matrix</li>
@@ -489,44 +619,24 @@ div.tocify {
 <li></li>
 <li>Demonstrate the mean-variance relationship by plotting mean and variance across genes. Show that the Poisson doesn’t hold across biological replicates and use this as introduction for the negative binomial distribution.</li>
 </ul>
-<p>In this lecture, we will introduce working with count data, using a real bulk RNA-seq dataset from <a href="https://pubmed.ncbi.nlm.nih.gov/23024189/">Haglund <em>et al.</em> (2012)</a>. We will be importing this dataset using the data package <a href="https://www.bioconductor.org/packages/release/data/experiment/html/parathyroidSE.html">parathyroidSE</a> from <a href="https://bioconductor.org/">Bioconductor</a>.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="cf">if</span> (<span class="op">!</span><span class="kw">requireNamespace</span>(<span class="st">&quot;BiocManager&quot;</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)){</span>
-<span id="cb1-2"><a href="#cb1-2"></a>  <span class="kw">install.packages</span>(<span class="st">&quot;BiocManager&quot;</span>)</span>
-<span id="cb1-3"><a href="#cb1-3"></a>}</span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="cf">if</span>(<span class="op">!</span><span class="st">&quot;SummarizedExperiment&quot;</span> <span class="op">%in%</span><span class="st"> </span><span class="kw">installed.packages</span>()){</span>
-<span id="cb1-5"><a href="#cb1-5"></a>  BiocManager<span class="op">::</span><span class="kw">install</span>(<span class="st">&quot;SummarizedExperiment&quot;</span>)</span>
-<span id="cb1-6"><a href="#cb1-6"></a>} </span>
-<span id="cb1-7"><a href="#cb1-7"></a><span class="co"># install package if not installed.</span></span>
-<span id="cb1-8"><a href="#cb1-8"></a><span class="cf">if</span>(<span class="op">!</span><span class="st">&quot;parathyroidSE&quot;</span> <span class="op">%in%</span><span class="st"> </span><span class="kw">installed.packages</span>()) BiocManager<span class="op">::</span><span class="kw">install</span>(<span class="st">&quot;parathyroidSE&quot;</span>)</span>
-<span id="cb1-9"><a href="#cb1-9"></a></span>
-<span id="cb1-10"><a href="#cb1-10"></a><span class="kw">library</span>(parathyroidSE)</span>
-<span id="cb1-11"><a href="#cb1-11"></a><span class="kw">library</span>(SummarizedExperiment)</span>
-<span id="cb1-12"><a href="#cb1-12"></a></span>
-<span id="cb1-13"><a href="#cb1-13"></a><span class="co"># import data</span></span>
-<span id="cb1-14"><a href="#cb1-14"></a><span class="kw">data</span>(<span class="st">&quot;parathyroidGenesSE&quot;</span>, <span class="dt">package=</span><span class="st">&quot;parathyroidSE&quot;</span>)</span>
-<span id="cb1-15"><a href="#cb1-15"></a><span class="co"># rename for convenience</span></span>
-<span id="cb1-16"><a href="#cb1-16"></a>se &lt;-<span class="st"> </span>parathyroidGenesSE</span>
-<span id="cb1-17"><a href="#cb1-17"></a><span class="kw">rm</span>(parathyroidGenesSE)</span></code></pre></div>
+<p>In this lecture, we will introduce working with count data, using a real bulk RNA-seq dataset</p>
 <ul>
 <li>Count data are inherently discrete.</li>
 </ul>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>y &lt;-<span class="st"> </span><span class="kw">assays</span>(se)<span class="op">$</span>counts[<span class="dv">1</span>,]</span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="kw">hist</span>(y, <span class="dt">breaks =</span> <span class="kw">ncol</span>(se),</span>
-<span id="cb2-3"><a href="#cb2-3"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Gene expression&quot;</span>)</span></code></pre></div>
 <div id="mean-variance-relationship" class="section level2">
-<h2><span class="header-section-number">1.1</span> Mean-variance relationship</h2>
+<h2><span class="header-section-number">4.1</span> Mean-variance relationship</h2>
 </div>
 <div id="relative-uncertainty-offsets-and-count-scaling" class="section level2">
-<h2><span class="header-section-number">1.2</span> Relative uncertainty, offsets and count scaling</h2>
+<h2><span class="header-section-number">4.2</span> Relative uncertainty, offsets and count scaling</h2>
 <p>Defer to normalization.</p>
 </div>
 </div>
 <div id="variance-stabilizing-transformations" class="section level1">
-<h1><span class="header-section-number">2</span> Variance-stabilizing transformations</h1>
+<h1><span class="header-section-number">5</span> Variance-stabilizing transformations</h1>
 <p>Defer to when talking about dim red.</p>
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAnU2VxdWVuY2luZzogUk5BLXNlcSBkYXRhIGludHJvJwphdXRob3I6ICJLb2VuIFZhbiBkZW4gQmVyZ2UiCmRhdGU6ICI4LzYvMjAyMSIKb3V0cHV0OiAKICBwZGZfZG9jdW1lbnQ6CiAgICB0b2M6IHRydWUKICAgIG51bWJlcl9zZWN0aW9uczogdHJ1ZQogICAgbGF0ZXhfZW5naW5lOiB4ZWxhdGV4CiAgaHRtbF9kb2N1bWVudDoKICAgIHRvYzogdHJ1ZQogICAgdG9jX2Zsb2F0OiB0cnVlCi0tLQoKU3RhcnQgd2l0aCBjaGFsbGVuZ2VzIGJlbG93LCBhbmQgbWFrZSBhIHNlY3Rpb24gZm9yIGVhY2guClRoaXMgd2lsbCBzaW11bHRhbmVvdXNseSBmb2xsb3cgYSBmdWxsIFJOQS1zZXEgYW5hbHlzaXMgcGlwZWxpbmUuCgoKQ2hhbGxlbmdlczoKCiAtIENob2ljZSBvZiBtb2RlbGluZyBhc3N1bXB0aW9ucyAoZGlzdHJpYnV0aW9uKQogLSBOb3JtYWxpemF0aW9uCiAtIFBhcmFtZXRlciBlc3RpbWF0aW9uIHVuZGVyIGxpbWl0ZWQgaW5mb3JtYXRpb24gc2V0dGluZwogLSBIaWdoIGRpbWVuc2lvbmFsaXR5IChtYW55IGdlbmVzKSwgbXVsdGlwbGUgdGVzdGluZwoKRm9sbG93aW5nIGNvZGUgc2hvdWxkIGJlIHBhcnQgb2YgYSBuZXh0IGZpbGUgd2hlcmUgd2Ugc3RhcnQgd29ya2luZyB3aXRoIFJOQS1zZXEgZGF0YSwgc2hvdyB0aGUgbWVhbi12YXJpYW5jZSB0cmVuZCwgZGlzY3VzcyBub3JtYWxpemF0aW9uLCBhbmQgaW50cm9kdWNlIGEgREUgYW5hbHlzaXMuCgojIFByb3BlcnRpZXMgb2YgKFJOQS1zZXEpIGNvdW50IGRhdGEKCkdvYWxzOgoKIC0gV29yayB3aXRoIHJlYWwgUk5BLXNlcSBjb3VudCBkYXRhLCBnZW5lIGJ5IHNhbXBsZSBtYXRyaXgKIC0gRXhwbG9yZSB0aGUgZGF0YSBmb3IgYSBzaW5nbGUgZ2VuZTogdW5pdmFyaWF0ZSAobGFyZ2UgcmFuZ2UsIHplcm9lcywgZGlzY3JldGUsIHNrZXdlZCkgYXMgd2VsbCBhcyBiaXZhcmlhdGUgd3J0IGNvdmFyaWF0ZS4KIC0gCiAtIERlbW9uc3RyYXRlIHRoZSBtZWFuLXZhcmlhbmNlIHJlbGF0aW9uc2hpcCBieSBwbG90dGluZyBtZWFuIGFuZCB2YXJpYW5jZSBhY3Jvc3MgZ2VuZXMuIFNob3cgdGhhdCB0aGUgUG9pc3NvbiBkb2Vzbid0IGhvbGQgYWNyb3NzIGJpb2xvZ2ljYWwgcmVwbGljYXRlcyBhbmQgdXNlIHRoaXMgYXMgaW50cm9kdWN0aW9uIGZvciB0aGUgbmVnYXRpdmUgYmlub21pYWwgZGlzdHJpYnV0aW9uLgoKSW4gdGhpcyBsZWN0dXJlLCB3ZSB3aWxsIGludHJvZHVjZSB3b3JraW5nIHdpdGggY291bnQgZGF0YSwgdXNpbmcgYSByZWFsIGJ1bGsgUk5BLXNlcSBkYXRhc2V0IGZyb20gW0hhZ2x1bmQgKmV0IGFsLiogKDIwMTIpXShodHRwczovL3B1Ym1lZC5uY2JpLm5sbS5uaWguZ292LzIzMDI0MTg5LykuIFdlIHdpbGwgYmUgaW1wb3J0aW5nIHRoaXMgZGF0YXNldCB1c2luZyB0aGUgZGF0YSBwYWNrYWdlIFtwYXJhdGh5cm9pZFNFXShodHRwczovL3d3dy5iaW9jb25kdWN0b3Iub3JnL3BhY2thZ2VzL3JlbGVhc2UvZGF0YS9leHBlcmltZW50L2h0bWwvcGFyYXRoeXJvaWRTRS5odG1sKSBmcm9tIFtCaW9jb25kdWN0b3JdKGh0dHBzOi8vYmlvY29uZHVjdG9yLm9yZy8pLgoKYGBge3IsIHdhcm5pbmc9RkFMU0UsIGV2YWw9RkFMU0V9CmlmICghcmVxdWlyZU5hbWVzcGFjZSgiQmlvY01hbmFnZXIiLCBxdWlldGx5ID0gVFJVRSkpewogIGluc3RhbGwucGFja2FnZXMoIkJpb2NNYW5hZ2VyIikKfQppZighIlN1bW1hcml6ZWRFeHBlcmltZW50IiAlaW4lIGluc3RhbGxlZC5wYWNrYWdlcygpKXsKICBCaW9jTWFuYWdlcjo6aW5zdGFsbCgiU3VtbWFyaXplZEV4cGVyaW1lbnQiKQp9IAojIGluc3RhbGwgcGFja2FnZSBpZiBub3QgaW5zdGFsbGVkLgppZighInBhcmF0aHlyb2lkU0UiICVpbiUgaW5zdGFsbGVkLnBhY2thZ2VzKCkpIEJpb2NNYW5hZ2VyOjppbnN0YWxsKCJwYXJhdGh5cm9pZFNFIikKCmxpYnJhcnkocGFyYXRoeXJvaWRTRSkKbGlicmFyeShTdW1tYXJpemVkRXhwZXJpbWVudCkKCiMgaW1wb3J0IGRhdGEKZGF0YSgicGFyYXRoeXJvaWRHZW5lc1NFIiwgcGFja2FnZT0icGFyYXRoeXJvaWRTRSIpCiMgcmVuYW1lIGZvciBjb252ZW5pZW5jZQpzZSA8LSBwYXJhdGh5cm9pZEdlbmVzU0UKcm0ocGFyYXRoeXJvaWRHZW5lc1NFKQpgYGAKCgoKIC0gQ291bnQgZGF0YSBhcmUgaW5oZXJlbnRseSBkaXNjcmV0ZS4KIAogCmBgYHtyLCBldmFsPUZBTFNFfQp5IDwtIGFzc2F5cyhzZSkkY291bnRzWzEsXQpoaXN0KHksIGJyZWFrcyA9IG5jb2woc2UpLAogICAgIHhsYWIgPSAiR2VuZSBleHByZXNzaW9uIikKYGBgCgojIyBNZWFuLXZhcmlhbmNlIHJlbGF0aW9uc2hpcAoKCiMjIFJlbGF0aXZlIHVuY2VydGFpbnR5LCBvZmZzZXRzIGFuZCBjb3VudCBzY2FsaW5nCgpEZWZlciB0byBub3JtYWxpemF0aW9uLgoKIyBWYXJpYW5jZS1zdGFiaWxpemluZyB0cmFuc2Zvcm1hdGlvbnMKCkRlZmVyIHRvIHdoZW4gdGFsa2luZyBhYm91dCBkaW0gcmVkLgoKCg==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAnU2VxdWVuY2luZzogUk5BLXNlcSBkYXRhIGludHJvJwphdXRob3I6ICJLb2VuIFZhbiBkZW4gQmVyZ2UiCmRhdGU6ICI4LzYvMjAyMSIKb3V0cHV0OiAKICBwZGZfZG9jdW1lbnQ6CiAgICB0b2M6IHRydWUKICAgIG51bWJlcl9zZWN0aW9uczogdHJ1ZQogICAgbGF0ZXhfZW5naW5lOiB4ZWxhdGV4CiAgaHRtbF9kb2N1bWVudDoKICAgIHRvYzogdHJ1ZQogICAgdG9jX2Zsb2F0OiB0cnVlCi0tLQoKSW4gdGhpcyBsZWN0dXJlIHdlIHdpbGwgc3RhcnQgd29ya2luZyB3aXRoIGEgcmVhbCBidWxrIFJOQS1zZXEgZGF0YXNldCBmcm9tIFtIYWdsdW5kICpldCBhbC4qICgyMDEyKV0oaHR0cHM6Ly9wdWJtZWQubmNiaS5ubG0ubmloLmdvdi8yMzAyNDE4OS8pLiBBZnRlciBpbXBvcnRpbmcgdGhlIGRhdGEsIHdlIHdpbGwgYmUgd29ya2luZyBvdXIgd2F5IHRocm91Z2ggZm91ciBtYWpvciBjaGFsbGVuZ2VzIHdoaWNoLCB0b2dldGhlciwgd2lsbCBmb3JtIGEgZnVsbCBSTkEtc2VxIGRpZmZlcmVudGlhbCBleHByZXNzaW9uIChERSkgYW5hbHlzaXMgcGlwZWxpbmUgd2hlcmUgdGhlIHJlc3VsdCBvZiBvdXIgYW5hbHlzaXMgd2lsbCBiZSBhKG4gb3JkZXJlZCkgbGlzdCBvZiBnZW5lcyB0aGF0IHdlIGZpbmQgdG8gYmUgZGlmZmVyZW50bHkgZXhwcmVzc2VkIGJldHdlZW4gb3VyIGNvbmRpdGlvbnMgb2YgaW50ZXJlc3QuIFRoZSBmb3VyIG1haW4gY2hhbGxlbmdlcyB3ZSB3aWxsIGxvb2sgaW50byBhcmUgCgogLSBDaG9pY2Ugb2YgbW9kZWxpbmcgYXNzdW1wdGlvbnMgKGRpc3RyaWJ1dGlvbikuCiAtIE5vcm1hbGl6YXRpb24uCiAtIFBhcmFtZXRlciBlc3RpbWF0aW9uIHVuZGVyIGEgbGltaXRlZCBpbmZvcm1hdGlvbiBzZXR0aW5nLgogLSBTdGF0aXN0aWNhbCBpbmZlcmVuY2UgdW5kZXIgaGlnaCBkaW1lbnNpb25hbGl0eSAobWFueSBnZW5lcykuCgojIERhdGEgaW1wb3J0CgpXZSB3aWxsIGJlIGltcG9ydGluZyB0aGlzIGRhdGFzZXQgdXNpbmcgdGhlIGRhdGEgcGFja2FnZSBbcGFyYXRoeXJvaWRTRV0oaHR0cHM6Ly93d3cuYmlvY29uZHVjdG9yLm9yZy9wYWNrYWdlcy9yZWxlYXNlL2RhdGEvZXhwZXJpbWVudC9odG1sL3BhcmF0aHlyb2lkU0UuaHRtbCkgZnJvbSBbQmlvY29uZHVjdG9yXShodHRwczovL2Jpb2NvbmR1Y3Rvci5vcmcvKS4KCmBgYHtyLCB3YXJuaW5nPUZBTFNFLCBldmFsPVRSVUV9CmlmICghcmVxdWlyZU5hbWVzcGFjZSgiQmlvY01hbmFnZXIiLCBxdWlldGx5ID0gVFJVRSkpewogIGluc3RhbGwucGFja2FnZXMoIkJpb2NNYW5hZ2VyIikKfQppZighIlN1bW1hcml6ZWRFeHBlcmltZW50IiAlaW4lIGluc3RhbGxlZC5wYWNrYWdlcygpKXsKICBCaW9jTWFuYWdlcjo6aW5zdGFsbCgiU3VtbWFyaXplZEV4cGVyaW1lbnQiKQp9IAojIGluc3RhbGwgcGFja2FnZSBpZiBub3QgaW5zdGFsbGVkLgppZighInBhcmF0aHlyb2lkU0UiICVpbiUgaW5zdGFsbGVkLnBhY2thZ2VzKCkpIEJpb2NNYW5hZ2VyOjppbnN0YWxsKCJwYXJhdGh5cm9pZFNFIikKCmxpYnJhcnkocGFyYXRoeXJvaWRTRSkKbGlicmFyeShTdW1tYXJpemVkRXhwZXJpbWVudCkKCiMgaW1wb3J0IGRhdGEKZGF0YSgicGFyYXRoeXJvaWRHZW5lc1NFIiwgcGFja2FnZT0icGFyYXRoeXJvaWRTRSIpCiMgcmVuYW1lIGZvciBjb252ZW5pZW5jZQpzZSA8LSBwYXJhdGh5cm9pZEdlbmVzU0UKcm0ocGFyYXRoeXJvaWRHZW5lc1NFKQpgYGAKCioqVE9ETzogbG9vayBpbnRvIHBhcGVyIGZvciBleHAgZGVzaWduLiBQb3NzaWJseSB0YWtlIHNjcmVlbnNob3QgYW5kIHRyeSB0byBkZWNpcGhlciB0b2dldGhlciB3aXRoIHN0dWRlbnRzLioqCgoKIyBDaG9pY2Ugb2YgbW9kZWxpbmcgYXNzdW1wdGlvbnMKCmBgYHtyLCBldmFsPVRSVUV9CnkgPC0gYXNzYXlzKHNlKSRjb3VudHNbMSxdCmhpc3QoeSwgYnJlYWtzID0gNDAsCiAgICAgeGxhYiA9ICJHZW5lIGV4cHJlc3Npb24iLAogICAgIHhheHQgPSAibiIsIHlheHQgPSAibiIsCiAgICAgbWFpbiA9ICJEYXRhIGZvciB0aGUgZmlyc3QgZ2VuZSIpCmF4aXMoMSwgYXQgPSBzZXEoMjAwLCAxMjAwLCBieT0yMDApKQpheGlzKDIsIGF0ID0gMDozKQpgYGAKCgoKCgoKCgoKCgoKCgoKCgoKCgojIGp1bmsKU3RhcnQgd2l0aCBjaGFsbGVuZ2VzIGJlbG93LCBhbmQgbWFrZSBhIHNlY3Rpb24gZm9yIGVhY2guClRoaXMgd2lsbCBzaW11bHRhbmVvdXNseSBmb2xsb3cgYSBmdWxsIFJOQS1zZXEgYW5hbHlzaXMgcGlwZWxpbmUuCgoKRm9sbG93aW5nIGNvZGUgc2hvdWxkIGJlIHBhcnQgb2YgYSBuZXh0IGZpbGUgd2hlcmUgd2Ugc3RhcnQgd29ya2luZyB3aXRoIFJOQS1zZXEgZGF0YSwgc2hvdyB0aGUgbWVhbi12YXJpYW5jZSB0cmVuZCwgZGlzY3VzcyBub3JtYWxpemF0aW9uLCBhbmQgaW50cm9kdWNlIGEgREUgYW5hbHlzaXMuCgojIFByb3BlcnRpZXMgb2YgKFJOQS1zZXEpIGNvdW50IGRhdGEKCkdvYWxzOgoKIC0gV29yayB3aXRoIHJlYWwgUk5BLXNlcSBjb3VudCBkYXRhLCBnZW5lIGJ5IHNhbXBsZSBtYXRyaXgKIC0gRXhwbG9yZSB0aGUgZGF0YSBmb3IgYSBzaW5nbGUgZ2VuZTogdW5pdmFyaWF0ZSAobGFyZ2UgcmFuZ2UsIHplcm9lcywgZGlzY3JldGUsIHNrZXdlZCkgYXMgd2VsbCBhcyBiaXZhcmlhdGUgd3J0IGNvdmFyaWF0ZS4KIC0gCiAtIERlbW9uc3RyYXRlIHRoZSBtZWFuLXZhcmlhbmNlIHJlbGF0aW9uc2hpcCBieSBwbG90dGluZyBtZWFuIGFuZCB2YXJpYW5jZSBhY3Jvc3MgZ2VuZXMuIFNob3cgdGhhdCB0aGUgUG9pc3NvbiBkb2Vzbid0IGhvbGQgYWNyb3NzIGJpb2xvZ2ljYWwgcmVwbGljYXRlcyBhbmQgdXNlIHRoaXMgYXMgaW50cm9kdWN0aW9uIGZvciB0aGUgbmVnYXRpdmUgYmlub21pYWwgZGlzdHJpYnV0aW9uLgoKSW4gdGhpcyBsZWN0dXJlLCB3ZSB3aWxsIGludHJvZHVjZSB3b3JraW5nIHdpdGggY291bnQgZGF0YSwgdXNpbmcgYSByZWFsIGJ1bGsgUk5BLXNlcSBkYXRhc2V0IAoKCgogLSBDb3VudCBkYXRhIGFyZSBpbmhlcmVudGx5IGRpc2NyZXRlLgogCiAKCiMjIE1lYW4tdmFyaWFuY2UgcmVsYXRpb25zaGlwCgoKIyMgUmVsYXRpdmUgdW5jZXJ0YWludHksIG9mZnNldHMgYW5kIGNvdW50IHNjYWxpbmcKCkRlZmVyIHRvIG5vcm1hbGl6YXRpb24uCgojIFZhcmlhbmNlLXN0YWJpbGl6aW5nIHRyYW5zZm9ybWF0aW9ucwoKRGVmZXIgdG8gd2hlbiB0YWxraW5nIGFib3V0IGRpbSByZWQuCgoK</div>
 
 
 </div>
