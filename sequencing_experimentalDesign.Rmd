@@ -12,5 +12,8 @@ output:
     toc_float: true
 ---
 
+- Experimental design
+- Design matrix in modeling and aliasing
+
 - [Marioni *et al.* (2008)](https://genome.cshlp.org/content/18/9/1509) show that lane effects as well as run effects are small, although existant for a small proportion ($< 0.5%$) of genes.
 

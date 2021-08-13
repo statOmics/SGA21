@@ -7,22 +7,21 @@ title: "Statistical Genomics Analysis 2021-2022"
 
 # Course Description
 
-High throughput omics studies generate ever larger datasets and, as a consequence, complex data interpretation challenges. This course focuses on the statistical concepts involved in preprocessing, quantification and differential analysis of high-throughput omics data. Experimental design is essential to allow for correct interpretation, and concepts such as blocking in advanced experimental designs will also be introduced. The core focus will be on shotgun proteomics and (bulk and single-cell) next generation sequencing. The course will rely exclusively on free and user-friendly open-source tools in R/Bioconductor. We hope that this will provide a solid basis for beginners, but will also bring new perspectives to those already familiar with standard data analysis workflows for proteomics and next-generation sequencing applications.
+High-throughput 'omics studies generate ever larger datasets and, as a consequence, complex data interpretation challenges. This course focusses on statistical concepts involved in preprocessing, quantification and differential analysis of high-throughput 'omics data. The core focus will be on shotgun proteomics and (bulk and single-cell) RNA-sequencing. Experimental design is essential to allow for correct interpretation in all 'omics studies, and we will cover how to design a statistically efficient experiment, as well as discuss the impact experimental design has on how we model 'omics data, introducing concepts such as blocking. The course will rely exclusively on free and user-friendly open-source tools in R/Bioconductor. We hope that this will provide a solid basis for beginners, but will also bring new perspectives to those already familiar with standard data analysis workflows for proteomics and next-generation sequencing applications.
 
 # Target Audience
 
-This course is oriented towards biologists and bioinformaticians with a particular interest in differential analysis for quantitative omics.
+This course is oriented towards biologists and bioinformaticians with a particular interest in differential analysis for quantitative 'omics data.
 
 # Prerequisites
 
-The prerequisites for the Statistical Genomics analysis course are the successful completion of a basic course of statistics that covers topics on data exploration and descriptive statistics, statistical modeling, and inference: linear models, confidence intervals, t-tests, F-tests, anova, chi-squared test.
-
+The prerequisites for the Statistical Genomics Analysis course are the successful completion of a basic course of statistics that covers topics on data exploration and descriptive statistics, statistical modeling, and inference: linear models, confidence intervals, t-tests, F-tests, anova, chi-squared test.
 The basis concepts may be revisited in the online course at https://gtpb.github.io/PSLS20/ (English) and in https://statomics.github.io/statistiekCursusNotas/ (Dutch).
 
-A primer to R and Data visualization in R can be found at:
+In addition, knowledge of programming in `R` is preferred. A primer to `R` and Data visualization in `R` can be found at:
 
- - R Basics: https://dodona.ugent.be/nl/courses/335/
- - R Data Exploration: https://dodona.ugent.be/nl/courses/345/
+ - `R` Basics: https://dodona.ugent.be/nl/courses/335/
+ - `R` Data Exploration: https://dodona.ugent.be/nl/courses/345/
 
 # Lecturers
 
@@ -41,6 +40,7 @@ All lecture material will be provided on this website. Please check the 'Lecture
 | 7 | Bulk RNA-seq | Introduction to sequencing | [HTML](./sequencing_intro.html) | [PDF](./sequencing_intro.pdf) | - [Van den Berge *et al.* (2019)](https://www.annualreviews.org/doi/abs/10.1146/annurev-biodatasci-072018-021255): Review paper on expression analysis. |
 | 7-8 | Bulk RNA-seq | Working with count data | [HTML](./sequencing_countData.html) | [PDF](./sequencing_countData.pdf) | ... |
 | 8 | Bulk RNA-seq | Lab session 💻 | [Rmd](), [HTML]() | [PDF]() | ... |
+| 8-9 | Bulk RNA-seq | Experimental Design: Lecture \& Lab session intertwined 💻 | [Rmd](), [HTML]() | [PDF]() | ... |
 
 
 

@@ -12,31 +12,18 @@ output:
     toc_float: true
 ---
 
-Start with challenges below, and make a section for each.
-This will simultaneously follow a full RNA-seq analysis pipeline.
+In this lecture we will start working with a real bulk RNA-seq dataset from [Haglund *et al.* (2012)](https://pubmed.ncbi.nlm.nih.gov/23024189/). After importing the data, we will be working our way through four major challenges which, together, will form a full RNA-seq differential expression (DE) analysis pipeline where the result of our analysis will be a(n ordered) list of genes that we find to be differently expressed between our conditions of interest. The four main challenges we will look into are 
 
+ - Choice of modeling assumptions (distribution).
+ - Normalization.
+ - Parameter estimation under a limited information setting.
+ - Statistical inference under high dimensionality (many genes).
 
-Challenges:
+# Data import
 
- - Choice of modeling assumptions (distribution)
- - Normalization
- - Parameter estimation under limited information setting
- - High dimensionality (many genes), multiple testing
+We will be importing this dataset using the data package [parathyroidSE](https://www.bioconductor.org/packages/release/data/experiment/html/parathyroidSE.html) from [Bioconductor](https://bioconductor.org/).
 
-Following code should be part of a next file where we start working with RNA-seq data, show the mean-variance trend, discuss normalization, and introduce a DE analysis.
-
-# Properties of (RNA-seq) count data
-
-Goals:
-
- - Work with real RNA-seq count data, gene by sample matrix
- - Explore the data for a single gene: univariate (large range, zeroes, discrete, skewed) as well as bivariate wrt covariate.
- - 
- - Demonstrate the mean-variance relationship by plotting mean and variance across genes. Show that the Poisson doesn't hold across biological replicates and use this as introduction for the negative binomial distribution.
-
-In this lecture, we will introduce working with count data, using a real bulk RNA-seq dataset from [Haglund *et al.* (2012)](https://pubmed.ncbi.nlm.nih.gov/23024189/). We will be importing this dataset using the data package [parathyroidSE](https://www.bioconductor.org/packages/release/data/experiment/html/parathyroidSE.html) from [Bioconductor](https://bioconductor.org/).
-
-```{r, warning=FALSE, eval=FALSE}
+```{r, warning=FALSE, eval=TRUE}
 if (!requireNamespace("BiocManager", quietly = TRUE)){
   install.packages("BiocManager")
 }
@@ -56,16 +43,63 @@ se <- parathyroidGenesSE
 rm(parathyroidGenesSE)
 ```
 
+**TODO: look into paper for exp design. Possibly take screenshot and try to decipher together with students.**
+
+
+# Choice of modeling assumptions
+
+```{r, eval=TRUE}
+y <- assays(se)$counts[1,]
+hist(y, breaks = 40,
+     xlab = "Gene expression",
+     xaxt = "n", yaxt = "n",
+     main = "Data for the first gene")
+axis(1, at = seq(200, 1200, by=200))
+axis(2, at = 0:3)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# junk
+Start with challenges below, and make a section for each.
+This will simultaneously follow a full RNA-seq analysis pipeline.
+
+
+Following code should be part of a next file where we start working with RNA-seq data, show the mean-variance trend, discuss normalization, and introduce a DE analysis.
+
+# Properties of (RNA-seq) count data
+
+Goals:
+
+ - Work with real RNA-seq count data, gene by sample matrix
+ - Explore the data for a single gene: univariate (large range, zeroes, discrete, skewed) as well as bivariate wrt covariate.
+ - 
+ - Demonstrate the mean-variance relationship by plotting mean and variance across genes. Show that the Poisson doesn't hold across biological replicates and use this as introduction for the negative binomial distribution.
+
+In this lecture, we will introduce working with count data, using a real bulk RNA-seq dataset 
+
 
 
  - Count data are inherently discrete.
  
  
-```{r, eval=FALSE}
-y <- assays(se)$counts[1,]
-hist(y, breaks = ncol(se),
-     xlab = "Gene expression")
-```
 
 ## Mean-variance relationship
 
