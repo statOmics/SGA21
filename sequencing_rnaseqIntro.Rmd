@@ -12,41 +12,163 @@ output:
     toc_float: true
 ---
 
-In this lecture we will start working with a real bulk RNA-seq dataset from [Haglund *et al.* (2012)](https://pubmed.ncbi.nlm.nih.gov/23024189/). After importing the data, we will be working our way through four major challenges which, together, will form a full RNA-seq differential expression (DE) analysis pipeline where the result of our analysis will be a(n ordered) list of genes that we find to be differently expressed between our conditions of interest. The four main challenges we will look into are 
+```{r functions, include=FALSE}
+# A function for captioning and referencing images
+fig <- local({
+    i <- 0
+    ref <- list()
+    list(
+        cap=function(refName, text) {
+            i <<- i + 1
+            ref[[refName]] <<- i
+            paste("Figure ", i, ": ", text, sep="")
+        },
+        ref=function(refName) {
+            ref[[refName]]
+        })
+})
+``` 
+
+```{r, echo=FALSE, eval=TRUE}
+suppressPackageStartupMessages({
+  library(knitr)
+  library(rmarkdown)
+  library(ggplot2)
+})
+```
+
+In this lecture we will start working with a real bulk RNA-seq dataset from [Haglund *et al.* (2012)](https://academic.oup.com/jcem/article/97/12/4631/2536573). After importing the data, we will be working our way through four major challenges which, together, will form a full RNA-seq differential expression (DE) analysis pipeline where the result of our analysis will be a(n ordered) list of genes that we find to be differently expressed between our conditions of interest. The four main challenges we will look into are 
 
  - Choice of modeling assumptions (distribution).
  - Normalization.
  - Parameter estimation under a limited information setting.
  - Statistical inference under high dimensionality (many genes).
 
-# Data import
+# Experimental design, data import and data exploration
 
-We will be importing this dataset using the data package [parathyroidSE](https://www.bioconductor.org/packages/release/data/experiment/html/parathyroidSE.html) from [Bioconductor](https://bioconductor.org/).
+## Experimental design
+
+Let's try to work out the experimental design using the following paragraph from the Methods section of the paper.
+
+```{r, echo=FALSE, fig.cap=paste("Figure: The data output revolution of sequencing machines. Image from Illumina documentation.")}
+# All defaults
+include_graphics("./images_sequencing/expDesign_para.png")
+```
+
+## Data import and exploration
+
+We will be importing the dataset using the [parathyroidSE](https://www.bioconductor.org/packages/release/data/experiment/html/parathyroidSE.html) data package from [Bioconductor](https://bioconductor.org/).
 
 ```{r, warning=FALSE, eval=TRUE}
 if (!requireNamespace("BiocManager", quietly = TRUE)){
   install.packages("BiocManager")
 }
-if(!"SummarizedExperiment" %in% installed.packages()){
+if(!"SummarizedExperiment" %in% installed.packages()[,1]){
   BiocManager::install("SummarizedExperiment")
 } 
 # install package if not installed.
-if(!"parathyroidSE" %in% installed.packages()) BiocManager::install("parathyroidSE")
+if(!"parathyroidSE" %in% installed.packages()[,1]) BiocManager::install("parathyroidSE")
 
-library(parathyroidSE)
-library(SummarizedExperiment)
+suppressPackageStartupMessages({
+  library(parathyroidSE)
+  library(SummarizedExperiment)
+})
 
 # import data
 data("parathyroidGenesSE", package="parathyroidSE")
 # rename for convenience
-se <- parathyroidGenesSE
+se1 <- parathyroidGenesSE
 rm(parathyroidGenesSE)
+
+# three treatments
+treatment1 <- colData(se1)$treatment
+table(treatment1)
+# two timepoints
+time1 <- colData(se1)$time
+table(time1)
+# four donor patients
+patient1 <- colData(se1)$patient
+table(patient1)
+
+table(patient1, treatment1, time1)
 ```
 
-**TODO: look into paper for exp design. Possibly take screenshot and try to decipher together with students.**
+- We observe that the number of samples that we are observing here is larger than what is described in the paper. As also described in the [parathyroidSE vignette](https://www.bioconductor.org/packages/release/data/experiment/vignettes/parathyroidSE/inst/doc/parathyroidSE.pdf), some samples were spread over multiple sequencing runs (i.e., the same sample being sequenced repeatedly) and therefore constitute **technical replication**, rather than biological replication.
+- We have previously seen that technical replicates can be considered to be distributed according to a Poisson distribution. One important property of Poisson random variables is that a sum of Poisson random variables still follow a Poisson distribution. Indeed, if $X \sim Poi(\mu_X)$ and $Y \sim Poi(\mu_Y)$, then $ X + Y = Z \sim Poi(\mu_X + \mu_Y)$.
+- For this reason, it is often suggested to sum technical replicates rather than, for example, averaging, which does not retain the Poisson property (try for yourself!). We'll therefore first sum the technical replicates.
 
+```{r}
+dupExps <- as.character(colData(se1)$experiment[duplicated(colData(se1)$experiment)])
+dupExps
 
-# Choice of modeling assumptions
+counts <- assays(se1)$counts
+newCounts <- counts
+cd <- colData(se1)
+for(ss in 1:length(dupExps)){
+  # check which samples are duplicates
+  relevantId <- which(colData(se1)$experiment == dupExps[ss])
+  # sum counts
+  newCounts[,relevantId[1]] <- rowSums(counts[,relevantId])
+  # keep which columns / rows to remove.
+  if(ss == 1){
+    toRemove <- relevantId[2]
+  } else {
+    toRemove <- c(toRemove, relevantId[2])
+  }
+}
+
+# remove after summing counts (otherwise IDs get mixed up)
+newCounts <- newCounts[,-toRemove]
+newCD <- cd[-toRemove,]
+
+# Create new SummarizedExperiment
+se <- SummarizedExperiment(assays = list("counts" = newCounts),
+                            colData = newCD,
+                            metadata = metadata(se1))
+
+treatment <- colData(se)$treatment
+table(treatment)
+time <- colData(se)$time
+table(time)
+patient <- colData(se)$patient
+table(patient)
+
+table(patient, treatment, time) # agrees with paper.
+```
+
+ - After summing the technical replicates and appropriately updating the sample information, we again create a `SummarizedExperiment` object, which is essentially a data container that contains all relevant information about your experiment. Please see the [vignette](https://bioconductor.org/packages/release/bioc/vignettes/SummarizedExperiment/inst/doc/SummarizedExperiment.html) for more information on how to use this class.
+ - By directly matching columns (samples) and rows (genes) to their relevant metadata, the `SummarizedExperiment` class avoids mistakes by mis-matching columns and rows with each other (provided you haven't mismatched them when you creat the object).
+ - The `SummarizedExperiment` class is modular and extendable, and extensions exist for example for the analysis of single-cell RNA-seq data.
+ - Due to their convenient organization and widely supported usage within Bioconductor, we will typically work with such containers in the analysis of RNA-seq data.
+
+## Data exploration
+
+```{r}
+suppressPackageStartupMessages({
+  library(limma)
+  library(edgeR)
+})
+
+# library size distribution
+hist(colSums(assays(se)$counts)/1e6, breaks=10)
+boxplot(colSums(assays(se)$counts)/1e6 ~ treatment)
+boxplot(colSums(assays(se)$counts)/1e6 ~ time)
+boxplot(colSums(assays(se)$counts)/1e6 ~ patient)
+boxplot(colSums(assays(se)$counts)/1e6 ~ interaction(treatment, time))
+
+# MDS plot
+plotMDS(se, 
+        labels = treatment, 
+        col=as.numeric(patient))
+```
+
+```{r, eval=FALSE, echo=FALSE}
+# Explain concept of MDS: preserve Euclidean distance from high to low dim.
+```
+
+# Challenge I: Choice of modeling assumptions
+
+When working with a GLM, as part of the choices of modeling assumptions, we need to pick an appropriate distribution for the expression counts. Below we perform some exploratory analyses to investigate.
 
 ```{r, eval=TRUE}
 y <- assays(se)$counts[1,]
@@ -56,60 +178,101 @@ hist(y, breaks = 40,
      main = "Data for the first gene")
 axis(1, at = seq(200, 1200, by=200))
 axis(2, at = 0:3)
+
+# Mean-variance trend within each experimental condition
+cont24ID <- which(treatment == "Control" & time == "24h")
+DPN24ID <- which(treatment == "DPN" & time == "24h")
+OHT24ID <- which(treatment == "OHT" & time == "24h")
+cont48ID <- which(treatment == "Control" & time == "48h")
+DPN48ID <- which(treatment == "DPN" & time == "48h")
+OHT48ID <- which(treatment == "OHT" & time == "48h")
+idList <- list(cont24ID, DPN24ID, OHT24ID, 
+               cont48ID, DPN48ID, OHT48ID)
+names(idList) <- paste0(rep(levels(treatment),2), rep(levels(time), each=3))
+
+par(mfrow=c(3,2), mar=c(2,2,2,1))
+for(kk in 1:length(idList)){
+  # extract counts for each condition
+  curCounts <- assays(se)$counts[,idList[[kk]]]
+  plot(x = rowMeans(curCounts)+1,
+       y = rowVars(curCounts)+1,
+       pch = 16, cex=1/2,
+       xlab = "Mean", ylab="Variance",
+       log="xy")
+  abline(0,1, col="red")
+  
+  smoothScatter(x = log1p(rowMeans(curCounts)),
+       y = log1p(rowVars(curCounts)),
+       pch = 16, cex=1/2,
+       xlab = "Mean", ylab="Variance")
+  abline(0,1, col="red")
+}
 ```
 
 
+```{r, eval=FALSE, echo=FALSE}
+# Ask students why I separate according to time and treatment, and not patient?
+# Relate to model definition of a GLM. (Note caveat of library size N_i)
+```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# junk
-Start with challenges below, and make a section for each.
-This will simultaneously follow a full RNA-seq analysis pipeline.
-
-
-Following code should be part of a next file where we start working with RNA-seq data, show the mean-variance trend, discuss normalization, and introduce a DE analysis.
-
-# Properties of (RNA-seq) count data
-
-Goals:
-
- - Work with real RNA-seq count data, gene by sample matrix
- - Explore the data for a single gene: univariate (large range, zeroes, discrete, skewed) as well as bivariate wrt covariate.
- - 
- - Demonstrate the mean-variance relationship by plotting mean and variance across genes. Show that the Poisson doesn't hold across biological replicates and use this as introduction for the negative binomial distribution.
-
-In this lecture, we will introduce working with count data, using a real bulk RNA-seq dataset 
-
-
-
- - Count data are inherently discrete.
+ - Having data on thousands of genes provides the opportunity to empirically assess the mean-variance relationship.
+ - It is clear that the data is overdispersed with respect to the Poisson distribution. There also seems to be a quadratic trend of the variance as a function of the mean. This has motivated the **negative binomial distribution as the most popular choice to model (bulk) RNA-seq gene expression data**.
  
+ ---
+ 
+ - The negative binomial distribution is also referred to as the Gamma-Poisson distribution as it can be formulated as such. Indeed, if 
+ $$
+ \lambda \sim \Gamma(\alpha, \beta) \\
+ Y | \lambda \sim Poi(\lambda),
+ $$
+ then this is equivalent to
+ $$ Y \sim NB(\mu = \alpha / \beta, \phi = 1/\alpha). $$
+ - This can be shown analytically, but is considered out of the scope of this course. Below, we show it empirically using simulation.
+ - This theoretical result has got some practical consequences. The Gamma-Poisson formulation makes it clear why we can sum technical replicates as the sum of Poisson random variables is again a Poisson random variable. 
+ - The Poisson statement can thus be considered as capturing technical variation, while the Gamma statement can be considered to capture biological variation, i.e., variation in the expression mean across biological replicates.
  
 
-## Mean-variance relationship
+```{r}
+alpha <- 20
+beta <- 10
+lambda <- rgamma(n = 1e5, shape = alpha, rate = beta)
+y1 <- rpois(n = 1e5, lambda = lambda)
+
+# note phi = 1 / size
+y2 <- rnbinom(n=1e5, mu=alpha / (beta), size=alpha)
 
 
-## Relative uncertainty, offsets and count scaling
+plot(density(y1))
+lines(density(y2), col="steelblue")
+```
 
-Defer to normalization.
+# Challenge II: Normalization
 
-# Variance-stabilizing transformations
+Normalization is necessary to correct for two source of technical variation
 
-Defer to when talking about dim red.
+ - **Differences in sequencing depth** between samples.
+ - **Differences in RNA population composition** between samples.
+
+
+
+# Challenge III: Parameter estimation (under limited information setting)
+
+Empirical Bayes, but also the factors we should incorporate into the mean model: show screenshot of paper that doesn't include interaction effect. Discuss with students.
+
+# Challenge IV: Statistical inference across many genes
+
+
+
+
+
+
+
+
+
+
+# The importance of reproducible analysis
+
+https://www.youtube.com/watch?v=8QJfNS7XXwA
+
 
 
