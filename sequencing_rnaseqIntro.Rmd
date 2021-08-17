@@ -35,13 +35,13 @@ suppressPackageStartupMessages({
   library(rmarkdown)
   library(ggplot2)
 })
-if("BiocManager" %in% installed.packages()[,1]){
+if(!"BiocManager" %in% installed.packages()[,1]){
   install.packages("BiocManager")
 }
-if("limma" %in% installed.packages()[,1]){
+if(!"limma" %in% installed.packages()[,1]){
   BiocManager::install("limma")
 }
-if("edgeR" %in% installed.packages()[,1]){
+if(!"edgeR" %in% installed.packages()[,1]){
   BiocManager::install("edgeR")
 }
 ```
