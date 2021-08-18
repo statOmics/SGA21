@@ -13,6 +13,8 @@ navbar:
         href: sequencing_intro.html
       - text: Sequencing - Working with count data
         href: sequencing_countData.html
+      - text: Sequencing - RNA-seq analysis challenges
+        href: sequencing_rnaseqIntro.html
   right:
     - icon: fab fa-github      
       href: https://github.com/statOmics/SGA21
