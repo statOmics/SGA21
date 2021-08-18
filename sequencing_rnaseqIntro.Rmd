@@ -29,7 +29,7 @@ fig <- local({
 })
 ``` 
 
-```{r, echo=FALSE, eval=TRUE}
+```{r, echo=FALSE, message=FALSE, eval=TRUE}
 suppressPackageStartupMessages({
   library(knitr)
   library(rmarkdown)
