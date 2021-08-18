@@ -1,0 +1,50 @@
+---
+title: 'Sequencing: Bulk RNA-seq homework'
+author: "Koen Van den Berge"
+date: "8/6/2021"
+output: 
+  pdf_document:
+    toc: true
+    number_sections: true
+    latex_engine: xelatex
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r functions, include=FALSE}
+# A function for captioning and referencing images
+fig <- local({
+    i <- 0
+    ref <- list()
+    list(
+        cap=function(refName, text) {
+            i <<- i + 1
+            ref[[refName]] <<- i
+            paste("Figure ", i, ": ", text, sep="")
+        },
+        ref=function(refName) {
+            ref[[refName]]
+        })
+})
+``` 
+
+```{r, echo=FALSE, eval=TRUE}
+suppressPackageStartupMessages({
+  library(knitr)
+  library(rmarkdown)
+  library(ggplot2)
+})
+if(!"BiocManager" %in% installed.packages()[,1]){
+  install.packages("BiocManager")
+}
+if(!"limma" %in% installed.packages()[,1]){
+  BiocManager::install("limma")
+}
+if(!"edgeR" %in% installed.packages()[,1]){
+  BiocManager::install("edgeR")
+}
+```
+
+
+ - Implement FQ normalization yourself and compare results to default edgeR normalization. 
