@@ -44,6 +44,9 @@ if(!"limma" %in% installed.packages()[,1]){
 if(!"edgeR" %in% installed.packages()[,1]){
   BiocManager::install("edgeR")
 }
+if(!"DESeq2" %in% installed.packages()[,1]){
+  BiocManager::install("DESeq2")
+}
 ```
 
 In this lecture we will start working with a real bulk RNA-seq dataset from [Haglund *et al.* (2012)](https://academic.oup.com/jcem/article/97/12/4631/2536573). After importing the data, we will be working our way through four major challenges which, together, will form a full RNA-seq differential expression (DE) analysis pipeline where the result of our analysis will be a(n ordered) list of genes that we find to be differently expressed between our conditions of interest. The four main challenges we will look into are 
