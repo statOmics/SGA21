@@ -410,11 +410,46 @@ In practice, we implement full-quantile normalization using the following proced
 
 # Challenge III: Parameter estimation (under limited information setting)
 
-Empirical Bayes, but also the factors we should incorporate into the mean model: show screenshot of paper that doesn't include interaction effect. Discuss with students.
+There are two challenges to be overcome here. First, we need to get the structure of our mean model right, this is, which covariates to include, and how to include them, such that we are capable of capturing important sources of variation in our experiment, in order to derive a correct interpretation of the data in terms of our research question.
+
+Second, we need to be able to estimate the parameters of our model in an efficient way, while having limited information (i.e., we only have a small number of replicates).
+
+## Defining the model for the mean
+
+Let's first check how the authors of the original study parameterized the mean model.
+
+```{r, echo=FALSE, fig.cap=paste("Figure: Another paragraph from the Methods section.")}
+# All defaults
+include_graphics("./images_sequencing/deAnalysis_para.png")
+```
+
+The authors write that they are "employing treatment type, time point and sample ID as factors in the model". Concerning experimental variables, this suggests they have added covariates defining the treatment and time point for each sample. The sample ID in the text refers to the original tissue sample and therefore corresponds to the donor patient. While there is also a variable called `sample` in the `colData`, this is not what the authors refer to. Note the ambiguity here and since the authors didn't share their code, this is hard to check! But, more on reproducibility later.
+
+**Question**. What are the authors assuming using this structure for the mean model? Do you think that there are extensions or simplifications of the mean model that would be relevant?
+
+<details><summary> Answer. </summary><p>
+The authors are acknowledging the relatedness of samples derived from the same donor patient by adding it as a fixed effect to the model, which is great. This blocking strategy has been extensively discussed in the proteomics part of this course.
+However, by only adding a main effect for treatment and time, they are assuming that the effect of time is identical for all treatments, i.e., the average gene expression in-/decrease at 48h versus 24h is identical for the DPN, OHT or the control samples, which seems like a quite stringent assumption.
+We can make the model more flexible (but also more complex) by allowing for a `treatment * time` interaction.
+</p></details>
+
+## Parameter estimation and empirical Bayes
+
+Even in limited sample sizes, the parameters $\beta$ of the mean model may be estimated reasonably efficiently. However, estimating parameters for the varaince (this is, the dispersion parameter $\phi$ from the negative binomial or the variance parameter $\sigma$ from the Gaussian) are typically quite a bit harder.
+
+In genomics, we often take advantage of the parallel structure of the thousands of regression models (one for each gene) to **borrow information across genes** in a procedure called **empirical Bayes**. In empirical Bayes, we basically take a semi-Bayesian approach to parameter estimation, where we use the data but also a prior distribution to derive our parameter estimate. However, what makes it empirical is that we are using the data to estimate this prior distribution, unlike in a fully Bayesian analysis where the prior distribution must be specified independently of the data. The basic assumption for this to make sense is that genes with similar means might have similar dispersion parameters (or variances), owing to the mean-variance trend. 
+
+Once initial estimates ($\hat{\Phi}_g^{ML}$ in the figure) have been derived, we use a parametric model to estimate its distribution (typically as a function of the mean), which we're calling the prior distribution. Then, each initial estimate is shrunken towards that empirically estimated prior distribution. The amount of shrinkage being performed is data-driven, and depends on the data, taking into account the precision of our initial estimate (i.e., shape of the likelihood) and the width of the prior.
+
+```{r, echo=FALSE, fig.cap=paste("Figure 8 from Van den Berge *et al.* (2019).")}
+# All defaults
+include_graphics("./images_sequencing/empiricalBayes.png")
+```
+
 
 # Challenge IV: Statistical inference across many genes
 
-
+Contrasts, and multiple testing.
 
 
 
