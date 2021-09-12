@@ -9,9 +9,10 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
+<meta name="author" content="Koen Van den Berge" />
 
 
-<title>Statistical Genomics Analysis 2021-2022</title>
+<title>single-cell</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -372,112 +373,18 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Statistical Genomics Analysis 2021-2022</h1>
+<h1 class="title toc-ignore">single-cell</h1>
+<h4 class="author">Koen Van den Berge</h4>
+<h4 class="date">9/11/2021</h4>
 
 </div>
 
 
-<p><strong>Picture</strong></p>
-<div id="course-description" class="section level1">
-<h1><span class="header-section-number">1</span> Course Description</h1>
-<p>High-throughput ’omics studies generate ever larger datasets and, as a consequence, complex data interpretation challenges. This course focusses on statistical concepts involved in preprocessing, quantification and differential analysis of high-throughput ’omics data. The core focus will be on shotgun proteomics and (bulk and single-cell) RNA-sequencing. Experimental design is essential to allow for correct interpretation in all ’omics studies, and we will cover how to design a statistically efficient experiment, as well as discuss the impact experimental design has on how we model ’omics data, introducing concepts such as blocking. The course will rely exclusively on free and user-friendly open-source tools in R/Bioconductor. We hope that this will provide a solid basis for beginners, but will also bring new perspectives to those already familiar with standard data analysis workflows for proteomics and next-generation sequencing applications.</p>
-</div>
-<div id="target-audience" class="section level1">
-<h1><span class="header-section-number">2</span> Target Audience</h1>
-<p>This course is oriented towards biologists and bioinformaticians with a particular interest in differential analysis for quantitative ’omics data.</p>
-</div>
-<div id="prerequisites" class="section level1">
-<h1><span class="header-section-number">3</span> Prerequisites</h1>
-<p>The prerequisites for the Statistical Genomics Analysis course are the successful completion of a basic course of statistics that covers topics on data exploration and descriptive statistics, statistical modeling, and inference: linear models, confidence intervals, t-tests, F-tests, anova, chi-squared test. The basis concepts may be revisited in the online course at <a href="https://gtpb.github.io/PSLS20/" class="uri">https://gtpb.github.io/PSLS20/</a> (English) and in <a href="https://statomics.github.io/statistiekCursusNotas/" class="uri">https://statomics.github.io/statistiekCursusNotas/</a> (Dutch).</p>
-<p>In addition, knowledge of programming in <code>R</code> is preferred. A primer to <code>R</code> and Data visualization in <code>R</code> can be found at:</p>
 <ul>
-<li><code>R</code> Basics: <a href="https://dodona.ugent.be/nl/courses/335/" class="uri">https://dodona.ugent.be/nl/courses/335/</a></li>
-<li><code>R</code> Data Exploration: <a href="https://dodona.ugent.be/nl/courses/345/" class="uri">https://dodona.ugent.be/nl/courses/345/</a></li>
+<li>Multiple testing after DR/clustering/trajectory inference/ …. gives a false sense of rigor. Remember it is just a monotonic transformation of the unadjusted p-values.</li>
 </ul>
-</div>
-<div id="lecturers" class="section level1">
-<h1><span class="header-section-number">4</span> Lecturers</h1>
-<ul>
-<li><a href="https://koenvandenberge.github.io/">Koen Van den Berge</a></li>
-<li><a href="https://statomics.github.io/pages/about.html">Lieven Clement</a></li>
-</ul>
-</div>
-<div id="lecture-material" class="section level1">
-<h1><span class="header-section-number">5</span> Lecture material</h1>
-<p>All lecture material will be provided on this website. Please check the ‘Lectures’ tab at the top of the homepage.</p>
-<table style="width:100%;">
-<colgroup>
-<col width="16%" />
-<col width="19%" />
-<col width="16%" />
-<col width="11%" />
-<col width="16%" />
-<col width="19%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>Week</th>
-<th>Class</th>
-<th>Topic</th>
-<th>HTML</th>
-<th>PDF</th>
-<th>Details</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>1</td>
-<td>Proteomics</td>
-<td>Introduction</td>
-<td>link to HTML</td>
-<td>link to PDF</td>
-<td>link to papers etc.</td>
-</tr>
-<tr class="even">
-<td>1</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-</tr>
-<tr class="odd">
-<td>7</td>
-<td>Bulk RNA-seq</td>
-<td>Introduction to sequencing</td>
-<td><a href="./sequencing_intro.html">HTML</a></td>
-<td><a href="./sequencing_intro.pdf">PDF</a></td>
-<td><a href="https://www.annualreviews.org/doi/abs/10.1146/annurev-biodatasci-072018-021255">Van den Berge <em>et al.</em> (2019)</a>: Review paper on expression analysis.</td>
-</tr>
-<tr class="even">
-<td>7-8</td>
-<td>Bulk RNA-seq</td>
-<td>Working with count data</td>
-<td><a href="./sequencing_countData.html">HTML</a></td>
-<td><a href="./sequencing_countData.pdf">PDF</a></td>
-<td>…</td>
-</tr>
-<tr class="odd">
-<td>8</td>
-<td>Bulk RNA-seq</td>
-<td>Lab session &amp; lecture: RNA-seq analysis challenges</td>
-<td><a href="./sequencing_rnaseqIntro.Rmd">Rmd</a>, <a href="./sequencing_rnaseqIntro.html">HTML</a></td>
-<td><a href="./sequencing_rnaseqIntro.pdf">PDF</a></td>
-<td><code>edgeR</code> <a href="https://academic.oup.com/nar/article/40/10/4288/2411520">paper</a>, <a href="http://www.statsci.org/smyth/pubs/edgeRChapterPreprint.pdf">chapter</a> and <a href="https://bioconductor.org/packages/release/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf">vignette</a>, <code>DESeq2</code> <a href="https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8">paper</a> and <a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html">vignette</a></td>
-</tr>
-<tr class="even">
-<td>8-9</td>
-<td>Bulk RNA-seq</td>
-<td>Homework on bulk RNA-seq analysis 💻</td>
-<td>TBD</td>
-<td>TBD</td>
-<td>…</td>
-</tr>
-</tbody>
-</table>
-</div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiU3RhdGlzdGljYWwgR2Vub21pY3MgQW5hbHlzaXMgMjAyMS0yMDIyIgotLS0KCgoqKlBpY3R1cmUqKgoKIyBDb3Vyc2UgRGVzY3JpcHRpb24KCkhpZ2gtdGhyb3VnaHB1dCAnb21pY3Mgc3R1ZGllcyBnZW5lcmF0ZSBldmVyIGxhcmdlciBkYXRhc2V0cyBhbmQsIGFzIGEgY29uc2VxdWVuY2UsIGNvbXBsZXggZGF0YSBpbnRlcnByZXRhdGlvbiBjaGFsbGVuZ2VzLiBUaGlzIGNvdXJzZSBmb2N1c3NlcyBvbiBzdGF0aXN0aWNhbCBjb25jZXB0cyBpbnZvbHZlZCBpbiBwcmVwcm9jZXNzaW5nLCBxdWFudGlmaWNhdGlvbiBhbmQgZGlmZmVyZW50aWFsIGFuYWx5c2lzIG9mIGhpZ2gtdGhyb3VnaHB1dCAnb21pY3MgZGF0YS4gVGhlIGNvcmUgZm9jdXMgd2lsbCBiZSBvbiBzaG90Z3VuIHByb3Rlb21pY3MgYW5kIChidWxrIGFuZCBzaW5nbGUtY2VsbCkgUk5BLXNlcXVlbmNpbmcuIEV4cGVyaW1lbnRhbCBkZXNpZ24gaXMgZXNzZW50aWFsIHRvIGFsbG93IGZvciBjb3JyZWN0IGludGVycHJldGF0aW9uIGluIGFsbCAnb21pY3Mgc3R1ZGllcywgYW5kIHdlIHdpbGwgY292ZXIgaG93IHRvIGRlc2lnbiBhIHN0YXRpc3RpY2FsbHkgZWZmaWNpZW50IGV4cGVyaW1lbnQsIGFzIHdlbGwgYXMgZGlzY3VzcyB0aGUgaW1wYWN0IGV4cGVyaW1lbnRhbCBkZXNpZ24gaGFzIG9uIGhvdyB3ZSBtb2RlbCAnb21pY3MgZGF0YSwgaW50cm9kdWNpbmcgY29uY2VwdHMgc3VjaCBhcyBibG9ja2luZy4gVGhlIGNvdXJzZSB3aWxsIHJlbHkgZXhjbHVzaXZlbHkgb24gZnJlZSBhbmQgdXNlci1mcmllbmRseSBvcGVuLXNvdXJjZSB0b29scyBpbiBSL0Jpb2NvbmR1Y3Rvci4gV2UgaG9wZSB0aGF0IHRoaXMgd2lsbCBwcm92aWRlIGEgc29saWQgYmFzaXMgZm9yIGJlZ2lubmVycywgYnV0IHdpbGwgYWxzbyBicmluZyBuZXcgcGVyc3BlY3RpdmVzIHRvIHRob3NlIGFscmVhZHkgZmFtaWxpYXIgd2l0aCBzdGFuZGFyZCBkYXRhIGFuYWx5c2lzIHdvcmtmbG93cyBmb3IgcHJvdGVvbWljcyBhbmQgbmV4dC1nZW5lcmF0aW9uIHNlcXVlbmNpbmcgYXBwbGljYXRpb25zLgoKIyBUYXJnZXQgQXVkaWVuY2UKClRoaXMgY291cnNlIGlzIG9yaWVudGVkIHRvd2FyZHMgYmlvbG9naXN0cyBhbmQgYmlvaW5mb3JtYXRpY2lhbnMgd2l0aCBhIHBhcnRpY3VsYXIgaW50ZXJlc3QgaW4gZGlmZmVyZW50aWFsIGFuYWx5c2lzIGZvciBxdWFudGl0YXRpdmUgJ29taWNzIGRhdGEuCgojIFByZXJlcXVpc2l0ZXMKClRoZSBwcmVyZXF1aXNpdGVzIGZvciB0aGUgU3RhdGlzdGljYWwgR2Vub21pY3MgQW5hbHlzaXMgY291cnNlIGFyZSB0aGUgc3VjY2Vzc2Z1bCBjb21wbGV0aW9uIG9mIGEgYmFzaWMgY291cnNlIG9mIHN0YXRpc3RpY3MgdGhhdCBjb3ZlcnMgdG9waWNzIG9uIGRhdGEgZXhwbG9yYXRpb24gYW5kIGRlc2NyaXB0aXZlIHN0YXRpc3RpY3MsIHN0YXRpc3RpY2FsIG1vZGVsaW5nLCBhbmQgaW5mZXJlbmNlOiBsaW5lYXIgbW9kZWxzLCBjb25maWRlbmNlIGludGVydmFscywgdC10ZXN0cywgRi10ZXN0cywgYW5vdmEsIGNoaS1zcXVhcmVkIHRlc3QuClRoZSBiYXNpcyBjb25jZXB0cyBtYXkgYmUgcmV2aXNpdGVkIGluIHRoZSBvbmxpbmUgY291cnNlIGF0IGh0dHBzOi8vZ3RwYi5naXRodWIuaW8vUFNMUzIwLyAoRW5nbGlzaCkgYW5kIGluIGh0dHBzOi8vc3RhdG9taWNzLmdpdGh1Yi5pby9zdGF0aXN0aWVrQ3Vyc3VzTm90YXMvIChEdXRjaCkuCgpJbiBhZGRpdGlvbiwga25vd2xlZGdlIG9mIHByb2dyYW1taW5nIGluIGBSYCBpcyBwcmVmZXJyZWQuIEEgcHJpbWVyIHRvIGBSYCBhbmQgRGF0YSB2aXN1YWxpemF0aW9uIGluIGBSYCBjYW4gYmUgZm91bmQgYXQ6CgogLSBgUmAgQmFzaWNzOiBodHRwczovL2RvZG9uYS51Z2VudC5iZS9ubC9jb3Vyc2VzLzMzNS8KIC0gYFJgIERhdGEgRXhwbG9yYXRpb246IGh0dHBzOi8vZG9kb25hLnVnZW50LmJlL25sL2NvdXJzZXMvMzQ1LwoKIyBMZWN0dXJlcnMKCiAtIFtLb2VuIFZhbiBkZW4gQmVyZ2VdKGh0dHBzOi8va29lbnZhbmRlbmJlcmdlLmdpdGh1Yi5pby8pCiAtIFtMaWV2ZW4gQ2xlbWVudF0oaHR0cHM6Ly9zdGF0b21pY3MuZ2l0aHViLmlvL3BhZ2VzL2Fib3V0Lmh0bWwpCiAKIyBMZWN0dXJlIG1hdGVyaWFsCgpBbGwgbGVjdHVyZSBtYXRlcmlhbCB3aWxsIGJlIHByb3ZpZGVkIG9uIHRoaXMgd2Vic2l0ZS4gUGxlYXNlIGNoZWNrIHRoZSAnTGVjdHVyZXMnIHRhYiBhdCB0aGUgdG9wIG9mIHRoZSBob21lcGFnZS4KCgp8IFdlZWsgfCBDbGFzcyB8IFRvcGljIHwgSFRNTCB8IFBERiB8IERldGFpbHMgfAp8LS0tLS0tfC0tLS0tLS18LS0tLS0tfC0tLS18LS0tLS0tfC0tLS0tLS18CnwgMSB8IFByb3Rlb21pY3MgfCBJbnRyb2R1Y3Rpb24gfCBsaW5rIHRvIEhUTUwgfCBsaW5rIHRvIFBERiB8IGxpbmsgdG8gcGFwZXJzIGV0Yy4gfAp8IDEgfCAuLi4gfCAuLi4gfCAuLi4gfCAuLi4gfCAuLi4gfAp8IDcgfCBCdWxrIFJOQS1zZXEgfCBJbnRyb2R1Y3Rpb24gdG8gc2VxdWVuY2luZyB8IFtIVE1MXSguL3NlcXVlbmNpbmdfaW50cm8uaHRtbCkgfCBbUERGXSguL3NlcXVlbmNpbmdfaW50cm8ucGRmKSB8IFtWYW4gZGVuIEJlcmdlICpldCBhbC4qICgyMDE5KV0oaHR0cHM6Ly93d3cuYW5udWFscmV2aWV3cy5vcmcvZG9pL2Ficy8xMC4xMTQ2L2FubnVyZXYtYmlvZGF0YXNjaS0wNzIwMTgtMDIxMjU1KTogUmV2aWV3IHBhcGVyIG9uIGV4cHJlc3Npb24gYW5hbHlzaXMuIHwKfCA3LTggfCBCdWxrIFJOQS1zZXEgfCBXb3JraW5nIHdpdGggY291bnQgZGF0YSB8IFtIVE1MXSguL3NlcXVlbmNpbmdfY291bnREYXRhLmh0bWwpIHwgW1BERl0oLi9zZXF1ZW5jaW5nX2NvdW50RGF0YS5wZGYpIHwgLi4uIHwKfCA4IHwgQnVsayBSTkEtc2VxIHwgTGFiIHNlc3Npb24gXCYgbGVjdHVyZTogUk5BLXNlcSBhbmFseXNpcyBjaGFsbGVuZ2VzIHwgW1JtZF0oLi9zZXF1ZW5jaW5nX3JuYXNlcUludHJvLlJtZCksIFtIVE1MXSguL3NlcXVlbmNpbmdfcm5hc2VxSW50cm8uaHRtbCkgfCBbUERGXSguL3NlcXVlbmNpbmdfcm5hc2VxSW50cm8ucGRmKSB8IGBlZGdlUmAgW3BhcGVyXShodHRwczovL2FjYWRlbWljLm91cC5jb20vbmFyL2FydGljbGUvNDAvMTAvNDI4OC8yNDExNTIwKSwgW2NoYXB0ZXJdKGh0dHA6Ly93d3cuc3RhdHNjaS5vcmcvc215dGgvcHVicy9lZGdlUkNoYXB0ZXJQcmVwcmludC5wZGYpIGFuZCBbdmlnbmV0dGVdKGh0dHBzOi8vYmlvY29uZHVjdG9yLm9yZy9wYWNrYWdlcy9yZWxlYXNlL2Jpb2MvdmlnbmV0dGVzL2VkZ2VSL2luc3QvZG9jL2VkZ2VSVXNlcnNHdWlkZS5wZGYpLCBgREVTZXEyYCBbcGFwZXJdKGh0dHBzOi8vZ2Vub21lYmlvbG9neS5iaW9tZWRjZW50cmFsLmNvbS9hcnRpY2xlcy8xMC4xMTg2L3MxMzA1OS0wMTQtMDU1MC04KSBhbmQgW3ZpZ25ldHRlXShodHRwczovL2Jpb2NvbmR1Y3Rvci5vcmcvcGFja2FnZXMvcmVsZWFzZS9iaW9jL3ZpZ25ldHRlcy9ERVNlcTIvaW5zdC9kb2MvREVTZXEyLmh0bWwpIHwKfCA4LTkgfCBCdWxrIFJOQS1zZXEgfCBIb21ld29yayBvbiBidWxrIFJOQS1zZXEgYW5hbHlzaXMg8J+SuyB8IFRCRCB8IFRCRCB8IC4uLiB8CgoKCg==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAic2luZ2xlLWNlbGwiCmF1dGhvcjogIktvZW4gVmFuIGRlbiBCZXJnZSIKZGF0ZTogIjkvMTEvMjAyMSIKb3V0cHV0OiBodG1sX2RvY3VtZW50Ci0tLQoKCgoKLSBNdWx0aXBsZSB0ZXN0aW5nIGFmdGVyIERSL2NsdXN0ZXJpbmcvdHJhamVjdG9yeSBpbmZlcmVuY2UvIC4uLi4gZ2l2ZXMgYSBmYWxzZSBzZW5zZSBvZiByaWdvci4gUmVtZW1iZXIgaXQgaXMganVzdCBhIG1vbm90b25pYyB0cmFuc2Zvcm1hdGlvbiBvZiB0aGUgdW5hZGp1c3RlZCBwLXZhbHVlcy4=</div>
 
 
 </div>
@@ -515,7 +422,7 @@ $(document).ready(function () {
 <!-- code folding -->
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("index.Rmd");
+  window.initializeSourceEmbed("singleCell_generalWorkflow.Rmd");
 });
 </script>
 
