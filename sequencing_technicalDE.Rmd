@@ -1,5 +1,5 @@
 ---
-title: 'Sequencing: Experimental design'
+title: 'Sequencing: Technical topics'
 author: "Koen Van den Berge"
 date: "7/5/2021"
 output: 
@@ -12,10 +12,84 @@ output:
     toc_float: true
 ---
 
-- Experimental design
-- Design matrix in modeling and aliasing
-- Empirical Bayes details
-- Other approaches to modeling counts: limma-voom
+# Aliasing
 
-- [Marioni *et al.* (2008)](https://genome.cshlp.org/content/18/9/1509) show that lane effects as well as run effects are small, although existant for a small proportion ($< 0.5%$) of genes.
+Suppose we are working with the following experimental design. Studying the effect of alcoholism on gene expression, researchers gather RNA-seq data from four alcoholic individuals and four healthy individuals. For each individual, they obtain RNA-seq data from a blood sample as well as liver tissue. The research question relates to differential expression between the diseased versus control conditions, in both tissues.
+
+If we would like to model all data simultaneously, then we could imagine a design such as ` ~ patient + disease*tissue`, where 
+
+ - `disease` is a binary indicator referring to alcoholic versus control sample.
+ - `tissue` defines if the sample is a liver or blood sample.
+ - `patient` defines the individual donor the sample comes from.
+
+Let's try this, by simulating random data for one gene.
+
+```{r}
+set.seed(2)
+patient <- factor(rep(letters[1:8], each=2)) # 2 samples per patient
+disease <- factor(c(rep("healthy",8), rep("alcohol",8))) # first four are healthy, next four are alcoholic
+tissue <- factor(rep(c("blood", "liver"), 8)) # one liver and one blood sample for each
+
+table(patient, disease, tissue)
+
+## simulate data for one gene
+n <- 16
+y <- rpois(n = n, lambda = 50)
+
+## fit a Poisson model
+m <- glm(y ~ patient + disease*tissue,
+         family = "poisson")
+summary(m)
+```
+
+ ---
+ 
+We find that one of the coefficients is `NA`! This is obviously not because we're dealing with `NA` values in the data as we've just simulated the response variable. 
+
+Instead, one of the parameters, in this case the parameter distinguising diseased from healthy patients **cannot be estimated as it is a linear combination of other parameters**. In our case, estimating the diseased effect would use information that is already used to estimate the patient-level intercepts. In other words, **once you know the patient, you immediately also know the diseased status**, so estimating the diseased vs healthy effect on top of the patient effect provides no additional information if we have already estimated the patient-level effects. This concept is called aliasing, and is common in RNA-seq experiments with complex experimental designs. 
+
+ ---
+
+While to understand the origin of the aliasing it is crucial to understand the relationship between the variables in the experimental design, we can also investigate it in detail using the `alias` function, to give us an idea.
+
+```{r}
+alias(m)
+```
+
+We see that the effect `diseasehealthy` is a linear combination of the the intercept minus the patient-specific effects of the alcoholic patients. This makes sense!
+For clarity, let's reproduce this using our design matrix.
+
+```{r}
+X <- model.matrix(~ patient + disease*tissue)
+
+## these are indeed the same.
+X[,"diseasehealthy"]
+X[,"(Intercept)"] - X[,"patiente"] - X[,"patientf"] - X[,"patientg"] - X[,"patienth"]
+```
+
+Since one of our parameters is a linear combination of other parameters, it cannot be estimated simultaneously with the other parameters. In this case, we can actually drop the `tissue` effect from the model, since we know that it is already included in the `patient` effect. The most convenient way will be to make a new variable that represents the interaction between patient and tissue. This covariate will contain all the information we need. Below, we fit it using a model without an intercept; this eases interpretation as each coefficient can be interpreted as the average expression for that particular tissue of that particular patient.
+
+```{r}
+patientTissue <- as.factor(paste0(tissue, "_", patient))
+patientTissue
+
+m2 <- glm(y ~ -1 + patientTissue,
+          family = "poisson")
+
+summary(m2)
+```
+
+**Question.** What do the $p$-values mean here? Why are they all significant?
+
+<details><summary> Answer. </summary><p>
+Since now we are working with an intercept-free model, each coefficient represents the average gene expression of that patient for the particular tissue. The coefficients therefore can no longer be interpreted as a difference with respect to the intercept on the linear predictor scale. The null hypothesis is still the same as usual, i.e., the $p$-value corresponding to $\beta_2$ tests the null hypothesis $H_0: \beta_2 = 0$. Thus, the test is now assessing whether the average gene expression is different from zero (rather than different from the intercept).
+</p></details>
+
+We see that all coefficients can now be estimated.
+
+
+# Independent filtering
+
+# Other approaches to modeling counts: limma-voom
+
 

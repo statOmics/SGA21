@@ -455,8 +455,6 @@ However, by only adding a main effect for treatment and time, they are assuming 
 We can make the model more flexible (but also more complex) by allowing for a `treatment * time` interaction.
 </p></details>
 
-
-
 ## Parameter estimation and empirical Bayes
 
 Even in limited sample sizes, the parameters $\beta$ of the mean model may be estimated reasonably efficiently. However, estimating parameters for the varaince (this is, the dispersion parameter $\phi$ from the negative binomial or the variance parameter $\sigma$ from the Gaussian) are typically quite a bit harder.
@@ -480,7 +478,7 @@ Let's fit the model using `edgeR`.
 ```{r}
 design <- model.matrix(~ treatment*time + patient, data=colData(se))
 
-
+# independent filtering
 keep <- filterByExpr(se, design = design)
 se <- se[keep,]
 
