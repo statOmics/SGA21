@@ -236,7 +236,7 @@ There is a extremely significant association of the histological grade on the ge
 
 
 
-![](https://raw.githubusercontent.com/statOmics/SGA21/master/figures/statGenomicsGent201718-10.jpeg)
+![](https://raw.githubusercontent.com/statOmics/SGA21/master/figures/statGenomicsGent201718-10.jpeg) 
 
 ---
 
