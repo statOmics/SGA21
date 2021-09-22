@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Lieven Clement" />
+
+
+<title>Recap general linear model</title>
+
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<script src="site_libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+<style type="text/css">
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SGA21</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-chalkboard-teacher"></span>
+     
+    Lectures
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="sequencing_intro.html">Sequencing - Introduction to sequencing</a>
+    </li>
+    <li>
+      <a href="sequencing_countData.html">Sequencing - Working with count data</a>
+    </li>
+    <li>
+      <a href="sequencing_rnaseqIntro.html">Sequencing - RNA-seq analysis challenges</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/statOmics/SGA21">
+    <span class="fab fa-github"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="http://statomics.github.io/">statOmics</a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Recap general linear model</h1>
+<h4 class="author">Lieven Clement</h4>
+<h4 class="date">statOmics, Ghent University (<a href="https://statomics.github.io" class="uri">https://statomics.github.io</a>)</h4>
+
+</div>
+
+
+<p><a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a></p>
+<p>This is part of the online course <a href="https://statomics.github.io/SGA21/">Statistical Genomics 2021 (SGA21)</a></p>
+<div id="breast-cancer-example" class="section level1">
+<h1><span class="header-section-number">1</span> Breast cancer example</h1>
+<ul>
+<li>part of study <a href="https://doi.org/10.1093/jnci/djj052" class="uri">https://doi.org/10.1093/jnci/djj052</a>)</li>
+<li>Histologic grade in breast cancer clinically prognostic. Association of histologic grade on expression of KPNA2 gene that is known to be associated with poor BC prognosis.</li>
+<li>Population: all current and future breast cancer patients</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/statOmics/SGA21/master/figures/statGenomicsGent201718-1.jpeg" /></p>
+<hr />
+<p><img src="https://raw.githubusercontent.com/statOmics/SGA21/master/figures/statGenomicsGent201718-2.jpeg" /></p>
+<hr />
+<p><img src="https://raw.githubusercontent.com/statOmics/SGA21/master/figures/statGenomicsGent201718-3.jpeg" /></p>
+<hr />
+<p><img src="https://raw.githubusercontent.com/statOmics/SGA21/master/figures/statGenomicsGent201718-4.jpeg" /></p>
+<hr />
+<p><img src="https://raw.githubusercontent.com/statOmics/SGA21/master/figures/statGenomicsGent201718-5.jpeg" /></p>
+<hr />
+<p><img src="https://raw.githubusercontent.com/statOmics/SGA21/master/figures/statGenomicsGent201718-6.jpeg" /></p>
+<hr />
+</div>
+<div id="data-exploration" class="section level1">
+<h1><span class="header-section-number">2</span> Data Exploration</h1>
+<div id="import" class="section level2">
+<h2><span class="header-section-number">2.1</span> Import</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(tidyverse)</span></code></pre></div>
+<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──</code></pre>
+<pre><code>## ✔ ggplot2 3.3.5     ✔ purrr   0.3.4
+## ✔ tibble  3.1.4     ✔ dplyr   1.0.7
+## ✔ tidyr   1.1.3     ✔ stringr 1.4.0
+## ✔ readr   2.0.1     ✔ forcats 0.5.1</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>gene &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="st">&quot;https://raw.githubusercontent.com/statOmics/SGA21/master/data/kpna2.txt&quot;</span>,<span class="dt">header=</span><span class="ot">TRUE</span>)</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="kw">head</span>(gene)</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["grade"],"name":[1],"type":["int"],"align":["right"]},{"label":["node"],"name":[2],"type":["int"],"align":["right"]},{"label":["gene"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"3","2":"1","3":"367.8179","_rn_":"1"},{"1":"3","2":"1","3":"590.3576","_rn_":"2"},{"1":"1","2":"1","3":"346.6583","_rn_":"3"},{"1":"1","2":"1","3":"258.4455","_rn_":"4"},{"1":"1","2":"0","3":"153.8416","_rn_":"5"},{"1":"3","2":"0","3":"643.6799","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>We will transform the variable grade and node to a factor</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>gene<span class="op">$</span>grade &lt;-<span class="st"> </span><span class="kw">as.factor</span>(gene<span class="op">$</span>grade)</span>
+<span id="cb6-2"><a href="#cb6-2"></a>gene<span class="op">$</span>node &lt;-<span class="st"> </span><span class="kw">as.factor</span>(gene<span class="op">$</span>node)</span></code></pre></div>
+</div>
+<div id="summary-statistics" class="section level2">
+<h2><span class="header-section-number">2.2</span> Summary statistics</h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>geneSum &lt;-<span class="st"> </span>gene <span class="op">%&gt;%</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="st">  </span><span class="kw">group_by</span>(grade) <span class="op">%&gt;%</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">mean =</span> <span class="kw">mean</span>(gene),</span>
+<span id="cb7-4"><a href="#cb7-4"></a>            <span class="dt">sd =</span> <span class="kw">sd</span>(gene),</span>
+<span id="cb7-5"><a href="#cb7-5"></a>            <span class="dt">n=</span><span class="kw">length</span>(gene)</span>
+<span id="cb7-6"><a href="#cb7-6"></a>            ) <span class="op">%&gt;%</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">se =</span> sd<span class="op">/</span><span class="kw">sqrt</span>(n))</span>
+<span id="cb7-8"><a href="#cb7-8"></a>geneSum</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["grade"],"name":[1],"type":["fct"],"align":["left"]},{"label":["mean"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["sd"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["n"],"name":[4],"type":["int"],"align":["right"]},{"label":["se"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"232.5003","3":"65.45975","4":"12","5":"18.89660"},{"1":"3","2":"561.0487","3":"143.56507","4":"12","5":"41.44367"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="visualisation" class="section level2">
+<h2><span class="header-section-number">2.3</span> Visualisation</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>gene <span class="op">%&gt;%</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x=</span>grade,<span class="dt">y=</span>gene)) <span class="op">+</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="st">  </span><span class="kw">geom_boxplot</span>(<span class="dt">outlier.shape=</span><span class="ot">NA</span>) <span class="op">+</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="st">  </span><span class="kw">geom_jitter</span>()</span></code></pre></div>
+<p><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>We can also save the plots as objects for later use!</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>p1 &lt;-<span class="st"> </span>gene <span class="op">%&gt;%</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x=</span>grade,<span class="dt">y=</span>gene)) <span class="op">+</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="st">  </span><span class="kw">geom_boxplot</span>(<span class="dt">outlier.shape=</span><span class="ot">NA</span>) <span class="op">+</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="st">  </span><span class="kw">geom_jitter</span>()</span>
+<span id="cb9-5"><a href="#cb9-5"></a></span>
+<span id="cb9-6"><a href="#cb9-6"></a>p2 &lt;-<span class="st"> </span>gene <span class="op">%&gt;%</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">sample=</span>gene)) <span class="op">+</span></span>
+<span id="cb9-8"><a href="#cb9-8"></a><span class="st">  </span><span class="kw">geom_qq</span>() <span class="op">+</span></span>
+<span id="cb9-9"><a href="#cb9-9"></a><span class="st">  </span><span class="kw">geom_qq_line</span>() <span class="op">+</span></span>
+<span id="cb9-10"><a href="#cb9-10"></a><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>grade)</span>
+<span id="cb9-11"><a href="#cb9-11"></a></span>
+<span id="cb9-12"><a href="#cb9-12"></a>p1</span></code></pre></div>
+<p><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>p2</span></code></pre></div>
+<p><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
+</div>
+<div id="research-questions" class="section level2">
+<h2><span class="header-section-number">2.4</span> Research questions</h2>
+<p>Researchers want to assess the association of the histological grade on KPNA2 gene expression</p>
+<p><img src="https://raw.githubusercontent.com/statOmics/SGA21/master/figures/statGenomicsGent201718-6.jpeg" /></p>
+<hr />
+</div>
+<div id="estimation-of-effect-size-and-standard-error" class="section level2">
+<h2><span class="header-section-number">2.5</span> Estimation of effect size and standard error</h2>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>effectSize &lt;-<span class="st"> </span><span class="kw">tibble</span>(</span>
+<span id="cb11-2"><a href="#cb11-2"></a>  <span class="dt">delta =</span> geneSum<span class="op">$</span>mean[<span class="dv">2</span>]<span class="op">-</span><span class="st"> </span>geneSum<span class="op">$</span>mean[<span class="dv">1</span>],</span>
+<span id="cb11-3"><a href="#cb11-3"></a>  <span class="dt">seDelta =</span> geneSum <span class="op">%&gt;%</span></span>
+<span id="cb11-4"><a href="#cb11-4"></a><span class="st">    </span><span class="kw">pull</span>(se) <span class="op">%&gt;%</span></span>
+<span id="cb11-5"><a href="#cb11-5"></a><span class="st">    </span>.<span class="op">^</span><span class="dv">2</span> <span class="op">%&gt;%</span></span>
+<span id="cb11-6"><a href="#cb11-6"></a><span class="st">    </span>sum <span class="op">%&gt;%</span></span>
+<span id="cb11-7"><a href="#cb11-7"></a><span class="st">    </span>sqrt</span>
+<span id="cb11-8"><a href="#cb11-8"></a>  )</span>
+<span id="cb11-9"><a href="#cb11-9"></a>effectSize</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["delta"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["seDelta"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"328.5485","2":"45.54842"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<div id="statistical-inference" class="section level1">
+<h1><span class="header-section-number">3</span> Statistical Inference</h1>
+<ul>
+<li>Researchers want to assess the association of histological grade on KPNA2 gene expression</li>
+<li>Inference?</li>
+</ul>
+<hr />
+<p><img src="https://raw.githubusercontent.com/statOmics/SGA21/master/figures/statGenomicsGent201718-7.jpeg" /></p>
+<hr />
+<ul>
+<li>Researchers want to assess the association of histological grade on KPNA2 gene expression</li>
+<li>Inference?</li>
+<li>testing + CI $ $ Assumptions</li>
+</ul>
+<hr />
+<ul>
+<li><p>In general we start from <strong>alternative hypothese</strong> <span class="math inline">\(H_A\)</span>: we want to show an association</p></li>
+<li><p>Gene expression of grade 1 and grade 3 patients is on average different</p></li>
+<li><p>But, we will assess it by falsifying the opposite:</p></li>
+<li><p>The average KPNA2 gene expression of grade 1 and grade 3 patients is equal</p></li>
+</ul>
+<hr />
+<ul>
+<li><p>How likely is it to observe an equal or more extreme association than the one observed in the sample when the null hypothesis is true?</p></li>
+<li><p>When we make assumptions about the distribution of our test statistic we can quantify this probability: <strong>p-value</strong>.</p></li>
+<li><p>If the p-value is below a significance threshold <span class="math inline">\(\alpha\)</span> we reject the null hypothesis</p></li>
+</ul>
+<p><em>We control the probability on a false positive result at the <span class="math inline">\(\alpha\)</span>-level (type I error)</em></p>
+<ul>
+<li>The p-value will only be calculated correctly if the underlying assumptions hold!</li>
+</ul>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw">library</span>(gridExtra)</span></code></pre></div>
+<pre><code>## 
+## Attaching package: &#39;gridExtra&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     combine</code></pre>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>p1</span></code></pre></div>
+<p><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>p2</span></code></pre></div>
+<p><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="kw">t.test</span>(gene<span class="op">~</span>grade,<span class="dt">data=</span>gene)</span></code></pre></div>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  gene by grade
+## t = -7.2132, df = 15.384, p-value = 2.598e-06
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -425.4218 -231.6751
+## sample estimates:
+## mean in group 1 mean in group 3 
+##        232.5003        561.0487</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>effectSize &lt;-<span class="st"> </span>effectSize <span class="op">%&gt;%</span></span>
+<span id="cb19-2"><a href="#cb19-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">t.stat=</span>delta<span class="op">/</span>seDelta) <span class="op">%&gt;%</span></span>
+<span id="cb19-3"><a href="#cb19-3"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">p.value=</span> <span class="kw">pt</span>(<span class="op">-</span><span class="kw">abs</span>(t.stat),<span class="fl">21.352</span>)<span class="op">*</span><span class="dv">2</span>)</span>
+<span id="cb19-4"><a href="#cb19-4"></a></span>
+<span id="cb19-5"><a href="#cb19-5"></a>effectSize</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["delta"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["seDelta"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["t.stat"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["p.value"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"328.5485","2":"45.54842","3":"7.213168","4":"3.762894e-07"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<ul>
+<li>Intensities are often not normally distributed and have a mean variance relation</li>
+<li>Commonly log2-transformed</li>
+<li>Differences on log scale:</li>
+</ul>
+<p><span class="math display">\[
+\log_2(B) - \log_2(A) = \log_2 \frac{B}{A} = \log_2 FC_{\frac{B}{A}}
+\]</span></p>
+<p><img src="https://raw.githubusercontent.com/statOmics/SGA21/master/figures/statGenomicsGent201718-8.jpeg" /></p>
+<hr />
+<div id="log-transformation" class="section level2">
+<h2><span class="header-section-number">3.1</span> Log transformation</h2>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>gene &lt;-<span class="st"> </span>gene <span class="op">%&gt;%</span></span>
+<span id="cb20-2"><a href="#cb20-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lgene =</span> <span class="kw">log2</span>(gene))</span>
+<span id="cb20-3"><a href="#cb20-3"></a></span>
+<span id="cb20-4"><a href="#cb20-4"></a>p1 &lt;-<span class="st"> </span>gene <span class="op">%&gt;%</span></span>
+<span id="cb20-5"><a href="#cb20-5"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x=</span>grade,<span class="dt">y=</span>lgene)) <span class="op">+</span></span>
+<span id="cb20-6"><a href="#cb20-6"></a><span class="st">  </span><span class="kw">geom_boxplot</span>(<span class="dt">outlier.shape=</span><span class="ot">NA</span>) <span class="op">+</span></span>
+<span id="cb20-7"><a href="#cb20-7"></a><span class="st">  </span><span class="kw">geom_jitter</span>()</span>
+<span id="cb20-8"><a href="#cb20-8"></a></span>
+<span id="cb20-9"><a href="#cb20-9"></a>p2 &lt;-<span class="st"> </span>gene <span class="op">%&gt;%</span></span>
+<span id="cb20-10"><a href="#cb20-10"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">sample=</span>lgene)) <span class="op">+</span></span>
+<span id="cb20-11"><a href="#cb20-11"></a><span class="st">  </span><span class="kw">geom_qq</span>() <span class="op">+</span></span>
+<span id="cb20-12"><a href="#cb20-12"></a><span class="st">  </span><span class="kw">geom_qq_line</span>() <span class="op">+</span></span>
+<span id="cb20-13"><a href="#cb20-13"></a><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>grade)</span>
+<span id="cb20-14"><a href="#cb20-14"></a></span>
+<span id="cb20-15"><a href="#cb20-15"></a>p1</span></code></pre></div>
+<p><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>p2</span></code></pre></div>
+<p><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-9-2.png" width="672" /></p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>logtest &lt;-<span class="st"> </span><span class="kw">t.test</span>(lgene<span class="op">~</span>grade,<span class="dt">data=</span>gene,<span class="dt">var.equal=</span><span class="ot">TRUE</span>)</span>
+<span id="cb22-2"><a href="#cb22-2"></a>logtest</span></code></pre></div>
+<pre><code>## 
+##  Two Sample t-test
+## 
+## data:  lgene by grade
+## t = -8.0455, df = 22, p-value = 5.372e-08
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -1.610148 -0.950178
+## sample estimates:
+## mean in group 1 mean in group 3 
+##        7.808478        9.088641</code></pre>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a>log2FC &lt;-<span class="st"> </span>logtest<span class="op">$</span>estimate[<span class="dv">2</span>]<span class="op">-</span>logtest<span class="op">$</span>estimate[<span class="dv">1</span>]</span>
+<span id="cb24-2"><a href="#cb24-2"></a>log2FC</span></code></pre></div>
+<pre><code>## mean in group 3 
+##        1.280163</code></pre>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="kw">names</span>(log2FC) &lt;-<span class="st"> &quot;g3-g1&quot;</span></span>
+<span id="cb26-2"><a href="#cb26-2"></a><span class="dv">2</span><span class="op">^</span>log2FC</span></code></pre></div>
+<pre><code>##    g3-g1 
+## 2.428664</code></pre>
+</div>
+<div id="conclusion" class="section level2">
+<h2><span class="header-section-number">3.2</span> Conclusion</h2>
+<p>There is a extremely significant association of the histological grade on the gene expression in tumor tissue. On average, the gene expression for the grade 3 patients is 2.43 times higher than the gene expression in grade 1 patients (95% CI [1.93, 3.05], <span class="math inline">\(p&lt;&lt;0.001\)</span>).</p>
+<p><img src="https://raw.githubusercontent.com/statOmics/SGA21/master/figures/statGenomicsGent201718-10.jpeg" /></p>
+<hr />
+<p><img src="https://raw.githubusercontent.com/statOmics/SGA21/master/figures/statGenomicsGent201718-11.jpeg" /></p>
+<hr />
+<p>The patients also differ in the their lymph node status. Hence, we have a two factorial design: grade x lymph node status!!!</p>
+<p>Solution??</p>
+<p><img src="https://raw.githubusercontent.com/statOmics/SGA21/master/figures/statGenomicsGent201718-12.jpeg" /></p>
+<hr />
+</div>
+</div>
+<div id="general-linear-model" class="section level1">
+<h1><span class="header-section-number">4</span> General Linear Model</h1>
+<p>How can we integrate multiple factors and continuous covariates in linear model.</p>
+<p><span class="math display">\[
+y_i= \beta_0 + \beta_1 x_{i,1} + \beta_2 x_{i,2} + \beta_{12}x_{i,1}x_{i,2}+\epsilon_i,
+\]</span> with</p>
+<ul>
+<li><span class="math inline">\(x_{i,1}\)</span> a dummy variable for histological grade: <span class="math inline">\(x_{i,1}=\begin{cases} 0&amp; \text{grade 1}\\ 1&amp; \text{grade 3} \end{cases}\)</span></li>
+<li><span class="math inline">\(x_{i,2}\)</span> a dummy variable for : <span class="math inline">\(x_{i,2}=\begin{cases} 0&amp; \text{lymph nodes were not removed}\\ 1&amp; \text{lymph nodes were removed} \end{cases}\)</span></li>
+<li><span class="math inline">\(\epsilon_i\)</span>?</li>
+</ul>
+<hr />
+<div id="implementation-in-r" class="section level2">
+<h2><span class="header-section-number">4.1</span> Implementation in R</h2>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a>lm1 &lt;-<span class="st"> </span><span class="kw">lm</span>(gene<span class="op">~</span>grade<span class="op">*</span>node,<span class="dt">data=</span>gene)</span>
+<span id="cb28-2"><a href="#cb28-2"></a><span class="kw">summary</span>(lm1)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = gene ~ grade * node, data = gene)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -201.748  -53.294   -6.308   46.216  277.601 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)    180.51      44.37   4.068   0.0006 ***
+## grade3         401.33      62.75   6.396 3.07e-06 ***
+## node1          103.98      62.75   1.657   0.1131    
+## grade3:node1  -145.57      88.74  -1.640   0.1166    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 108.7 on 20 degrees of freedom
+## Multiple R-squared:  0.7437, Adjusted R-squared:  0.7052 
+## F-statistic: 19.34 on 3 and 20 DF,  p-value: 3.971e-06</code></pre>
+<hr />
+</div>
+<div id="assumptions" class="section level2">
+<h2><span class="header-section-number">4.2</span> Assumptions</h2>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a><span class="kw">plot</span>(lm1)</span></code></pre></div>
+<p><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-11-1.png" width="672" /><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-11-2.png" width="672" /><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-11-3.png" width="672" /><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-11-4.png" width="672" /></p>
+<hr />
+</div>
+<div id="breast-cancer-example-1" class="section level2">
+<h2><span class="header-section-number">4.3</span> Breast cancer example</h2>
+<ul>
+<li>Paper: <a href="https://doi.org/10.1093/jnci/djj052" class="uri">https://doi.org/10.1093/jnci/djj052</a></li>
+<li>Histologic grade in breast cancer provides clinically important prognostic information. Two factors have to be concidered: Histologic grade (grade 1 and grade 3) and lymph node status (0 vs 1). The researchers assessed gene expression of the KPNA2 gene a protein-coding gene associated with breast cancer and are mainly interested in the association of histological grade. Note, that the gene variable consists of background corrected normalized intensities obtained with a microarray platform. Upon log-transformation, they are known to be a good proxy for the <span class="math inline">\(\log\)</span> transformed concentration of gene expression product of the KPNA2 gene.</li>
+<li>Research questions and translate them towards model parameters (contrasts)?</li>
+<li>Make an R markdown file to answer the research questions</li>
+</ul>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="kw">library</span>(ExploreModelMatrix)</span>
+<span id="cb31-2"><a href="#cb31-2"></a>explMx &lt;-<span class="st"> </span><span class="kw">VisualizeDesign</span>(gene,<span class="dt">designFormula =</span> <span class="op">~</span>grade<span class="op">*</span>node)</span>
+<span id="cb31-3"><a href="#cb31-3"></a>explMx<span class="op">$</span>plotlist</span></code></pre></div>
+<pre><code>## [[1]]</code></pre>
+<p><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p>You can also explore the model matrix interactively:</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a><span class="kw">ExploreModelMatrix</span>(gene,<span class="dt">designFormula =</span> <span class="op">~</span>grade<span class="op">*</span>node)</span></code></pre></div>
+<hr />
+</div>
+</div>
+<div id="linear-regression-in-matrix-form" class="section level1">
+<h1><span class="header-section-number">5</span> Linear regression in matrix form</h1>
+<div id="scalar-form" class="section level2">
+<h2><span class="header-section-number">5.1</span> Scalar form</h2>
+<ul>
+<li>Consider a vector of predictors <span class="math inline">\(\mathbf{x}=(x_1,\ldots,x_p)^T\)</span> and</li>
+<li>a real-valued response <span class="math inline">\(Y\)</span></li>
+<li>then the linear regression model can be written as <span class="math display">\[
+Y=f(\mathbf{x}) +\epsilon=\beta_0+\sum\limits_{j=1}^p x_j\beta_j + \epsilon
+\]</span> with i.i.d. <span class="math inline">\(\epsilon\sim N(0,\sigma^2)\)</span></li>
+</ul>
+</div>
+<div id="matrix-form" class="section level2">
+<h2><span class="header-section-number">5.2</span> Matrix form</h2>
+<ul>
+<li><span class="math inline">\(n\)</span> observations <span class="math inline">\((\mathbf{x}_1,y_1) \ldots (\mathbf{x}_n,y_n)\)</span></li>
+<li>Regression in matrix notation <span class="math display">\[\mathbf{Y}=\mathbf{X\beta} + \mathbf{\epsilon}\]</span> with <span class="math inline">\(\mathbf{Y}=\left[\begin{array}{c}y_1\\ \vdots\\y_n\end{array}\right]\)</span>, <span class="math inline">\(\mathbf{X}=\left[\begin{array}{cccc} 1&amp;x_{11}&amp;\ldots&amp;x_{1p}\\ \vdots&amp;\vdots&amp;&amp;\vdots\\ 1&amp;x_{n1}&amp;\ldots&amp;x_{np} \end{array}\right]\)</span>, <span class="math inline">\(\mathbf{\beta}=\left[\begin{array}{c}\beta_0\\ \vdots\\ \beta_p\end{array}\right]\)</span> and <span class="math inline">\(\mathbf{\epsilon}=\left[\begin{array}{c} \epsilon_1 \\ \vdots \\ \epsilon_n\end{array}\right]\)</span></li>
+</ul>
+</div>
+<div id="least-squares-ls" class="section level2">
+<h2><span class="header-section-number">5.3</span> Least Squares (LS)</h2>
+<ul>
+<li>Minimize the residual sum of squares <span class="math display">\[\begin{eqnarray*}
+RSS(\mathbf{\beta})&amp;=&amp;\sum\limits_{i=1}^n e^2_i\\
+&amp;=&amp;\sum\limits_{i=1}^n \left(y_i-\beta_0-\sum\limits_{j=1}^p x_{ij}\beta_j\right)^2
+\end{eqnarray*}\]</span></li>
+<li>or in matrix notation <span class="math display">\[\begin{eqnarray*}
+RSS(\mathbf{\beta})&amp;=&amp;(\mathbf{Y}-\mathbf{X\beta})^T(\mathbf{Y}-\mathbf{X\beta})\\
+&amp;=&amp;\Vert \mathbf{Y}-\mathbf{X\beta}\Vert^2_2
+\end{eqnarray*}\]</span> with the <span class="math inline">\(L_2\)</span>-norm of a <span class="math inline">\(p\)</span>-dim. vector <span class="math inline">\(v\)</span> <span class="math inline">\(\Vert \mathbf{v} \Vert=\sqrt{v_1^2+\ldots+v_p^2}\)</span> <span class="math inline">\(\rightarrow\)</span> <span class="math inline">\(\hat{\mathbf{\beta}}=\text{argmin}_\beta \Vert \mathbf{Y}-\mathbf{X\beta}\Vert^2_2\)</span></li>
+</ul>
+<hr />
+<div id="minimize-rss" class="section level3">
+<h3><span class="header-section-number">5.3.1</span> Minimize RSS</h3>
+<p><span class="math display">\[
+\begin{array}{ccc}
+\frac{\partial RSS}{\partial \mathbf{\beta}}&amp;=&amp;\mathbf{0}\\\\
+\frac{(\mathbf{Y}-\mathbf{X\beta})^T(\mathbf{Y}-\mathbf{X\beta})}{\partial \mathbf{\beta}}&amp;=&amp;\mathbf{0}\\\\
+-2\mathbf{X}^T(\mathbf{Y}-\mathbf{X\beta})&amp;=&amp;\mathbf{0}\\\\
+\mathbf{X}^T\mathbf{X\beta}&amp;=&amp;\mathbf{X}^T\mathbf{Y}\\\\
+\hat{\mathbf{\beta}}&amp;=&amp;(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y}
+\end{array}
+\]</span></p>
+<hr />
+</div>
+<div id="geometrical-interpretation" class="section level3">
+<h3><span class="header-section-number">5.3.2</span> Geometrical Interpretation</h3>
+<p>Toy Example: fit without intercept</p>
+<ul>
+<li>n=3 and p=2 <span class="math display">\[
+\mathbf{X}=\left[\begin{array}{cc}
+2&amp;0\\
+0&amp;2\\
+0&amp;0
+\end{array}\right]
+\]</span></li>
+</ul>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a><span class="kw">set.seed</span>(<span class="dv">4</span>)</span>
+<span id="cb34-2"><a href="#cb34-2"></a>x1 &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">0</span>,<span class="dv">0</span>)</span>
+<span id="cb34-3"><a href="#cb34-3"></a>x2 &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">2</span>,<span class="dv">0</span>)</span>
+<span id="cb34-4"><a href="#cb34-4"></a>y &lt;-<span class="st"> </span>x1<span class="op">*</span><span class="fl">0.5</span> <span class="op">+</span><span class="st"> </span>x2<span class="op">*</span><span class="fl">0.5</span> <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">3</span>,<span class="dv">2</span>)</span>
+<span id="cb34-5"><a href="#cb34-5"></a>fit &lt;-<span class="st"> </span><span class="kw">lm</span>(y<span class="op">~-</span><span class="dv">1</span><span class="op">+</span>x1<span class="op">+</span>x2)</span></code></pre></div>
+<div id="visualise-fit" class="section level4">
+<h4><span class="header-section-number">5.3.2.1</span> Visualise fit</h4>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a><span class="co"># predict values on regular xy grid</span></span>
+<span id="cb35-2"><a href="#cb35-2"></a>x1pred &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">3</span>, <span class="dt">length.out =</span> <span class="dv">10</span>)</span>
+<span id="cb35-3"><a href="#cb35-3"></a>x2pred &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">3</span>, <span class="dt">length.out =</span> <span class="dv">10</span>)</span>
+<span id="cb35-4"><a href="#cb35-4"></a>xy &lt;-<span class="st"> </span><span class="kw">expand.grid</span>(<span class="dt">x1 =</span> x1pred,</span>
+<span id="cb35-5"><a href="#cb35-5"></a><span class="dt">x2 =</span> x2pred)</span>
+<span id="cb35-6"><a href="#cb35-6"></a>ypred &lt;-<span class="st"> </span><span class="kw">matrix</span> (<span class="dt">nrow =</span> <span class="dv">30</span>, <span class="dt">ncol =</span> <span class="dv">30</span>,</span>
+<span id="cb35-7"><a href="#cb35-7"></a><span class="dt">data =</span> <span class="kw">predict</span>(fit, <span class="dt">newdata =</span> <span class="kw">data.frame</span>(xy),</span>
+<span id="cb35-8"><a href="#cb35-8"></a><span class="dt">interval =</span> <span class="st">&quot;prediction&quot;</span>))</span>
+<span id="cb35-9"><a href="#cb35-9"></a></span>
+<span id="cb35-10"><a href="#cb35-10"></a><span class="kw">library</span>(plot3D)</span></code></pre></div>
+<pre><code>## Warning in fun(libname, pkgname): no display name and no $DISPLAY environment
+## variable</code></pre>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a><span class="co"># fitted points for droplines to surface</span></span>
+<span id="cb37-2"><a href="#cb37-2"></a>th=<span class="dv">20</span></span>
+<span id="cb37-3"><a href="#cb37-3"></a>ph=<span class="dv">5</span></span>
+<span id="cb37-4"><a href="#cb37-4"></a><span class="kw">scatter3D</span>(x1,</span>
+<span id="cb37-5"><a href="#cb37-5"></a>  x2,</span>
+<span id="cb37-6"><a href="#cb37-6"></a>  y,</span>
+<span id="cb37-7"><a href="#cb37-7"></a>  <span class="dt">pch =</span> <span class="dv">16</span>,</span>
+<span id="cb37-8"><a href="#cb37-8"></a>  <span class="dt">col=</span><span class="st">&quot;darkblue&quot;</span>,</span>
+<span id="cb37-9"><a href="#cb37-9"></a>  <span class="dt">cex =</span> <span class="dv">1</span>,</span>
+<span id="cb37-10"><a href="#cb37-10"></a>  <span class="dt">theta =</span> th,</span>
+<span id="cb37-11"><a href="#cb37-11"></a>  <span class="dt">ticktype =</span> <span class="st">&quot;detailed&quot;</span>,</span>
+<span id="cb37-12"><a href="#cb37-12"></a>  <span class="dt">xlab =</span> <span class="st">&quot;x1&quot;</span>,</span>
+<span id="cb37-13"><a href="#cb37-13"></a>  <span class="dt">ylab =</span> <span class="st">&quot;x2&quot;</span>,</span>
+<span id="cb37-14"><a href="#cb37-14"></a>  <span class="dt">zlab =</span> <span class="st">&quot;y&quot;</span>,  </span>
+<span id="cb37-15"><a href="#cb37-15"></a>  <span class="dt">colvar=</span><span class="ot">FALSE</span>,</span>
+<span id="cb37-16"><a href="#cb37-16"></a>  <span class="dt">bty =</span> <span class="st">&quot;g&quot;</span>,</span>
+<span id="cb37-17"><a href="#cb37-17"></a>  <span class="dt">xlim=</span><span class="kw">c</span>(<span class="op">-</span><span class="dv">1</span>,<span class="dv">3</span>),</span>
+<span id="cb37-18"><a href="#cb37-18"></a>  <span class="dt">ylim=</span><span class="kw">c</span>(<span class="op">-</span><span class="dv">1</span>,<span class="dv">3</span>),</span>
+<span id="cb37-19"><a href="#cb37-19"></a>  <span class="dt">zlim=</span><span class="kw">c</span>(<span class="op">-</span><span class="dv">2</span>,<span class="dv">4</span>))</span>
+<span id="cb37-20"><a href="#cb37-20"></a></span>
+<span id="cb37-21"><a href="#cb37-21"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">3</span>)</span>
+<span id="cb37-22"><a href="#cb37-22"></a>  <span class="kw">lines3D</span>(</span>
+<span id="cb37-23"><a href="#cb37-23"></a>    <span class="dt">x =</span> <span class="kw">rep</span>(x1[i],<span class="dv">2</span>),</span>
+<span id="cb37-24"><a href="#cb37-24"></a>    <span class="dt">y =</span> <span class="kw">rep</span>(x2[i],<span class="dv">2</span>),</span>
+<span id="cb37-25"><a href="#cb37-25"></a>    <span class="dt">z =</span> <span class="kw">c</span>(y[i],fit<span class="op">$</span>fitted[i]),</span>
+<span id="cb37-26"><a href="#cb37-26"></a>    <span class="dt">col=</span><span class="st">&quot;darkblue&quot;</span>,</span>
+<span id="cb37-27"><a href="#cb37-27"></a>    <span class="dt">add=</span><span class="ot">TRUE</span>,</span>
+<span id="cb37-28"><a href="#cb37-28"></a>    <span class="dt">lty=</span><span class="dv">2</span>)</span>
+<span id="cb37-29"><a href="#cb37-29"></a></span>
+<span id="cb37-30"><a href="#cb37-30"></a>z.pred3D &lt;-<span class="st"> </span><span class="kw">outer</span>(</span>
+<span id="cb37-31"><a href="#cb37-31"></a>  x1pred,</span>
+<span id="cb37-32"><a href="#cb37-32"></a>  x2pred,</span>
+<span id="cb37-33"><a href="#cb37-33"></a>  <span class="cf">function</span>(x1,x2)</span>
+<span id="cb37-34"><a href="#cb37-34"></a>  {</span>
+<span id="cb37-35"><a href="#cb37-35"></a>    fit<span class="op">$</span>coef[<span class="dv">1</span>]<span class="op">*</span>x1<span class="op">+</span>fit<span class="op">$</span>coef[<span class="dv">2</span>]<span class="op">*</span>x2</span>
+<span id="cb37-36"><a href="#cb37-36"></a>  })</span>
+<span id="cb37-37"><a href="#cb37-37"></a></span>
+<span id="cb37-38"><a href="#cb37-38"></a>x.pred3D &lt;-<span class="st"> </span><span class="kw">outer</span>(</span>
+<span id="cb37-39"><a href="#cb37-39"></a>  x1pred,</span>
+<span id="cb37-40"><a href="#cb37-40"></a>  x2pred,</span>
+<span id="cb37-41"><a href="#cb37-41"></a>  <span class="cf">function</span>(x,y) x)</span>
+<span id="cb37-42"><a href="#cb37-42"></a></span>
+<span id="cb37-43"><a href="#cb37-43"></a>y.pred3D &lt;-<span class="st"> </span><span class="kw">outer</span>(</span>
+<span id="cb37-44"><a href="#cb37-44"></a>  x1pred,</span>
+<span id="cb37-45"><a href="#cb37-45"></a>  x2pred,</span>
+<span id="cb37-46"><a href="#cb37-46"></a>  <span class="cf">function</span>(x,y) y)</span>
+<span id="cb37-47"><a href="#cb37-47"></a></span>
+<span id="cb37-48"><a href="#cb37-48"></a><span class="kw">surf3D</span>(</span>
+<span id="cb37-49"><a href="#cb37-49"></a>  x.pred3D,</span>
+<span id="cb37-50"><a href="#cb37-50"></a>  y.pred3D,</span>
+<span id="cb37-51"><a href="#cb37-51"></a>  z.pred3D,</span>
+<span id="cb37-52"><a href="#cb37-52"></a>  <span class="dt">col=</span><span class="st">&quot;blue&quot;</span>,</span>
+<span id="cb37-53"><a href="#cb37-53"></a>  <span class="dt">facets=</span><span class="ot">NA</span>,</span>
+<span id="cb37-54"><a href="#cb37-54"></a>  <span class="dt">add=</span><span class="ot">TRUE</span>)</span></code></pre></div>
+<p><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+</div>
+</div>
+<div id="projection" class="section level3">
+<h3><span class="header-section-number">5.3.3</span> Projection</h3>
+<ul>
+<li><p>We can also interpret the fit as the projection of the <span class="math inline">\(n\times 1\)</span> vector <span class="math inline">\(\mathbf{Y}\)</span> on the column space of the matrix <span class="math inline">\(\mathbf{X}\)</span>.</p></li>
+<li><p>So each column in <span class="math inline">\(\mathbf{X}\)</span> is also an <span class="math inline">\(n\times 1\)</span> vector.</p></li>
+<li><p>For the toy example n=3 and p=2. So the column space of X is a plane in the three dimensional space.</p></li>
+</ul>
+<p><span class="math display">\[
+\hat{\mathbf{Y}} = \mathbf{X} (\mathbf{X}^T\mathbf{X})^{-1} \mathbf{X}^T \mathbf{Y}
+\]</span></p>
+<ol style="list-style-type: decimal">
+<li>Plane spanned by column space:</li>
+</ol>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a><span class="kw">arrows3D</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,x1[<span class="dv">1</span>],x1[<span class="dv">2</span>],x1[<span class="dv">3</span>],<span class="dt">xlim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">5</span>),<span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">5</span>),<span class="dt">zlim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">5</span>),<span class="dt">bty =</span> <span class="st">&quot;g&quot;</span>,<span class="dt">theta=</span>th,<span class="dt">col=</span><span class="dv">2</span>,<span class="dt">xlab=</span><span class="st">&quot;row 1&quot;</span>,<span class="dt">ylab=</span><span class="st">&quot;row 2&quot;</span>,<span class="dt">zlab=</span><span class="st">&quot;row 3&quot;</span>)</span>
+<span id="cb38-2"><a href="#cb38-2"></a><span class="kw">text3D</span>(x1[<span class="dv">1</span>],x1[<span class="dv">2</span>],x1[<span class="dv">3</span>],<span class="dt">labels=</span><span class="st">&quot;X1&quot;</span>,<span class="dt">col=</span><span class="dv">2</span>,<span class="dt">add=</span><span class="ot">TRUE</span>)</span>
+<span id="cb38-3"><a href="#cb38-3"></a><span class="kw">arrows3D</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,x2[<span class="dv">1</span>],x2[<span class="dv">2</span>],x2[<span class="dv">3</span>],<span class="dt">add=</span><span class="ot">TRUE</span>,<span class="dt">col=</span><span class="dv">2</span>)</span>
+<span id="cb38-4"><a href="#cb38-4"></a><span class="kw">text3D</span>(x2[<span class="dv">1</span>],x2[<span class="dv">2</span>],x2[<span class="dv">3</span>],<span class="dt">labels=</span><span class="st">&quot;X2&quot;</span>,<span class="dt">col=</span><span class="dv">2</span>,<span class="dt">add=</span><span class="ot">TRUE</span>)</span></code></pre></div>
+<p><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<ol start="2" style="list-style-type: decimal">
+<li>Vector of Y:</li>
+</ol>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a><span class="kw">arrows3D</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,x1[<span class="dv">1</span>],x1[<span class="dv">2</span>],x1[<span class="dv">3</span>],<span class="dt">xlim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">5</span>),<span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">5</span>),<span class="dt">zlim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">5</span>),<span class="dt">bty =</span> <span class="st">&quot;g&quot;</span>,<span class="dt">theta=</span>th,<span class="dt">col=</span><span class="dv">2</span>,<span class="dt">xlab=</span><span class="st">&quot;row 1&quot;</span>,<span class="dt">ylab=</span><span class="st">&quot;row 2&quot;</span>,<span class="dt">zlab=</span><span class="st">&quot;row 3&quot;</span>)</span>
+<span id="cb39-2"><a href="#cb39-2"></a><span class="kw">text3D</span>(x1[<span class="dv">1</span>],x1[<span class="dv">2</span>],x1[<span class="dv">3</span>],<span class="dt">labels=</span><span class="st">&quot;X1&quot;</span>,<span class="dt">col=</span><span class="dv">2</span>,<span class="dt">add=</span><span class="ot">TRUE</span>)</span>
+<span id="cb39-3"><a href="#cb39-3"></a><span class="kw">arrows3D</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,x2[<span class="dv">1</span>],x2[<span class="dv">2</span>],x2[<span class="dv">3</span>],<span class="dt">add=</span><span class="ot">TRUE</span>,<span class="dt">col=</span><span class="dv">2</span>)</span>
+<span id="cb39-4"><a href="#cb39-4"></a><span class="kw">text3D</span>(x2[<span class="dv">1</span>],x2[<span class="dv">2</span>],x2[<span class="dv">3</span>],<span class="dt">labels=</span><span class="st">&quot;X2&quot;</span>,<span class="dt">col=</span><span class="dv">2</span>,<span class="dt">add=</span><span class="ot">TRUE</span>)</span>
+<span id="cb39-5"><a href="#cb39-5"></a><span class="kw">arrows3D</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,y[<span class="dv">1</span>],y[<span class="dv">2</span>],y[<span class="dv">3</span>],<span class="dt">add=</span><span class="ot">TRUE</span>,<span class="dt">col=</span><span class="st">&quot;darkblue&quot;</span>)</span>
+<span id="cb39-6"><a href="#cb39-6"></a><span class="kw">text3D</span>(y[<span class="dv">1</span>],y[<span class="dv">2</span>],y[<span class="dv">3</span>],<span class="dt">labels=</span><span class="st">&quot;Y&quot;</span>,<span class="dt">col=</span><span class="st">&quot;darkblue&quot;</span>,<span class="dt">add=</span><span class="ot">TRUE</span>)</span></code></pre></div>
+<p><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<ol start="3" style="list-style-type: decimal">
+<li>Projection of Y onto column space</li>
+</ol>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1"></a><span class="kw">arrows3D</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,x1[<span class="dv">1</span>],x1[<span class="dv">2</span>],x1[<span class="dv">3</span>],<span class="dt">xlim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">5</span>),<span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">5</span>),<span class="dt">zlim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">5</span>),<span class="dt">bty =</span> <span class="st">&quot;g&quot;</span>,<span class="dt">theta=</span>th,<span class="dt">col=</span><span class="dv">2</span>,<span class="dt">xlab=</span><span class="st">&quot;row 1&quot;</span>,<span class="dt">ylab=</span><span class="st">&quot;row 2&quot;</span>,<span class="dt">zlab=</span><span class="st">&quot;row 3&quot;</span>)</span>
+<span id="cb40-2"><a href="#cb40-2"></a><span class="kw">text3D</span>(x1[<span class="dv">1</span>],x1[<span class="dv">2</span>],x1[<span class="dv">3</span>],<span class="dt">labels=</span><span class="st">&quot;X1&quot;</span>,<span class="dt">col=</span><span class="dv">2</span>,<span class="dt">add=</span><span class="ot">TRUE</span>)</span>
+<span id="cb40-3"><a href="#cb40-3"></a><span class="kw">arrows3D</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,x2[<span class="dv">1</span>],x2[<span class="dv">2</span>],x2[<span class="dv">3</span>],<span class="dt">add=</span><span class="ot">TRUE</span>,<span class="dt">col=</span><span class="dv">2</span>)</span>
+<span id="cb40-4"><a href="#cb40-4"></a><span class="kw">text3D</span>(x2[<span class="dv">1</span>],x2[<span class="dv">2</span>],x2[<span class="dv">3</span>],<span class="dt">labels=</span><span class="st">&quot;X2&quot;</span>,<span class="dt">col=</span><span class="dv">2</span>,<span class="dt">add=</span><span class="ot">TRUE</span>)</span>
+<span id="cb40-5"><a href="#cb40-5"></a><span class="kw">arrows3D</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,y[<span class="dv">1</span>],y[<span class="dv">2</span>],y[<span class="dv">3</span>],<span class="dt">add=</span><span class="ot">TRUE</span>,<span class="dt">col=</span><span class="st">&quot;darkblue&quot;</span>)</span>
+<span id="cb40-6"><a href="#cb40-6"></a><span class="kw">text3D</span>(y[<span class="dv">1</span>],y[<span class="dv">2</span>],y[<span class="dv">3</span>],<span class="dt">labels=</span><span class="st">&quot;Y&quot;</span>,<span class="dt">col=</span><span class="st">&quot;darkblue&quot;</span>,<span class="dt">add=</span><span class="ot">TRUE</span>)</span>
+<span id="cb40-7"><a href="#cb40-7"></a><span class="kw">arrows3D</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,fit<span class="op">$</span>fitted[<span class="dv">1</span>],fit<span class="op">$</span>fitted[<span class="dv">2</span>],fit<span class="op">$</span>fitted[<span class="dv">3</span>],<span class="dt">add=</span><span class="ot">TRUE</span>,<span class="dt">col=</span><span class="st">&quot;darkblue&quot;</span>)</span>
+<span id="cb40-8"><a href="#cb40-8"></a><span class="kw">segments3D</span>(y[<span class="dv">1</span>],y[<span class="dv">2</span>],y[<span class="dv">3</span>],fit<span class="op">$</span>fitted[<span class="dv">1</span>],fit<span class="op">$</span>fitted[<span class="dv">2</span>],fit<span class="op">$</span>fitted[<span class="dv">3</span>],<span class="dt">add=</span><span class="ot">TRUE</span>,<span class="dt">lty=</span><span class="dv">2</span>,<span class="dt">col=</span><span class="st">&quot;darkblue&quot;</span>)</span>
+<span id="cb40-9"><a href="#cb40-9"></a><span class="kw">text3D</span>(fit<span class="op">$</span>fitted[<span class="dv">1</span>],fit<span class="op">$</span>fitted[<span class="dv">2</span>],fit<span class="op">$</span>fitted[<span class="dv">3</span>],<span class="dt">labels=</span><span class="st">&quot;fit&quot;</span>,<span class="dt">col=</span><span class="st">&quot;darkblue&quot;</span>,<span class="dt">add=</span><span class="ot">TRUE</span>)</span></code></pre></div>
+<p><img src="recapGeneralLinearModel_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<ul>
+<li>Note, that it is also clear from the equation in the derivation of the LS that the residual is orthogonal on the column space: <span class="math display">\[
+ -2 \mathbf{X}^T(\mathbf{Y}-\mathbf{X}\boldsymbol{\beta}) = 0
+\]</span></li>
+</ul>
+<hr />
+</div>
+</div>
+<div id="variance-estimator" class="section level2">
+<h2><span class="header-section-number">5.4</span> Variance Estimator?</h2>
+<p><span class="math display">\[
+\begin{array}{ccl}
+\hat{\boldsymbol{\Sigma}}_{\hat{\mathbf{\beta}}}
+&amp;=&amp;\text{var}\left[(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y}\right]\\\\
+&amp;=&amp;(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\text{var}\left[\mathbf{Y}\right]\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}\\\\
+&amp;=&amp;(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T(\mathbf{I}\sigma^2)\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}
+\\\\
+&amp;=&amp;(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{I}\quad\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}\sigma^2\\\\
+%\hat{\boldmath{\Sigma}}_{\hat{\mathbf{\beta}}}&amp;=&amp;(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\var\left[\mathbf{Y}\right](\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}\\
+&amp;=&amp;(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}\sigma^2\\\\
+&amp;=&amp;(\mathbf{X}^T\mathbf{X})^{-1}\sigma^2
+\end{array}
+\]</span></p>
+<hr />
+</div>
+<div id="contrasts" class="section level2">
+<h2><span class="header-section-number">5.5</span> Contrasts</h2>
+<p>Hypotheses often involve linear combinations of the model parameters!</p>
+<p>e.g.</p>
+<ul>
+<li><p><span class="math inline">\(H_0: \log_2{FC}_{g3n1-g1n1}= \beta_{g3} + \hat\beta_{g3n1}=0\)</span> <span class="math inline">\(\rightarrow\)</span> “grade3+grade3:node1 = 0”</p></li>
+<li><p>Let <span class="math display">\[
+\boldsymbol{\beta} = \left[
+\begin{array}{c}
+\beta_{0}\\
+\beta_{g3}\\
+\beta_{n1}\\
+\beta_{g3:n1}
+\end{array}
+\right]\]</span></p></li>
+<li><p>we can write that contrast using a contrast matrix: <span class="math display">\[
+\mathbf{L}=\left[\begin{array}{c}0\\1\\0\\1\end{array}\right] \rightarrow \mathbf{L}^T\boldsymbol{beta} \]</span></p></li>
+<li><p>Then the variance becomes: <span class="math display">\[
+\text{var}_{\mathbf{L}^T\boldsymbol{\hat\beta}}= \mathbf{L}^T \boldsymbol{\Sigma}_{\boldsymbol{\hat\beta}}\mathbf{L}
+\]</span></p></li>
+</ul>
+<hr />
+</div>
+</div>
+<div id="homework-adopt-the-gene-analysis-on-log-scale-in-matrix-form" class="section level1">
+<h1><span class="header-section-number">6</span> Homework: Adopt the gene analysis on log scale in matrix form!</h1>
+<ol style="list-style-type: decimal">
+<li><p>Study the solution of the exercise to understand the analysis in R</p></li>
+<li><p>Calculate</p></li>
+</ol>
+<ul>
+<li>model parameters and contrasts of interest</li>
+<li>standard errors, standard errors on contrasts</li>
+<li>t-test statistics on the model parameters and contrasts of interest</li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li>Compare your results with the output of the lm(.) function</li>
+</ol>
+<hr />
+<div id="inspiration" class="section level2">
+<h2><span class="header-section-number">6.1</span> Inspiration</h2>
+<p>Tip: details on the implementation can be found in the book of Faraway (chapter 2). <a href="https://people.bath.ac.uk/jjf23/book/" class="uri">https://people.bath.ac.uk/jjf23/book/</a></p>
+<ul>
+<li>Design matrix</li>
+</ul>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a>X &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(<span class="op">~</span>grade<span class="op">*</span>node,<span class="dt">data=</span>gene)</span></code></pre></div>
+<ul>
+<li>Transpose of a matrix: use function t(.)</li>
+</ul>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1"></a><span class="kw">t</span>(X)</span></code></pre></div>
+<pre><code>##              1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
+## (Intercept)  1 1 1 1 1 1 1 1 1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1
+## grade3       1 1 0 0 0 1 1 0 1  1  0  1  0  0  0  1  0  1  0  1  0  1  1  0
+## node1        1 1 1 1 0 0 1 1 0  0  0  0  0  0  0  1  1  0  1  1  1  0  1  0
+## grade3:node1 1 1 0 0 0 0 1 0 0  0  0  0  0  0  0  1  0  0  0  1  0  0  1  0
+## attr(,&quot;assign&quot;)
+## [1] 0 1 2 3
+## attr(,&quot;contrasts&quot;)
+## attr(,&quot;contrasts&quot;)$grade
+## [1] &quot;contr.treatment&quot;
+## 
+## attr(,&quot;contrasts&quot;)$node
+## [1] &quot;contr.treatment&quot;</code></pre>
+<ul>
+<li>Matrix product %*% operator</li>
+</ul>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1"></a><span class="kw">t</span>(X)<span class="op">%*%</span>X</span></code></pre></div>
+<pre><code>##              (Intercept) grade3 node1 grade3:node1
+## (Intercept)           24     12    12            6
+## grade3                12     12     6            6
+## node1                 12      6    12            6
+## grade3:node1           6      6     6            6</code></pre>
+<ul>
+<li>Degrees of freedom of a model?</li>
+</ul>
+<p><span class="math display">\[ df =  n-p\]</span></p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1"></a><span class="kw">summary</span>(lm1)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = gene ~ grade * node, data = gene)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -201.748  -53.294   -6.308   46.216  277.601 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)    180.51      44.37   4.068   0.0006 ***
+## grade3         401.33      62.75   6.396 3.07e-06 ***
+## node1          103.98      62.75   1.657   0.1131    
+## grade3:node1  -145.57      88.74  -1.640   0.1166    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 108.7 on 20 degrees of freedom
+## Multiple R-squared:  0.7437, Adjusted R-squared:  0.7052 
+## F-statistic: 19.34 on 3 and 20 DF,  p-value: 3.971e-06</code></pre>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1"></a>dfRes &lt;-<span class="st"> </span>(<span class="kw">nrow</span>(X)<span class="op">-</span><span class="kw">ncol</span>(X))</span>
+<span id="cb48-2"><a href="#cb48-2"></a>dfRes</span></code></pre></div>
+<pre><code>## [1] 20</code></pre>
+<ul>
+<li>Variance estimator: MSE</li>
+</ul>
+<p><span class="math display">\[
+\hat \sigma^2 = \frac{\sum\limits_{i=1}^n\epsilon_i^2}{n-p}
+\]</span></p>
+<ul>
+<li><p>Invert matrix: use function solve(.)</p></li>
+<li><p>Diagonal elements of a matrix: use function diag(.)</p></li>
+</ul>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1"></a><span class="kw">t</span>(X)<span class="op">%*%</span>X</span></code></pre></div>
+<pre><code>##              (Intercept) grade3 node1 grade3:node1
+## (Intercept)           24     12    12            6
+## grade3                12     12     6            6
+## node1                 12      6    12            6
+## grade3:node1           6      6     6            6</code></pre>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1"></a><span class="kw">diag</span>(<span class="kw">t</span>(X)<span class="op">%*%</span>X)</span></code></pre></div>
+<pre><code>##  (Intercept)       grade3        node1 grade3:node1 
+##           24           12           12            6</code></pre>
+</div>
+</div>
+
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiUmVjYXAgZ2VuZXJhbCBsaW5lYXIgbW9kZWwiCmF1dGhvcjogIkxpZXZlbiBDbGVtZW50IgpkYXRlOiAic3RhdE9taWNzLCBHaGVudCBVbml2ZXJzaXR5IChodHRwczovL3N0YXRvbWljcy5naXRodWIuaW8pIgpvdXRwdXQ6CiAgICBodG1sX2RvY3VtZW50OgogICAgICBjb2RlX2Rvd25sb2FkOiB0cnVlCiAgICAgIHRoZW1lOiBjb3NtbwogICAgICB0b2M6IHRydWUKICAgICAgdG9jX2Zsb2F0OiB0cnVlCiAgICAgIGhpZ2hsaWdodDogdGFuZ28KICAgICAgbnVtYmVyX3NlY3Rpb25zOiB0cnVlCi0tLQoKCjxhIHJlbD0ibGljZW5zZSIgaHJlZj0iaHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMCI+PGltZyBhbHQ9IkNyZWF0aXZlIENvbW1vbnMgTGljZW5zZSIgc3R5bGU9ImJvcmRlci13aWR0aDowIiBzcmM9Imh0dHBzOi8vaS5jcmVhdGl2ZWNvbW1vbnMub3JnL2wvYnktbmMtc2EvNC4wLzg4eDMxLnBuZyIgLz48L2E+CgpUaGlzIGlzIHBhcnQgb2YgdGhlIG9ubGluZSBjb3Vyc2UgW1N0YXRpc3RpY2FsIEdlbm9taWNzIDIwMjEgKFNHQTIxKV0oaHR0cHM6Ly9zdGF0b21pY3MuZ2l0aHViLmlvL1NHQTIxLykKCiMgQnJlYXN0IGNhbmNlciBleGFtcGxlCgotIHBhcnQgb2Ygc3R1ZHkgaHR0cHM6Ly9kb2kub3JnLzEwLjEwOTMvam5jaS9kamowNTIpCi0gSGlzdG9sb2dpYyBncmFkZSBpbiBicmVhc3QgY2FuY2VyIGNsaW5pY2FsbHkgcHJvZ25vc3RpYy4KQXNzb2NpYXRpb24gb2YgaGlzdG9sb2dpYyBncmFkZSBvbiBleHByZXNzaW9uIG9mIEtQTkEyIGdlbmUgdGhhdCBpcyBrbm93biB0byBiZSBhc3NvY2lhdGVkIHdpdGggcG9vciBCQyBwcm9nbm9zaXMuCi0gUG9wdWxhdGlvbjogYWxsIGN1cnJlbnQgYW5kIGZ1dHVyZSBicmVhc3QgY2FuY2VyIHBhdGllbnRzCgohW10oaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3N0YXRPbWljcy9TR0EyMS9tYXN0ZXIvZmlndXJlcy9zdGF0R2Vub21pY3NHZW50MjAxNzE4LTEuanBlZykKCi0tLQoKIVtdKGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9zdGF0T21pY3MvU0dBMjEvbWFzdGVyL2ZpZ3VyZXMvc3RhdEdlbm9taWNzR2VudDIwMTcxOC0yLmpwZWcpCgotLS0KCiFbXShodHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vc3RhdE9taWNzL1NHQTIxL21hc3Rlci9maWd1cmVzL3N0YXRHZW5vbWljc0dlbnQyMDE3MTgtMy5qcGVnKQoKLS0tCgoKIVtdKGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9zdGF0T21pY3MvU0dBMjEvbWFzdGVyL2ZpZ3VyZXMvc3RhdEdlbm9taWNzR2VudDIwMTcxOC00LmpwZWcpCgotLS0KCgohW10oaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3N0YXRPbWljcy9TR0EyMS9tYXN0ZXIvZmlndXJlcy9zdGF0R2Vub21pY3NHZW50MjAxNzE4LTUuanBlZykKCi0tLQoKCiFbXShodHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vc3RhdE9taWNzL1NHQTIxL21hc3Rlci9maWd1cmVzL3N0YXRHZW5vbWljc0dlbnQyMDE3MTgtNi5qcGVnKQoKLS0tCgojIERhdGEgRXhwbG9yYXRpb24KCiMjIEltcG9ydAoKYGBge3J9CmxpYnJhcnkodGlkeXZlcnNlKQpnZW5lIDwtIHJlYWQudGFibGUoImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9zdGF0T21pY3MvU0dBMjEvbWFzdGVyL2RhdGEva3BuYTIudHh0IixoZWFkZXI9VFJVRSkKaGVhZChnZW5lKQpgYGAKCldlIHdpbGwgdHJhbnNmb3JtIHRoZSB2YXJpYWJsZSBncmFkZSBhbmQgbm9kZSB0byBhIGZhY3RvcgoKYGBge3J9CmdlbmUkZ3JhZGUgPC0gYXMuZmFjdG9yKGdlbmUkZ3JhZGUpCmdlbmUkbm9kZSA8LSBhcy5mYWN0b3IoZ2VuZSRub2RlKQpgYGAKCiMjIFN1bW1hcnkgc3RhdGlzdGljcwoKYGBge3J9CmdlbmVTdW0gPC0gZ2VuZSAlPiUKICBncm91cF9ieShncmFkZSkgJT4lCiAgc3VtbWFyaXplKG1lYW4gPSBtZWFuKGdlbmUpLAogICAgICAgICAgICBzZCA9IHNkKGdlbmUpLAogICAgICAgICAgICBuPWxlbmd0aChnZW5lKQogICAgICAgICAgICApICU+JQogIG11dGF0ZShzZSA9IHNkL3NxcnQobikpCmdlbmVTdW0KYGBgCgojIyBWaXN1YWxpc2F0aW9uCgpgYGB7cn0KZ2VuZSAlPiUKICBnZ3Bsb3QoYWVzKHg9Z3JhZGUseT1nZW5lKSkgKwogIGdlb21fYm94cGxvdChvdXRsaWVyLnNoYXBlPU5BKSArCiAgZ2VvbV9qaXR0ZXIoKQpgYGAKCldlIGNhbiBhbHNvIHNhdmUgdGhlIHBsb3RzIGFzIG9iamVjdHMgZm9yIGxhdGVyIHVzZSEKCmBgYHtyfQpwMSA8LSBnZW5lICU+JQogIGdncGxvdChhZXMoeD1ncmFkZSx5PWdlbmUpKSArCiAgZ2VvbV9ib3hwbG90KG91dGxpZXIuc2hhcGU9TkEpICsKICBnZW9tX2ppdHRlcigpCgpwMiA8LSBnZW5lICU+JQogIGdncGxvdChhZXMoc2FtcGxlPWdlbmUpKSArCiAgZ2VvbV9xcSgpICsKICBnZW9tX3FxX2xpbmUoKSArCiAgZmFjZXRfd3JhcCh+Z3JhZGUpCgpwMQpwMgpgYGAKCgojIyBSZXNlYXJjaCBxdWVzdGlvbnMKClJlc2VhcmNoZXJzIHdhbnQgdG8gYXNzZXNzIHRoZSBhc3NvY2lhdGlvbiBvZiB0aGUgaGlzdG9sb2dpY2FsIGdyYWRlIG9uIEtQTkEyIGdlbmUgZXhwcmVzc2lvbgoKCgoKIVtdKGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9zdGF0T21pY3MvU0dBMjEvbWFzdGVyL2ZpZ3VyZXMvc3RhdEdlbm9taWNzR2VudDIwMTcxOC02LmpwZWcpCgotLS0KCiMjIEVzdGltYXRpb24gb2YgZWZmZWN0IHNpemUgYW5kIHN0YW5kYXJkIGVycm9yCgpgYGB7cn0KZWZmZWN0U2l6ZSA8LSB0aWJibGUoCiAgZGVsdGEgPSBnZW5lU3VtJG1lYW5bMl0tIGdlbmVTdW0kbWVhblsxXSwKICBzZURlbHRhID0gZ2VuZVN1bSAlPiUKICAgIHB1bGwoc2UpICU+JQogICAgLl4yICU+JQogICAgc3VtICU+JQogICAgc3FydAogICkKZWZmZWN0U2l6ZQpgYGAKCiMgU3RhdGlzdGljYWwgSW5mZXJlbmNlCgotIFJlc2VhcmNoZXJzIHdhbnQgdG8gYXNzZXNzIHRoZSBhc3NvY2lhdGlvbiBvZiBoaXN0b2xvZ2ljYWwgZ3JhZGUgb24gS1BOQTIgZ2VuZSBleHByZXNzaW9uCi0gSW5mZXJlbmNlPwoKLS0tCgohW10oaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3N0YXRPbWljcy9TR0EyMS9tYXN0ZXIvZmlndXJlcy9zdGF0R2Vub21pY3NHZW50MjAxNzE4LTcuanBlZykKCi0tLQoKCi0gUmVzZWFyY2hlcnMgd2FudCB0byBhc3Nlc3MgdGhlIGFzc29jaWF0aW9uIG9mIGhpc3RvbG9naWNhbCBncmFkZSBvbiBLUE5BMiBnZW5lIGV4cHJlc3Npb24KLSBJbmZlcmVuY2U/Ci0gdGVzdGluZyArIENJICQgXHJpZ2h0YXJyb3cgJCBBc3N1bXB0aW9ucwoKLS0tCgotIEluIGdlbmVyYWwgd2Ugc3RhcnQgZnJvbSAqKmFsdGVybmF0aXZlIGh5cG90aGVzZSoqICRIX0EkOiB3ZSB3YW50IHRvIHNob3cgYW4gYXNzb2NpYXRpb24KLSBHZW5lIGV4cHJlc3Npb24gb2YgZ3JhZGUgMSBhbmQgZ3JhZGUgMyBwYXRpZW50cyBpcyBvbiBhdmVyYWdlIGRpZmZlcmVudAoKLSBCdXQsIHdlIHdpbGwgYXNzZXNzIGl0IGJ5IGZhbHNpZnlpbmcgdGhlIG9wcG9zaXRlOgoKLSBUaGUgYXZlcmFnZSBLUE5BMiBnZW5lIGV4cHJlc3Npb24gb2YgIGdyYWRlIDEgYW5kIGdyYWRlIDMgcGF0aWVudHMgaXMgZXF1YWwKCi0tLQoKLSBIb3cgbGlrZWx5IGlzIGl0IHRvIG9ic2VydmUgYW4gZXF1YWwgb3IgbW9yZSBleHRyZW1lIGFzc29jaWF0aW9uIHRoYW4gdGhlIG9uZSBvYnNlcnZlZCBpbiB0aGUgc2FtcGxlIHdoZW4gdGhlIG51bGwgaHlwb3RoZXNpcyBpcyB0cnVlPwoKLSBXaGVuIHdlIG1ha2UgYXNzdW1wdGlvbnMgYWJvdXQgdGhlIGRpc3RyaWJ1dGlvbiBvZiBvdXIgdGVzdCBzdGF0aXN0aWMgd2UgY2FuIHF1YW50aWZ5IHRoaXMgcHJvYmFiaWxpdHk6ICoqcC12YWx1ZSoqLgotIElmIHRoZSBwLXZhbHVlIGlzIGJlbG93IGEgc2lnbmlmaWNhbmNlIHRocmVzaG9sZCAkXGFscGhhJCB3ZSByZWplY3QgdGhlIG51bGwgaHlwb3RoZXNpcwoKKldlIGNvbnRyb2wgdGhlIHByb2JhYmlsaXR5IG9uIGEgZmFsc2UgcG9zaXRpdmUgcmVzdWx0IGF0IHRoZSAkXGFscGhhJC1sZXZlbCAodHlwZSBJIGVycm9yKSoKCi0gVGhlIHAtdmFsdWUgd2lsbCBvbmx5IGJlIGNhbGN1bGF0ZWQgY29ycmVjdGx5IGlmIHRoZSB1bmRlcmx5aW5nIGFzc3VtcHRpb25zIGhvbGQhCgpgYGB7cn0KbGlicmFyeShncmlkRXh0cmEpCnAxCnAyCmBgYAoKYGBge3J9CnQudGVzdChnZW5lfmdyYWRlLGRhdGE9Z2VuZSkKCmVmZmVjdFNpemUgPC0gZWZmZWN0U2l6ZSAlPiUKICBtdXRhdGUodC5zdGF0PWRlbHRhL3NlRGVsdGEpICU+JQogIG11dGF0ZShwLnZhbHVlPSBwdCgtYWJzKHQuc3RhdCksMjEuMzUyKSoyKQoKZWZmZWN0U2l6ZQpgYGAKCi0gSW50ZW5zaXRpZXMgYXJlIG9mdGVuIG5vdCBub3JtYWxseSBkaXN0cmlidXRlZCBhbmQgaGF2ZSBhIG1lYW4gdmFyaWFuY2UgcmVsYXRpb24KLSBDb21tb25seSBsb2cyLXRyYW5zZm9ybWVkCi0gRGlmZmVyZW5jZXMgb24gbG9nIHNjYWxlOgoKJCQKXGxvZ18yKEIpIC0gXGxvZ18yKEEpID0gXGxvZ18yIFxmcmFje0J9e0F9ID0gXGxvZ18yIEZDX3tcZnJhY3tCfXtBfX0KJCQKCgoKIVtdKGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9zdGF0T21pY3MvU0dBMjEvbWFzdGVyL2ZpZ3VyZXMvc3RhdEdlbm9taWNzR2VudDIwMTcxOC04LmpwZWcpCgotLS0KCiMjIExvZyB0cmFuc2Zvcm1hdGlvbgoKYGBge3J9CmdlbmUgPC0gZ2VuZSAlPiUKICBtdXRhdGUobGdlbmUgPSBsb2cyKGdlbmUpKQoKcDEgPC0gZ2VuZSAlPiUKICBnZ3Bsb3QoYWVzKHg9Z3JhZGUseT1sZ2VuZSkpICsKICBnZW9tX2JveHBsb3Qob3V0bGllci5zaGFwZT1OQSkgKwogIGdlb21faml0dGVyKCkKCnAyIDwtIGdlbmUgJT4lCiAgZ2dwbG90KGFlcyhzYW1wbGU9bGdlbmUpKSArCiAgZ2VvbV9xcSgpICsKICBnZW9tX3FxX2xpbmUoKSArCiAgZmFjZXRfd3JhcCh+Z3JhZGUpCgpwMQpwMgoKbG9ndGVzdCA8LSB0LnRlc3QobGdlbmV+Z3JhZGUsZGF0YT1nZW5lLHZhci5lcXVhbD1UUlVFKQpsb2d0ZXN0Cgpsb2cyRkMgPC0gbG9ndGVzdCRlc3RpbWF0ZVsyXS1sb2d0ZXN0JGVzdGltYXRlWzFdCmxvZzJGQwpuYW1lcyhsb2cyRkMpIDwtICJnMy1nMSIKMl5sb2cyRkMKYGBgCgojIyBDb25jbHVzaW9uCgpUaGVyZSBpcyBhIGV4dHJlbWVseSBzaWduaWZpY2FudCBhc3NvY2lhdGlvbiBvZiB0aGUgaGlzdG9sb2dpY2FsIGdyYWRlIG9uIHRoZSBnZW5lIGV4cHJlc3Npb24gaW4gdHVtb3IgdGlzc3VlLiAgT24gYXZlcmFnZSwgdGhlIGdlbmUgZXhwcmVzc2lvbiBmb3IgdGhlIGdyYWRlIDMgcGF0aWVudHMgaXMgYHIgcm91bmQoMl5sb2cyRkMsMilgIHRpbWVzIGhpZ2hlciB0aGFuIHRoZSBnZW5lIGV4cHJlc3Npb24gaW4gZ3JhZGUgMSBwYXRpZW50cyAoOTVcJSBDSSAgW2ByIHBhc3RlKHJvdW5kKDJeLWxvZ3Rlc3QkY29uZi5pbnRbMjoxXSwyKSxjb2xsYXBzZT0iLCAiKWBdLCAkcDw8MC4wMDEkKS4KCgoKCiFbXShodHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vc3RhdE9taWNzL1NHQTIxL21hc3Rlci9maWd1cmVzL3N0YXRHZW5vbWljc0dlbnQyMDE3MTgtMTAuanBlZykgCgotLS0KCgohW10oaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3N0YXRPbWljcy9TR0EyMS9tYXN0ZXIvZmlndXJlcy9zdGF0R2Vub21pY3NHZW50MjAxNzE4LTExLmpwZWcpCgotLS0KClRoZSBwYXRpZW50cyBhbHNvIGRpZmZlciBpbiB0aGUgdGhlaXIgbHltcGggbm9kZSBzdGF0dXMuIEhlbmNlLCB3ZSBoYXZlIGEgdHdvIGZhY3RvcmlhbCBkZXNpZ246IGdyYWRlIHggbHltcGggbm9kZSBzdGF0dXMhISEKClNvbHV0aW9uPz8KCiFbXShodHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vc3RhdE9taWNzL1NHQTIxL21hc3Rlci9maWd1cmVzL3N0YXRHZW5vbWljc0dlbnQyMDE3MTgtMTIuanBlZykKCi0tLQoKIyBHZW5lcmFsIExpbmVhciBNb2RlbAoKSG93IGNhbiB3ZSBpbnRlZ3JhdGUgbXVsdGlwbGUgZmFjdG9ycyBhbmQgY29udGludW91cyBjb3ZhcmlhdGVzIGluIGxpbmVhciBtb2RlbC4KClxbCnlfaT0gXGJldGFfMCArIFxiZXRhXzEgeF97aSwxfSArIFxiZXRhXzIgeF97aSwyfSArIFxiZXRhX3sxMn14X3tpLDF9eF97aSwyfStcZXBzaWxvbl9pLApcXQp3aXRoCgotICR4X3tpLDF9JCBhIGR1bW15IHZhcmlhYmxlIGZvciBoaXN0b2xvZ2ljYWwgZ3JhZGU6ICR4X3tpLDF9PVxiZWdpbntjYXNlc30KMCYgXHRleHR7Z3JhZGUgMX1cXAoxJiBcdGV4dHtncmFkZSAzfQpcZW5ke2Nhc2VzfSQKLSAkeF97aSwyfSQgYSBkdW1teSB2YXJpYWJsZSBmb3IgOiAkeF97aSwyfT1cYmVnaW57Y2FzZXN9CjAmIFx0ZXh0e2x5bXBoIG5vZGVzIHdlcmUgbm90IHJlbW92ZWR9XFwKMSYgXHRleHR7bHltcGggbm9kZXMgd2VyZSByZW1vdmVkfQpcZW5ke2Nhc2VzfSQKLSAkXGVwc2lsb25faSQ/CgotLS0KCiMjIEltcGxlbWVudGF0aW9uIGluIFIKCmBgYHtyfQpsbTEgPC0gbG0oZ2VuZX5ncmFkZSpub2RlLGRhdGE9Z2VuZSkKc3VtbWFyeShsbTEpCmBgYAoKLS0tCgojIyBBc3N1bXB0aW9ucwoKYGBge3J9CnBsb3QobG0xKQpgYGAKCi0tLQoKIyMgQnJlYXN0IGNhbmNlciBleGFtcGxlCgotICBQYXBlcjogaHR0cHM6Ly9kb2kub3JnLzEwLjEwOTMvam5jaS9kamowNTIKLSBIaXN0b2xvZ2ljIGdyYWRlIGluIGJyZWFzdCBjYW5jZXIgcHJvdmlkZXMgY2xpbmljYWxseSBpbXBvcnRhbnQgcHJvZ25vc3RpYyBpbmZvcm1hdGlvbi4gVHdvIGZhY3RvcnMgaGF2ZSB0byBiZSBjb25jaWRlcmVkOiBIaXN0b2xvZ2ljIGdyYWRlIChncmFkZSAxIGFuZCBncmFkZSAzKSBhbmQgbHltcGggbm9kZSBzdGF0dXMgKDAgdnMgMSkuIFRoZSByZXNlYXJjaGVycyBhc3Nlc3NlZCBnZW5lIGV4cHJlc3Npb24gb2YgdGhlIEtQTkEyIGdlbmUgYSBwcm90ZWluLWNvZGluZyBnZW5lIGFzc29jaWF0ZWQgd2l0aCBicmVhc3QgY2FuY2VyIGFuZCBhcmUgbWFpbmx5IGludGVyZXN0ZWQgaW4gdGhlIGFzc29jaWF0aW9uIG9mIGhpc3RvbG9naWNhbCBncmFkZS4gTm90ZSwgdGhhdCB0aGUgZ2VuZSB2YXJpYWJsZSBjb25zaXN0cyBvZiBiYWNrZ3JvdW5kIGNvcnJlY3RlZCBub3JtYWxpemVkIGludGVuc2l0aWVzIG9idGFpbmVkIHdpdGggYSBtaWNyb2FycmF5IHBsYXRmb3JtLiBVcG9uIGxvZy10cmFuc2Zvcm1hdGlvbiwgdGhleSBhcmUga25vd24gdG8gYmUgYSBnb29kIHByb3h5IGZvciB0aGUgJFxsb2ckIHRyYW5zZm9ybWVkIGNvbmNlbnRyYXRpb24gb2YgZ2VuZSBleHByZXNzaW9uIHByb2R1Y3Qgb2YgdGhlIEtQTkEyIGdlbmUuCi0gUmVzZWFyY2ggcXVlc3Rpb25zIGFuZCB0cmFuc2xhdGUgdGhlbSB0b3dhcmRzIG1vZGVsIHBhcmFtZXRlcnMgKGNvbnRyYXN0cyk/Ci0gTWFrZSBhbiBSIG1hcmtkb3duIGZpbGUgdG8gYW5zd2VyIHRoZSByZXNlYXJjaCBxdWVzdGlvbnMKCgpgYGB7cn0KbGlicmFyeShFeHBsb3JlTW9kZWxNYXRyaXgpCmV4cGxNeCA8LSBWaXN1YWxpemVEZXNpZ24oZ2VuZSxkZXNpZ25Gb3JtdWxhID0gfmdyYWRlKm5vZGUpCmV4cGxNeCRwbG90bGlzdApgYGAKCllvdSBjYW4gYWxzbyBleHBsb3JlIHRoZSBtb2RlbCBtYXRyaXggaW50ZXJhY3RpdmVseToKCmBgYHtyIGV2YWw9RkFMU0V9CkV4cGxvcmVNb2RlbE1hdHJpeChnZW5lLGRlc2lnbkZvcm11bGEgPSB+Z3JhZGUqbm9kZSkKYGBgCi0tLQoKIyBMaW5lYXIgcmVncmVzc2lvbiBpbiBtYXRyaXggZm9ybQoKIyMgU2NhbGFyIGZvcm0KCi0gQ29uc2lkZXIgYSB2ZWN0b3Igb2YgcHJlZGljdG9ycyAkXG1hdGhiZnt4fT0oeF8xLFxsZG90cyx4X3ApXlQkIGFuZAotIGEgcmVhbC12YWx1ZWQgcmVzcG9uc2UgJFkkCi0gdGhlbiB0aGUgbGluZWFyIHJlZ3Jlc3Npb24gbW9kZWwgY2FuIGJlIHdyaXR0ZW4gYXMKXFsKWT1mKFxtYXRoYmZ7eH0pICtcZXBzaWxvbj1cYmV0YV8wK1xzdW1cbGltaXRzX3tqPTF9XnAgeF9qXGJldGFfaiArIFxlcHNpbG9uClxdCndpdGggaS5pLmQuICRcZXBzaWxvblxzaW0gTigwLFxzaWdtYV4yKSQKCiMjIE1hdHJpeCBmb3JtCgotICRuJCBvYnNlcnZhdGlvbnMgJChcbWF0aGJme3h9XzEseV8xKSBcbGRvdHMgKFxtYXRoYmZ7eH1fbix5X24pJAotIFJlZ3Jlc3Npb24gaW4gbWF0cml4IG5vdGF0aW9uClxbXG1hdGhiZntZfT1cbWF0aGJme1hcYmV0YX0gKyBcbWF0aGJme1xlcHNpbG9ufVxdCndpdGggJFxtYXRoYmZ7WX09XGxlZnRbXGJlZ2lue2FycmF5fXtjfXlfMVxcIFx2ZG90c1xceV9uXGVuZHthcnJheX1ccmlnaHRdJCwKJFxtYXRoYmZ7WH09XGxlZnRbXGJlZ2lue2FycmF5fXtjY2NjfSAxJnhfezExfSZcbGRvdHMmeF97MXB9XFwKXHZkb3RzJlx2ZG90cyYmXHZkb3RzXFwKMSZ4X3tuMX0mXGxkb3RzJnhfe25wfQpcZW5ke2FycmF5fVxyaWdodF0kLAokXG1hdGhiZntcYmV0YX09XGxlZnRbXGJlZ2lue2FycmF5fXtjfVxiZXRhXzBcXCBcdmRvdHNcXCBcYmV0YV9wXGVuZHthcnJheX1ccmlnaHRdJCBhbmQKJFxtYXRoYmZ7XGVwc2lsb259PVxsZWZ0W1xiZWdpbnthcnJheX17Y30gXGVwc2lsb25fMSBcXCBcdmRvdHMgXFwgXGVwc2lsb25fblxlbmR7YXJyYXl9XHJpZ2h0XSQKCiMjIExlYXN0IFNxdWFyZXMgKExTKQotIE1pbmltaXplIHRoZSByZXNpZHVhbCBzdW0gb2Ygc3F1YXJlcwpcYmVnaW57ZXFuYXJyYXkqfQpSU1MoXG1hdGhiZntcYmV0YX0pJj0mXHN1bVxsaW1pdHNfe2k9MX1ebiBlXjJfaVxcCiY9JlxzdW1cbGltaXRzX3tpPTF9Xm4gXGxlZnQoeV9pLVxiZXRhXzAtXHN1bVxsaW1pdHNfe2o9MX1ecCB4X3tpan1cYmV0YV9qXHJpZ2h0KV4yClxlbmR7ZXFuYXJyYXkqfQotIG9yIGluIG1hdHJpeCBub3RhdGlvbgpcYmVnaW57ZXFuYXJyYXkqfQpSU1MoXG1hdGhiZntcYmV0YX0pJj0mKFxtYXRoYmZ7WX0tXG1hdGhiZntYXGJldGF9KV5UKFxtYXRoYmZ7WX0tXG1hdGhiZntYXGJldGF9KVxcCiY9JlxWZXJ0IFxtYXRoYmZ7WX0tXG1hdGhiZntYXGJldGF9XFZlcnReMl8yClxlbmR7ZXFuYXJyYXkqfQp3aXRoIHRoZSAkTF8yJC1ub3JtIG9mIGEgJHAkLWRpbS4gdmVjdG9yICR2JCAkXFZlcnQgXG1hdGhiZnt2fSBcVmVydD1cc3FydHt2XzFeMitcbGRvdHMrdl9wXjJ9JAokXHJpZ2h0YXJyb3ckICRcaGF0e1xtYXRoYmZ7XGJldGF9fT1cdGV4dHthcmdtaW59X1xiZXRhIFxWZXJ0IFxtYXRoYmZ7WX0tXG1hdGhiZntYXGJldGF9XFZlcnReMl8yJAoKLS0tCgojIyMgTWluaW1pemUgUlNTClxbClxiZWdpbnthcnJheX17Y2NjfQpcZnJhY3tccGFydGlhbCBSU1N9e1xwYXJ0aWFsIFxtYXRoYmZ7XGJldGF9fSY9JlxtYXRoYmZ7MH1cXFxcClxmcmFjeyhcbWF0aGJme1l9LVxtYXRoYmZ7WFxiZXRhfSleVChcbWF0aGJme1l9LVxtYXRoYmZ7WFxiZXRhfSl9e1xwYXJ0aWFsIFxtYXRoYmZ7XGJldGF9fSY9JlxtYXRoYmZ7MH1cXFxcCi0yXG1hdGhiZntYfV5UKFxtYXRoYmZ7WX0tXG1hdGhiZntYXGJldGF9KSY9JlxtYXRoYmZ7MH1cXFxcClxtYXRoYmZ7WH1eVFxtYXRoYmZ7WFxiZXRhfSY9JlxtYXRoYmZ7WH1eVFxtYXRoYmZ7WX1cXFxcClxoYXR7XG1hdGhiZntcYmV0YX19Jj0mKFxtYXRoYmZ7WH1eVFxtYXRoYmZ7WH0pXnstMX1cbWF0aGJme1h9XlRcbWF0aGJme1l9ClxlbmR7YXJyYXl9ClxdCgotLS0KCiMjIyBHZW9tZXRyaWNhbCBJbnRlcnByZXRhdGlvbgoKVG95IEV4YW1wbGU6IGZpdCB3aXRob3V0IGludGVyY2VwdAoKLSBuPTMgYW5kIHA9MgpcWwpcbWF0aGJme1h9PVxsZWZ0W1xiZWdpbnthcnJheX17Y2N9CjImMFxcCjAmMlxcCjAmMApcZW5ke2FycmF5fVxyaWdodF0KXF0KCmBgYHtyfQpzZXQuc2VlZCg0KQp4MSA8LSBjKDIsMCwwKQp4MiA8LSBjKDAsMiwwKQp5IDwtIHgxKjAuNSArIHgyKjAuNSArIHJub3JtKDMsMikKZml0IDwtIGxtKHl+LTEreDEreDIpCmBgYAoKIyMjIyBWaXN1YWxpc2UgZml0CgpgYGB7cn0KIyBwcmVkaWN0IHZhbHVlcyBvbiByZWd1bGFyIHh5IGdyaWQKeDFwcmVkIDwtIHNlcSgtMSwgMywgbGVuZ3RoLm91dCA9IDEwKQp4MnByZWQgPC0gc2VxKC0xLCAzLCBsZW5ndGgub3V0ID0gMTApCnh5IDwtIGV4cGFuZC5ncmlkKHgxID0geDFwcmVkLAp4MiA9IHgycHJlZCkKeXByZWQgPC0gbWF0cml4IChucm93ID0gMzAsIG5jb2wgPSAzMCwKZGF0YSA9IHByZWRpY3QoZml0LCBuZXdkYXRhID0gZGF0YS5mcmFtZSh4eSksCmludGVydmFsID0gInByZWRpY3Rpb24iKSkKCmxpYnJhcnkocGxvdDNEKQoKCiMgZml0dGVkIHBvaW50cyBmb3IgZHJvcGxpbmVzIHRvIHN1cmZhY2UKdGg9MjAKcGg9NQpzY2F0dGVyM0QoeDEsCiAgeDIsCiAgeSwKICBwY2ggPSAxNiwKICBjb2w9ImRhcmtibHVlIiwKICBjZXggPSAxLAogIHRoZXRhID0gdGgsCiAgdGlja3R5cGUgPSAiZGV0YWlsZWQiLAogIHhsYWIgPSAieDEiLAogIHlsYWIgPSAieDIiLAogIHpsYWIgPSAieSIsICAKICBjb2x2YXI9RkFMU0UsCiAgYnR5ID0gImciLAogIHhsaW09YygtMSwzKSwKICB5bGltPWMoLTEsMyksCiAgemxpbT1jKC0yLDQpKQoKZm9yIChpIGluIDE6MykKICBsaW5lczNEKAogICAgeCA9IHJlcCh4MVtpXSwyKSwKICAgIHkgPSByZXAoeDJbaV0sMiksCiAgICB6ID0gYyh5W2ldLGZpdCRmaXR0ZWRbaV0pLAogICAgY29sPSJkYXJrYmx1ZSIsCiAgICBhZGQ9VFJVRSwKICAgIGx0eT0yKQoKei5wcmVkM0QgPC0gb3V0ZXIoCiAgeDFwcmVkLAogIHgycHJlZCwKICBmdW5jdGlvbih4MSx4MikKICB7CiAgICBmaXQkY29lZlsxXSp4MStmaXQkY29lZlsyXSp4MgogIH0pCgp4LnByZWQzRCA8LSBvdXRlcigKICB4MXByZWQsCiAgeDJwcmVkLAogIGZ1bmN0aW9uKHgseSkgeCkKCnkucHJlZDNEIDwtIG91dGVyKAogIHgxcHJlZCwKICB4MnByZWQsCiAgZnVuY3Rpb24oeCx5KSB5KQoKc3VyZjNEKAogIHgucHJlZDNELAogIHkucHJlZDNELAogIHoucHJlZDNELAogIGNvbD0iYmx1ZSIsCiAgZmFjZXRzPU5BLAogIGFkZD1UUlVFKQpgYGAKCiMjIyBQcm9qZWN0aW9uCgotIFdlIGNhbiBhbHNvIGludGVycHJldCB0aGUgZml0IGFzIHRoZSBwcm9qZWN0aW9uIG9mIHRoZSAkblx0aW1lcyAxJCB2ZWN0b3IgJFxtYXRoYmZ7WX0kIG9uIHRoZSBjb2x1bW4gc3BhY2Ugb2YgdGhlIG1hdHJpeCAkXG1hdGhiZntYfSQuCgotIFNvIGVhY2ggY29sdW1uIGluICRcbWF0aGJme1h9JCBpcyBhbHNvIGFuICRuXHRpbWVzIDEkIHZlY3Rvci4KCi0gRm9yIHRoZSB0b3kgZXhhbXBsZSBuPTMgYW5kIHA9Mi4KU28gdGhlIGNvbHVtbiBzcGFjZSBvZiBYIGlzIGEgcGxhbmUgaW4gdGhlIHRocmVlIGRpbWVuc2lvbmFsIHNwYWNlLgoKXFsKXGhhdHtcbWF0aGJme1l9fSA9IFxtYXRoYmZ7WH0gKFxtYXRoYmZ7WH1eVFxtYXRoYmZ7WH0pXnstMX0gXG1hdGhiZntYfV5UIFxtYXRoYmZ7WX0KXF0KCjEuIFBsYW5lIHNwYW5uZWQgYnkgY29sdW1uIHNwYWNlOgpgYGB7cn0KYXJyb3dzM0QoMCwwLDAseDFbMV0seDFbMl0seDFbM10seGxpbT1jKDAsNSkseWxpbT1jKDAsNSksemxpbT1jKDAsNSksYnR5ID0gImciLHRoZXRhPXRoLGNvbD0yLHhsYWI9InJvdyAxIix5bGFiPSJyb3cgMiIsemxhYj0icm93IDMiKQp0ZXh0M0QoeDFbMV0seDFbMl0seDFbM10sbGFiZWxzPSJYMSIsY29sPTIsYWRkPVRSVUUpCmFycm93czNEKDAsMCwwLHgyWzFdLHgyWzJdLHgyWzNdLGFkZD1UUlVFLGNvbD0yKQp0ZXh0M0QoeDJbMV0seDJbMl0seDJbM10sbGFiZWxzPSJYMiIsY29sPTIsYWRkPVRSVUUpCmBgYAoKMi4gVmVjdG9yIG9mIFk6CmBgYHtyfQphcnJvd3MzRCgwLDAsMCx4MVsxXSx4MVsyXSx4MVszXSx4bGltPWMoMCw1KSx5bGltPWMoMCw1KSx6bGltPWMoMCw1KSxidHkgPSAiZyIsdGhldGE9dGgsY29sPTIseGxhYj0icm93IDEiLHlsYWI9InJvdyAyIix6bGFiPSJyb3cgMyIpCnRleHQzRCh4MVsxXSx4MVsyXSx4MVszXSxsYWJlbHM9IlgxIixjb2w9MixhZGQ9VFJVRSkKYXJyb3dzM0QoMCwwLDAseDJbMV0seDJbMl0seDJbM10sYWRkPVRSVUUsY29sPTIpCnRleHQzRCh4MlsxXSx4MlsyXSx4MlszXSxsYWJlbHM9IlgyIixjb2w9MixhZGQ9VFJVRSkKYXJyb3dzM0QoMCwwLDAseVsxXSx5WzJdLHlbM10sYWRkPVRSVUUsY29sPSJkYXJrYmx1ZSIpCnRleHQzRCh5WzFdLHlbMl0seVszXSxsYWJlbHM9IlkiLGNvbD0iZGFya2JsdWUiLGFkZD1UUlVFKQpgYGAKCjMuIFByb2plY3Rpb24gb2YgWSBvbnRvIGNvbHVtbiBzcGFjZQpgYGB7cn0KYXJyb3dzM0QoMCwwLDAseDFbMV0seDFbMl0seDFbM10seGxpbT1jKDAsNSkseWxpbT1jKDAsNSksemxpbT1jKDAsNSksYnR5ID0gImciLHRoZXRhPXRoLGNvbD0yLHhsYWI9InJvdyAxIix5bGFiPSJyb3cgMiIsemxhYj0icm93IDMiKQp0ZXh0M0QoeDFbMV0seDFbMl0seDFbM10sbGFiZWxzPSJYMSIsY29sPTIsYWRkPVRSVUUpCmFycm93czNEKDAsMCwwLHgyWzFdLHgyWzJdLHgyWzNdLGFkZD1UUlVFLGNvbD0yKQp0ZXh0M0QoeDJbMV0seDJbMl0seDJbM10sbGFiZWxzPSJYMiIsY29sPTIsYWRkPVRSVUUpCmFycm93czNEKDAsMCwwLHlbMV0seVsyXSx5WzNdLGFkZD1UUlVFLGNvbD0iZGFya2JsdWUiKQp0ZXh0M0QoeVsxXSx5WzJdLHlbM10sbGFiZWxzPSJZIixjb2w9ImRhcmtibHVlIixhZGQ9VFJVRSkKYXJyb3dzM0QoMCwwLDAsZml0JGZpdHRlZFsxXSxmaXQkZml0dGVkWzJdLGZpdCRmaXR0ZWRbM10sYWRkPVRSVUUsY29sPSJkYXJrYmx1ZSIpCnNlZ21lbnRzM0QoeVsxXSx5WzJdLHlbM10sZml0JGZpdHRlZFsxXSxmaXQkZml0dGVkWzJdLGZpdCRmaXR0ZWRbM10sYWRkPVRSVUUsbHR5PTIsY29sPSJkYXJrYmx1ZSIpCnRleHQzRChmaXQkZml0dGVkWzFdLGZpdCRmaXR0ZWRbMl0sZml0JGZpdHRlZFszXSxsYWJlbHM9ImZpdCIsY29sPSJkYXJrYmx1ZSIsYWRkPVRSVUUpCgpgYGAKCi0gTm90ZSwgdGhhdCBpdCBpcyBhbHNvIGNsZWFyIGZyb20gdGhlIGVxdWF0aW9uIGluIHRoZSBkZXJpdmF0aW9uIG9mIHRoZSBMUyB0aGF0IHRoZSByZXNpZHVhbCBpcyBvcnRob2dvbmFsIG9uIHRoZSBjb2x1bW4gc3BhY2U6ClxbCiAtMiBcbWF0aGJme1h9XlQoXG1hdGhiZntZfS1cbWF0aGJme1h9XGJvbGRzeW1ib2x7XGJldGF9KSA9IDAKXF0KCgotLS0KCiMjIFZhcmlhbmNlIEVzdGltYXRvcj8KXFsKXGJlZ2lue2FycmF5fXtjY2x9ClxoYXR7XGJvbGRzeW1ib2x7XFNpZ21hfX1fe1xoYXR7XG1hdGhiZntcYmV0YX19fQomPSZcdGV4dHt2YXJ9XGxlZnRbKFxtYXRoYmZ7WH1eVFxtYXRoYmZ7WH0pXnstMX1cbWF0aGJme1h9XlRcbWF0aGJme1l9XHJpZ2h0XVxcXFwKJj0mKFxtYXRoYmZ7WH1eVFxtYXRoYmZ7WH0pXnstMX1cbWF0aGJme1h9XlRcdGV4dHt2YXJ9XGxlZnRbXG1hdGhiZntZfVxyaWdodF1cbWF0aGJme1h9KFxtYXRoYmZ7WH1eVFxtYXRoYmZ7WH0pXnstMX1cXFxcCiY9JihcbWF0aGJme1h9XlRcbWF0aGJme1h9KV57LTF9XG1hdGhiZntYfV5UKFxtYXRoYmZ7SX1cc2lnbWFeMilcbWF0aGJme1h9KFxtYXRoYmZ7WH1eVFxtYXRoYmZ7WH0pXnstMX0KXFxcXAomPSYoXG1hdGhiZntYfV5UXG1hdGhiZntYfSleey0xfVxtYXRoYmZ7WH1eVFxtYXRoYmZ7SX1ccXVhZFxtYXRoYmZ7WH0oXG1hdGhiZntYfV5UXG1hdGhiZntYfSleey0xfVxzaWdtYV4yXFxcXAolXGhhdHtcYm9sZG1hdGh7XFNpZ21hfX1fe1xoYXR7XG1hdGhiZntcYmV0YX19fSY9JihcbWF0aGJme1h9XlRcbWF0aGJme1h9KV57LTF9XG1hdGhiZntYfV5UXHZhclxsZWZ0W1xtYXRoYmZ7WX1ccmlnaHRdKFxtYXRoYmZ7WH1eVFxtYXRoYmZ7WH0pXnstMX1cbWF0aGJme1h9XFwKJj0mKFxtYXRoYmZ7WH1eVFxtYXRoYmZ7WH0pXnstMX1cbWF0aGJme1h9XlRcbWF0aGJme1h9KFxtYXRoYmZ7WH1eVFxtYXRoYmZ7WH0pXnstMX1cc2lnbWFeMlxcXFwKJj0mKFxtYXRoYmZ7WH1eVFxtYXRoYmZ7WH0pXnstMX1cc2lnbWFeMgpcZW5ke2FycmF5fQpcXQoKLS0tCgojIyBDb250cmFzdHMKCkh5cG90aGVzZXMgb2Z0ZW4gaW52b2x2ZSBsaW5lYXIgY29tYmluYXRpb25zIG9mIHRoZSBtb2RlbCBwYXJhbWV0ZXJzIQoKZS5nLgoKLSAkSF8wOiBcbG9nXzJ7RkN9X3tnM24xLWcxbjF9PSBcYmV0YV97ZzN9ICsgXGhhdFxiZXRhX3tnM24xfT0wJCAkXHJpZ2h0YXJyb3ckICJncmFkZTMrZ3JhZGUzOm5vZGUxID0gMCIKCi0gTGV0IFxbClxib2xkc3ltYm9se1xiZXRhfSA9IFxsZWZ0WwpcYmVnaW57YXJyYXl9e2N9ClxiZXRhX3swfVxcClxiZXRhX3tnM31cXApcYmV0YV97bjF9XFwKXGJldGFfe2czOm4xfQpcZW5ke2FycmF5fQpccmlnaHRdXF0KLSB3ZSBjYW4gd3JpdGUgdGhhdCBjb250cmFzdCB1c2luZyBhIGNvbnRyYXN0IG1hdHJpeDoKXFsKXG1hdGhiZntMfT1cbGVmdFtcYmVnaW57YXJyYXl9e2N9MFxcMVxcMFxcMVxlbmR7YXJyYXl9XHJpZ2h0XSBccmlnaHRhcnJvdyBcbWF0aGJme0x9XlRcYm9sZHN5bWJvbHtiZXRhfSBcXQoKLSBUaGVuIHRoZSB2YXJpYW5jZSBiZWNvbWVzOgpcWwpcdGV4dHt2YXJ9X3tcbWF0aGJme0x9XlRcYm9sZHN5bWJvbHtcaGF0XGJldGF9fT0gXG1hdGhiZntMfV5UIFxib2xkc3ltYm9se1xTaWdtYX1fe1xib2xkc3ltYm9se1xoYXRcYmV0YX19XG1hdGhiZntMfQpcXQoKCi0tLQoKIyBIb21ld29yazogQWRvcHQgdGhlIGdlbmUgYW5hbHlzaXMgb24gbG9nIHNjYWxlIGluIG1hdHJpeCBmb3JtIQoKMS4gU3R1ZHkgdGhlIHNvbHV0aW9uIG9mIHRoZSBleGVyY2lzZSB0byB1bmRlcnN0YW5kIHRoZSBhbmFseXNpcyBpbiBSCgoKMi4gQ2FsY3VsYXRlCi0gbW9kZWwgcGFyYW1ldGVycyBhbmQgY29udHJhc3RzIG9mIGludGVyZXN0Ci0gc3RhbmRhcmQgZXJyb3JzLCBzdGFuZGFyZCBlcnJvcnMgb24gY29udHJhc3RzCi0gdC10ZXN0IHN0YXRpc3RpY3Mgb24gdGhlIG1vZGVsIHBhcmFtZXRlcnMgYW5kIGNvbnRyYXN0cyBvZiBpbnRlcmVzdAoKMy4gQ29tcGFyZSB5b3VyIHJlc3VsdHMgd2l0aCB0aGUgb3V0cHV0IG9mIHRoZSBsbSguKSBmdW5jdGlvbgoKCi0tLQoKIyMgSW5zcGlyYXRpb24KClRpcDogZGV0YWlscyBvbiB0aGUgaW1wbGVtZW50YXRpb24gY2FuIGJlIGZvdW5kIGluIHRoZSBib29rIG9mIEZhcmF3YXkgKGNoYXB0ZXIgMikuIGh0dHBzOi8vcGVvcGxlLmJhdGguYWMudWsvampmMjMvYm9vay8KCi0gRGVzaWduIG1hdHJpeAoKYGBge3J9ClggPC0gbW9kZWwubWF0cml4KH5ncmFkZSpub2RlLGRhdGE9Z2VuZSkKYGBgCgotIFRyYW5zcG9zZSBvZiBhIG1hdHJpeDogdXNlIGZ1bmN0aW9uIHQoLikKCmBgYHtyfQp0KFgpCmBgYAoKLSBNYXRyaXggcHJvZHVjdCAlXColIG9wZXJhdG9yCgpgYGB7cn0KdChYKSUqJVgKYGBgCgotIERlZ3JlZXMgb2YgZnJlZWRvbSBvZiBhIG1vZGVsPwoKJCQgZGYgPSAgbi1wJCQKCmBgYHtyfQpzdW1tYXJ5KGxtMSkKZGZSZXMgPC0gKG5yb3coWCktbmNvbChYKSkKZGZSZXMKYGBgCgotIFZhcmlhbmNlIGVzdGltYXRvcjogTVNFCgokJApcaGF0IFxzaWdtYV4yID0gXGZyYWN7XHN1bVxsaW1pdHNfe2k9MX1eblxlcHNpbG9uX2leMn17bi1wfQokJAoKCi0gSW52ZXJ0IG1hdHJpeDogdXNlIGZ1bmN0aW9uIHNvbHZlKC4pCgotIERpYWdvbmFsIGVsZW1lbnRzIG9mIGEgbWF0cml4OiB1c2UgZnVuY3Rpb24gZGlhZyguKQoKYGBge3J9CnQoWCklKiVYCmRpYWcodChYKSUqJVgpCmBgYAo=</div>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("recapGeneralLinearModel.Rmd");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

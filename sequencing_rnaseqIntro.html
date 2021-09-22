@@ -14,7 +14,7 @@
 
 <title>Sequencing: RNA-seq data intro</title>
 
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -475,9 +475,6 @@ div.tocify {
 
 
 <p><strong>TODO: Add independent filtering</strong></p>
-<pre><code>## 
-## The downloaded binary packages are in
-##  /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//Rtmpqo4ZsB/downloaded_packages</code></pre>
 <p>In this lecture we will start working with a real bulk RNA-seq dataset from <a href="https://academic.oup.com/jcem/article/97/12/4631/2536573">Haglund <em>et al.</em> (2012)</a>. After importing the data, we will be working our way through four major challenges which, together, will form a full RNA-seq differential expression (DE) analysis pipeline where the result of our analysis will be a(n ordered) list of genes that we find to be differently expressed between our conditions of interest. The four main challenges we will look into are</p>
 <ul>
 <li>Choice of modeling assumptions (distribution).</li>
@@ -498,54 +495,45 @@ div.tocify {
 <div id="data-import-and-exploration" class="section level2">
 <h2><span class="header-section-number">1.2</span> Data import and exploration</h2>
 <p>We will be importing the dataset using the <a href="https://www.bioconductor.org/packages/release/data/experiment/html/parathyroidSE.html">parathyroidSE</a> data package from <a href="https://bioconductor.org/">Bioconductor</a>.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="cf">if</span> (<span class="op">!</span><span class="kw">requireNamespace</span>(<span class="st">&quot;BiocManager&quot;</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)){</span>
-<span id="cb2-2"><a href="#cb2-2"></a>  <span class="kw">install.packages</span>(<span class="st">&quot;BiocManager&quot;</span>)</span>
-<span id="cb2-3"><a href="#cb2-3"></a>}</span>
-<span id="cb2-4"><a href="#cb2-4"></a><span class="cf">if</span>(<span class="op">!</span><span class="st">&quot;SummarizedExperiment&quot;</span> <span class="op">%in%</span><span class="st"> </span><span class="kw">installed.packages</span>()[,<span class="dv">1</span>]){</span>
-<span id="cb2-5"><a href="#cb2-5"></a>  BiocManager<span class="op">::</span><span class="kw">install</span>(<span class="st">&quot;SummarizedExperiment&quot;</span>)</span>
-<span id="cb2-6"><a href="#cb2-6"></a>} </span>
-<span id="cb2-7"><a href="#cb2-7"></a><span class="co"># install package if not installed.</span></span>
-<span id="cb2-8"><a href="#cb2-8"></a><span class="cf">if</span>(<span class="op">!</span><span class="st">&quot;parathyroidSE&quot;</span> <span class="op">%in%</span><span class="st"> </span><span class="kw">installed.packages</span>()[,<span class="dv">1</span>]) BiocManager<span class="op">::</span><span class="kw">install</span>(<span class="st">&quot;parathyroidSE&quot;</span>)</span></code></pre></div>
-<pre><code>## &#39;getOption(&quot;repos&quot;)&#39; replaces Bioconductor standard repositories, see
-## &#39;?repositories&#39; for details
-## 
-## replacement repositories:
-##     CRAN: https://cloud.r-project.org</code></pre>
-<pre><code>## Bioconductor version 3.12 (BiocManager 1.30.16), R 4.0.5 (2021-03-31)</code></pre>
-<pre><code>## Installing package(s) &#39;parathyroidSE&#39;</code></pre>
-<pre><code>## installing the source package &#39;parathyroidSE&#39;</code></pre>
-<pre><code>## Old packages: &#39;boot&#39;, &#39;class&#39;, &#39;cluster&#39;, &#39;KernSmooth&#39;, &#39;lattice&#39;, &#39;MASS&#39;,
-##   &#39;Matrix&#39;, &#39;mgcv&#39;, &#39;nlme&#39;, &#39;nnet&#39;, &#39;spatial&#39;, &#39;survival&#39;</code></pre>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">suppressPackageStartupMessages</span>({</span>
-<span id="cb8-2"><a href="#cb8-2"></a>  <span class="kw">library</span>(parathyroidSE)</span>
-<span id="cb8-3"><a href="#cb8-3"></a>  <span class="kw">library</span>(SummarizedExperiment)</span>
-<span id="cb8-4"><a href="#cb8-4"></a>})</span>
-<span id="cb8-5"><a href="#cb8-5"></a></span>
-<span id="cb8-6"><a href="#cb8-6"></a><span class="co"># import data</span></span>
-<span id="cb8-7"><a href="#cb8-7"></a><span class="kw">data</span>(<span class="st">&quot;parathyroidGenesSE&quot;</span>, <span class="dt">package=</span><span class="st">&quot;parathyroidSE&quot;</span>)</span>
-<span id="cb8-8"><a href="#cb8-8"></a><span class="co"># rename for convenience</span></span>
-<span id="cb8-9"><a href="#cb8-9"></a>se1 &lt;-<span class="st"> </span>parathyroidGenesSE</span>
-<span id="cb8-10"><a href="#cb8-10"></a><span class="kw">rm</span>(parathyroidGenesSE)</span>
-<span id="cb8-11"><a href="#cb8-11"></a></span>
-<span id="cb8-12"><a href="#cb8-12"></a><span class="co"># three treatments</span></span>
-<span id="cb8-13"><a href="#cb8-13"></a>treatment1 &lt;-<span class="st"> </span><span class="kw">colData</span>(se1)<span class="op">$</span>treatment</span>
-<span id="cb8-14"><a href="#cb8-14"></a><span class="kw">table</span>(treatment1)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="cf">if</span> (<span class="op">!</span><span class="kw">requireNamespace</span>(<span class="st">&quot;BiocManager&quot;</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)){</span>
+<span id="cb1-2"><a href="#cb1-2"></a>  <span class="kw">install.packages</span>(<span class="st">&quot;BiocManager&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3"></a>}</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="cf">if</span>(<span class="op">!</span><span class="st">&quot;SummarizedExperiment&quot;</span> <span class="op">%in%</span><span class="st"> </span><span class="kw">installed.packages</span>()[,<span class="dv">1</span>]){</span>
+<span id="cb1-5"><a href="#cb1-5"></a>  BiocManager<span class="op">::</span><span class="kw">install</span>(<span class="st">&quot;SummarizedExperiment&quot;</span>)</span>
+<span id="cb1-6"><a href="#cb1-6"></a>} </span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="co"># install package if not installed.</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="cf">if</span>(<span class="op">!</span><span class="st">&quot;parathyroidSE&quot;</span> <span class="op">%in%</span><span class="st"> </span><span class="kw">installed.packages</span>()[,<span class="dv">1</span>]) BiocManager<span class="op">::</span><span class="kw">install</span>(<span class="st">&quot;parathyroidSE&quot;</span>)</span>
+<span id="cb1-9"><a href="#cb1-9"></a></span>
+<span id="cb1-10"><a href="#cb1-10"></a><span class="kw">suppressPackageStartupMessages</span>({</span>
+<span id="cb1-11"><a href="#cb1-11"></a>  <span class="kw">library</span>(parathyroidSE)</span>
+<span id="cb1-12"><a href="#cb1-12"></a>  <span class="kw">library</span>(SummarizedExperiment)</span>
+<span id="cb1-13"><a href="#cb1-13"></a>})</span>
+<span id="cb1-14"><a href="#cb1-14"></a></span>
+<span id="cb1-15"><a href="#cb1-15"></a><span class="co"># import data</span></span>
+<span id="cb1-16"><a href="#cb1-16"></a><span class="kw">data</span>(<span class="st">&quot;parathyroidGenesSE&quot;</span>, <span class="dt">package=</span><span class="st">&quot;parathyroidSE&quot;</span>)</span>
+<span id="cb1-17"><a href="#cb1-17"></a><span class="co"># rename for convenience</span></span>
+<span id="cb1-18"><a href="#cb1-18"></a>se1 &lt;-<span class="st"> </span>parathyroidGenesSE</span>
+<span id="cb1-19"><a href="#cb1-19"></a><span class="kw">rm</span>(parathyroidGenesSE)</span>
+<span id="cb1-20"><a href="#cb1-20"></a></span>
+<span id="cb1-21"><a href="#cb1-21"></a><span class="co"># three treatments</span></span>
+<span id="cb1-22"><a href="#cb1-22"></a>treatment1 &lt;-<span class="st"> </span><span class="kw">colData</span>(se1)<span class="op">$</span>treatment</span>
+<span id="cb1-23"><a href="#cb1-23"></a><span class="kw">table</span>(treatment1)</span></code></pre></div>
 <pre><code>## treatment1
 ## Control     DPN     OHT 
 ##       7      10      10</code></pre>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="co"># two timepoints</span></span>
-<span id="cb10-2"><a href="#cb10-2"></a>time1 &lt;-<span class="st"> </span><span class="kw">colData</span>(se1)<span class="op">$</span>time</span>
-<span id="cb10-3"><a href="#cb10-3"></a><span class="kw">table</span>(time1)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># two timepoints</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>time1 &lt;-<span class="st"> </span><span class="kw">colData</span>(se1)<span class="op">$</span>time</span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="kw">table</span>(time1)</span></code></pre></div>
 <pre><code>## time1
 ## 24h 48h 
 ##  13  14</code></pre>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="co"># four donor patients</span></span>
-<span id="cb12-2"><a href="#cb12-2"></a>patient1 &lt;-<span class="st"> </span><span class="kw">colData</span>(se1)<span class="op">$</span>patient</span>
-<span id="cb12-3"><a href="#cb12-3"></a><span class="kw">table</span>(patient1)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># four donor patients</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>patient1 &lt;-<span class="st"> </span><span class="kw">colData</span>(se1)<span class="op">$</span>patient</span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="kw">table</span>(patient1)</span></code></pre></div>
 <pre><code>## patient1
 ## 1 2 3 4 
 ## 6 8 6 7</code></pre>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">table</span>(patient1, treatment1, time1)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">table</span>(patient1, treatment1, time1)</span></code></pre></div>
 <pre><code>## , , time1 = 24h
 ## 
 ##         treatment1
@@ -568,50 +556,50 @@ div.tocify {
 <li>We have previously seen that technical replicates can be considered to be distributed according to a Poisson distribution. One important property of Poisson random variables is that a sum of Poisson random variables still follow a Poisson distribution. Indeed, if <span class="math inline">\(X \sim Poi(\mu_X)\)</span> and <span class="math inline">\(Y \sim Poi(\mu_Y)\)</span>, then $ X + Y = Z Poi(_X + _Y)$.</li>
 <li>For this reason, it is often suggested to sum technical replicates rather than, for example, averaging, which does not retain the Poisson property (try for yourself!). We’ll therefore first sum the technical replicates.</li>
 </ul>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>dupExps &lt;-<span class="st"> </span><span class="kw">as.character</span>(<span class="kw">colData</span>(se1)<span class="op">$</span>experiment[<span class="kw">duplicated</span>(<span class="kw">colData</span>(se1)<span class="op">$</span>experiment)])</span>
-<span id="cb16-2"><a href="#cb16-2"></a>dupExps</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>dupExps &lt;-<span class="st"> </span><span class="kw">as.character</span>(<span class="kw">colData</span>(se1)<span class="op">$</span>experiment[<span class="kw">duplicated</span>(<span class="kw">colData</span>(se1)<span class="op">$</span>experiment)])</span>
+<span id="cb9-2"><a href="#cb9-2"></a>dupExps</span></code></pre></div>
 <pre><code>## [1] &quot;SRX140511&quot; &quot;SRX140513&quot; &quot;SRX140523&quot; &quot;SRX140525&quot;</code></pre>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>counts &lt;-<span class="st"> </span><span class="kw">assays</span>(se1)<span class="op">$</span>counts</span>
-<span id="cb18-2"><a href="#cb18-2"></a>newCounts &lt;-<span class="st"> </span>counts</span>
-<span id="cb18-3"><a href="#cb18-3"></a>cd &lt;-<span class="st"> </span><span class="kw">colData</span>(se1)</span>
-<span id="cb18-4"><a href="#cb18-4"></a><span class="cf">for</span>(ss <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(dupExps)){</span>
-<span id="cb18-5"><a href="#cb18-5"></a>  <span class="co"># check which samples are duplicates</span></span>
-<span id="cb18-6"><a href="#cb18-6"></a>  relevantId &lt;-<span class="st"> </span><span class="kw">which</span>(<span class="kw">colData</span>(se1)<span class="op">$</span>experiment <span class="op">==</span><span class="st"> </span>dupExps[ss])</span>
-<span id="cb18-7"><a href="#cb18-7"></a>  <span class="co"># sum counts</span></span>
-<span id="cb18-8"><a href="#cb18-8"></a>  newCounts[,relevantId[<span class="dv">1</span>]] &lt;-<span class="st"> </span><span class="kw">rowSums</span>(counts[,relevantId])</span>
-<span id="cb18-9"><a href="#cb18-9"></a>  <span class="co"># keep which columns / rows to remove.</span></span>
-<span id="cb18-10"><a href="#cb18-10"></a>  <span class="cf">if</span>(ss <span class="op">==</span><span class="st"> </span><span class="dv">1</span>){</span>
-<span id="cb18-11"><a href="#cb18-11"></a>    toRemove &lt;-<span class="st"> </span>relevantId[<span class="dv">2</span>]</span>
-<span id="cb18-12"><a href="#cb18-12"></a>  } <span class="cf">else</span> {</span>
-<span id="cb18-13"><a href="#cb18-13"></a>    toRemove &lt;-<span class="st"> </span><span class="kw">c</span>(toRemove, relevantId[<span class="dv">2</span>])</span>
-<span id="cb18-14"><a href="#cb18-14"></a>  }</span>
-<span id="cb18-15"><a href="#cb18-15"></a>}</span>
-<span id="cb18-16"><a href="#cb18-16"></a></span>
-<span id="cb18-17"><a href="#cb18-17"></a><span class="co"># remove after summing counts (otherwise IDs get mixed up)</span></span>
-<span id="cb18-18"><a href="#cb18-18"></a>newCounts &lt;-<span class="st"> </span>newCounts[,<span class="op">-</span>toRemove]</span>
-<span id="cb18-19"><a href="#cb18-19"></a>newCD &lt;-<span class="st"> </span>cd[<span class="op">-</span>toRemove,]</span>
-<span id="cb18-20"><a href="#cb18-20"></a></span>
-<span id="cb18-21"><a href="#cb18-21"></a><span class="co"># Create new SummarizedExperiment</span></span>
-<span id="cb18-22"><a href="#cb18-22"></a>se &lt;-<span class="st"> </span><span class="kw">SummarizedExperiment</span>(<span class="dt">assays =</span> <span class="kw">list</span>(<span class="st">&quot;counts&quot;</span> =<span class="st"> </span>newCounts),</span>
-<span id="cb18-23"><a href="#cb18-23"></a>                            <span class="dt">colData =</span> newCD,</span>
-<span id="cb18-24"><a href="#cb18-24"></a>                            <span class="dt">metadata =</span> <span class="kw">metadata</span>(se1))</span>
-<span id="cb18-25"><a href="#cb18-25"></a></span>
-<span id="cb18-26"><a href="#cb18-26"></a>treatment &lt;-<span class="st"> </span><span class="kw">colData</span>(se)<span class="op">$</span>treatment</span>
-<span id="cb18-27"><a href="#cb18-27"></a><span class="kw">table</span>(treatment)</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>counts &lt;-<span class="st"> </span><span class="kw">assays</span>(se1)<span class="op">$</span>counts</span>
+<span id="cb11-2"><a href="#cb11-2"></a>newCounts &lt;-<span class="st"> </span>counts</span>
+<span id="cb11-3"><a href="#cb11-3"></a>cd &lt;-<span class="st"> </span><span class="kw">colData</span>(se1)</span>
+<span id="cb11-4"><a href="#cb11-4"></a><span class="cf">for</span>(ss <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(dupExps)){</span>
+<span id="cb11-5"><a href="#cb11-5"></a>  <span class="co"># check which samples are duplicates</span></span>
+<span id="cb11-6"><a href="#cb11-6"></a>  relevantId &lt;-<span class="st"> </span><span class="kw">which</span>(<span class="kw">colData</span>(se1)<span class="op">$</span>experiment <span class="op">==</span><span class="st"> </span>dupExps[ss])</span>
+<span id="cb11-7"><a href="#cb11-7"></a>  <span class="co"># sum counts</span></span>
+<span id="cb11-8"><a href="#cb11-8"></a>  newCounts[,relevantId[<span class="dv">1</span>]] &lt;-<span class="st"> </span><span class="kw">rowSums</span>(counts[,relevantId])</span>
+<span id="cb11-9"><a href="#cb11-9"></a>  <span class="co"># keep which columns / rows to remove.</span></span>
+<span id="cb11-10"><a href="#cb11-10"></a>  <span class="cf">if</span>(ss <span class="op">==</span><span class="st"> </span><span class="dv">1</span>){</span>
+<span id="cb11-11"><a href="#cb11-11"></a>    toRemove &lt;-<span class="st"> </span>relevantId[<span class="dv">2</span>]</span>
+<span id="cb11-12"><a href="#cb11-12"></a>  } <span class="cf">else</span> {</span>
+<span id="cb11-13"><a href="#cb11-13"></a>    toRemove &lt;-<span class="st"> </span><span class="kw">c</span>(toRemove, relevantId[<span class="dv">2</span>])</span>
+<span id="cb11-14"><a href="#cb11-14"></a>  }</span>
+<span id="cb11-15"><a href="#cb11-15"></a>}</span>
+<span id="cb11-16"><a href="#cb11-16"></a></span>
+<span id="cb11-17"><a href="#cb11-17"></a><span class="co"># remove after summing counts (otherwise IDs get mixed up)</span></span>
+<span id="cb11-18"><a href="#cb11-18"></a>newCounts &lt;-<span class="st"> </span>newCounts[,<span class="op">-</span>toRemove]</span>
+<span id="cb11-19"><a href="#cb11-19"></a>newCD &lt;-<span class="st"> </span>cd[<span class="op">-</span>toRemove,]</span>
+<span id="cb11-20"><a href="#cb11-20"></a></span>
+<span id="cb11-21"><a href="#cb11-21"></a><span class="co"># Create new SummarizedExperiment</span></span>
+<span id="cb11-22"><a href="#cb11-22"></a>se &lt;-<span class="st"> </span><span class="kw">SummarizedExperiment</span>(<span class="dt">assays =</span> <span class="kw">list</span>(<span class="st">&quot;counts&quot;</span> =<span class="st"> </span>newCounts),</span>
+<span id="cb11-23"><a href="#cb11-23"></a>                            <span class="dt">colData =</span> newCD,</span>
+<span id="cb11-24"><a href="#cb11-24"></a>                            <span class="dt">metadata =</span> <span class="kw">metadata</span>(se1))</span>
+<span id="cb11-25"><a href="#cb11-25"></a></span>
+<span id="cb11-26"><a href="#cb11-26"></a>treatment &lt;-<span class="st"> </span><span class="kw">colData</span>(se)<span class="op">$</span>treatment</span>
+<span id="cb11-27"><a href="#cb11-27"></a><span class="kw">table</span>(treatment)</span></code></pre></div>
 <pre><code>## treatment
 ## Control     DPN     OHT 
 ##       7       8       8</code></pre>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>time &lt;-<span class="st"> </span><span class="kw">colData</span>(se)<span class="op">$</span>time</span>
-<span id="cb20-2"><a href="#cb20-2"></a><span class="kw">table</span>(time)</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>time &lt;-<span class="st"> </span><span class="kw">colData</span>(se)<span class="op">$</span>time</span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="kw">table</span>(time)</span></code></pre></div>
 <pre><code>## time
 ## 24h 48h 
 ##  11  12</code></pre>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>patient &lt;-<span class="st"> </span><span class="kw">colData</span>(se)<span class="op">$</span>patient</span>
-<span id="cb22-2"><a href="#cb22-2"></a><span class="kw">table</span>(patient)</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>patient &lt;-<span class="st"> </span><span class="kw">colData</span>(se)<span class="op">$</span>patient</span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="kw">table</span>(patient)</span></code></pre></div>
 <pre><code>## patient
 ## 1 2 3 4 
 ## 6 6 6 5</code></pre>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="kw">table</span>(patient, treatment, time) <span class="co"># agrees with paper.</span></span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="kw">table</span>(patient, treatment, time) <span class="co"># agrees with paper.</span></span></code></pre></div>
 <pre><code>## , , time = 24h
 ## 
 ##        treatment
@@ -638,35 +626,35 @@ div.tocify {
 </div>
 <div id="data-exploration" class="section level2">
 <h2><span class="header-section-number">1.3</span> Data exploration</h2>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="kw">suppressPackageStartupMessages</span>({</span>
-<span id="cb26-2"><a href="#cb26-2"></a>  <span class="kw">library</span>(limma)</span>
-<span id="cb26-3"><a href="#cb26-3"></a>  <span class="kw">library</span>(edgeR)</span>
-<span id="cb26-4"><a href="#cb26-4"></a>})</span>
-<span id="cb26-5"><a href="#cb26-5"></a></span>
-<span id="cb26-6"><a href="#cb26-6"></a><span class="co"># library size distribution</span></span>
-<span id="cb26-7"><a href="#cb26-7"></a><span class="kw">hist</span>(<span class="kw">colSums</span>(<span class="kw">assays</span>(se)<span class="op">$</span>counts)<span class="op">/</span><span class="fl">1e6</span>, <span class="dt">breaks=</span><span class="dv">10</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="kw">suppressPackageStartupMessages</span>({</span>
+<span id="cb19-2"><a href="#cb19-2"></a>  <span class="kw">library</span>(limma)</span>
+<span id="cb19-3"><a href="#cb19-3"></a>  <span class="kw">library</span>(edgeR)</span>
+<span id="cb19-4"><a href="#cb19-4"></a>})</span>
+<span id="cb19-5"><a href="#cb19-5"></a></span>
+<span id="cb19-6"><a href="#cb19-6"></a><span class="co"># library size distribution</span></span>
+<span id="cb19-7"><a href="#cb19-7"></a><span class="kw">hist</span>(<span class="kw">colSums</span>(<span class="kw">assays</span>(se)<span class="op">$</span>counts)<span class="op">/</span><span class="fl">1e6</span>, <span class="dt">breaks=</span><span class="dv">10</span>)</span></code></pre></div>
 <p><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a><span class="kw">boxplot</span>(<span class="kw">colSums</span>(<span class="kw">assays</span>(se)<span class="op">$</span>counts)<span class="op">/</span><span class="fl">1e6</span> <span class="op">~</span><span class="st"> </span>treatment)</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="kw">boxplot</span>(<span class="kw">colSums</span>(<span class="kw">assays</span>(se)<span class="op">$</span>counts)<span class="op">/</span><span class="fl">1e6</span> <span class="op">~</span><span class="st"> </span>treatment)</span></code></pre></div>
 <p><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a><span class="kw">boxplot</span>(<span class="kw">colSums</span>(<span class="kw">assays</span>(se)<span class="op">$</span>counts)<span class="op">/</span><span class="fl">1e6</span> <span class="op">~</span><span class="st"> </span>time)</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="kw">boxplot</span>(<span class="kw">colSums</span>(<span class="kw">assays</span>(se)<span class="op">$</span>counts)<span class="op">/</span><span class="fl">1e6</span> <span class="op">~</span><span class="st"> </span>time)</span></code></pre></div>
 <p><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-5-3.png" width="672" /></p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a><span class="kw">boxplot</span>(<span class="kw">colSums</span>(<span class="kw">assays</span>(se)<span class="op">$</span>counts)<span class="op">/</span><span class="fl">1e6</span> <span class="op">~</span><span class="st"> </span>patient)</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="kw">boxplot</span>(<span class="kw">colSums</span>(<span class="kw">assays</span>(se)<span class="op">$</span>counts)<span class="op">/</span><span class="fl">1e6</span> <span class="op">~</span><span class="st"> </span>patient)</span></code></pre></div>
 <p><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-5-4.png" width="672" /></p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a><span class="kw">boxplot</span>(<span class="kw">colSums</span>(<span class="kw">assays</span>(se)<span class="op">$</span>counts)<span class="op">/</span><span class="fl">1e6</span> <span class="op">~</span><span class="st"> </span><span class="kw">interaction</span>(treatment, time))</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a><span class="kw">boxplot</span>(<span class="kw">colSums</span>(<span class="kw">assays</span>(se)<span class="op">$</span>counts)<span class="op">/</span><span class="fl">1e6</span> <span class="op">~</span><span class="st"> </span><span class="kw">interaction</span>(treatment, time))</span></code></pre></div>
 <p><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-5-5.png" width="672" /></p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="co"># MDS plot</span></span>
-<span id="cb31-2"><a href="#cb31-2"></a><span class="kw">plotMDS</span>(se, </span>
-<span id="cb31-3"><a href="#cb31-3"></a>        <span class="dt">labels =</span> treatment, </span>
-<span id="cb31-4"><a href="#cb31-4"></a>        <span class="dt">col=</span><span class="kw">as.numeric</span>(patient))</span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="co"># MDS plot</span></span>
+<span id="cb24-2"><a href="#cb24-2"></a><span class="kw">plotMDS</span>(se, </span>
+<span id="cb24-3"><a href="#cb24-3"></a>        <span class="dt">labels =</span> treatment, </span>
+<span id="cb24-4"><a href="#cb24-4"></a>        <span class="dt">col=</span><span class="kw">as.numeric</span>(patient))</span></code></pre></div>
 <p><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-5-6.png" width="672" /></p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a><span class="co">## hard to see influence of experimental factors due to large between-patient variation</span></span>
-<span id="cb32-2"><a href="#cb32-2"></a><span class="co">## we could also make an MDS plot per patient to take a look.</span></span>
-<span id="cb32-3"><a href="#cb32-3"></a><span class="cf">for</span>(kk <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">4</span>){</span>
-<span id="cb32-4"><a href="#cb32-4"></a>  id &lt;-<span class="st"> </span><span class="kw">which</span>(patient <span class="op">==</span><span class="st"> </span>kk)</span>
-<span id="cb32-5"><a href="#cb32-5"></a>  <span class="kw">plotMDS</span>(se[,id], </span>
-<span id="cb32-6"><a href="#cb32-6"></a>        <span class="dt">labels =</span> <span class="kw">paste0</span>(treatment[id],<span class="st">&quot;_&quot;</span>,time[id]), </span>
-<span id="cb32-7"><a href="#cb32-7"></a>        <span class="dt">col=</span><span class="kw">as.numeric</span>(time[id]))</span>
-<span id="cb32-8"><a href="#cb32-8"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a><span class="co">## hard to see influence of experimental factors due to large between-patient variation</span></span>
+<span id="cb25-2"><a href="#cb25-2"></a><span class="co">## we could also make an MDS plot per patient to take a look.</span></span>
+<span id="cb25-3"><a href="#cb25-3"></a><span class="cf">for</span>(kk <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">4</span>){</span>
+<span id="cb25-4"><a href="#cb25-4"></a>  id &lt;-<span class="st"> </span><span class="kw">which</span>(patient <span class="op">==</span><span class="st"> </span>kk)</span>
+<span id="cb25-5"><a href="#cb25-5"></a>  <span class="kw">plotMDS</span>(se[,id], </span>
+<span id="cb25-6"><a href="#cb25-6"></a>        <span class="dt">labels =</span> <span class="kw">paste0</span>(treatment[id],<span class="st">&quot;_&quot;</span>,time[id]), </span>
+<span id="cb25-7"><a href="#cb25-7"></a>        <span class="dt">col=</span><span class="kw">as.numeric</span>(time[id]))</span>
+<span id="cb25-8"><a href="#cb25-8"></a>}</span></code></pre></div>
 <p><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-5-7.png" width="672" /><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-5-8.png" width="672" /><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-5-9.png" width="672" /><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-5-10.png" width="672" /></p>
 <p>Observations based on MDS plot:</p>
 <ul>
@@ -679,42 +667,42 @@ div.tocify {
 <div id="challenge-i-choice-of-modeling-assumptions" class="section level1">
 <h1><span class="header-section-number">2</span> Challenge I: Choice of modeling assumptions</h1>
 <p>When working with a GLM, as part of the choices of modeling assumptions, we need to pick an appropriate distribution for the expression counts. Below we perform some exploratory analyses to investigate.</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>y &lt;-<span class="st"> </span><span class="kw">assays</span>(se)<span class="op">$</span>counts[<span class="dv">1</span>,]</span>
-<span id="cb33-2"><a href="#cb33-2"></a><span class="kw">hist</span>(y, <span class="dt">breaks =</span> <span class="dv">40</span>,</span>
-<span id="cb33-3"><a href="#cb33-3"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Gene expression&quot;</span>,</span>
-<span id="cb33-4"><a href="#cb33-4"></a>     <span class="dt">xaxt =</span> <span class="st">&quot;n&quot;</span>, <span class="dt">yaxt =</span> <span class="st">&quot;n&quot;</span>,</span>
-<span id="cb33-5"><a href="#cb33-5"></a>     <span class="dt">main =</span> <span class="st">&quot;Data for the first gene&quot;</span>)</span>
-<span id="cb33-6"><a href="#cb33-6"></a><span class="kw">axis</span>(<span class="dv">1</span>, <span class="dt">at =</span> <span class="kw">seq</span>(<span class="dv">200</span>, <span class="dv">1200</span>, <span class="dt">by=</span><span class="dv">200</span>))</span>
-<span id="cb33-7"><a href="#cb33-7"></a><span class="kw">axis</span>(<span class="dv">2</span>, <span class="dt">at =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a>y &lt;-<span class="st"> </span><span class="kw">assays</span>(se)<span class="op">$</span>counts[<span class="dv">1</span>,]</span>
+<span id="cb26-2"><a href="#cb26-2"></a><span class="kw">hist</span>(y, <span class="dt">breaks =</span> <span class="dv">40</span>,</span>
+<span id="cb26-3"><a href="#cb26-3"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Gene expression&quot;</span>,</span>
+<span id="cb26-4"><a href="#cb26-4"></a>     <span class="dt">xaxt =</span> <span class="st">&quot;n&quot;</span>, <span class="dt">yaxt =</span> <span class="st">&quot;n&quot;</span>,</span>
+<span id="cb26-5"><a href="#cb26-5"></a>     <span class="dt">main =</span> <span class="st">&quot;Data for the first gene&quot;</span>)</span>
+<span id="cb26-6"><a href="#cb26-6"></a><span class="kw">axis</span>(<span class="dv">1</span>, <span class="dt">at =</span> <span class="kw">seq</span>(<span class="dv">200</span>, <span class="dv">1200</span>, <span class="dt">by=</span><span class="dv">200</span>))</span>
+<span id="cb26-7"><a href="#cb26-7"></a><span class="kw">axis</span>(<span class="dv">2</span>, <span class="dt">at =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">3</span>)</span></code></pre></div>
 <p><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a><span class="co"># Mean-variance trend within each experimental condition</span></span>
-<span id="cb34-2"><a href="#cb34-2"></a>cont24ID &lt;-<span class="st"> </span><span class="kw">which</span>(treatment <span class="op">==</span><span class="st"> &quot;Control&quot;</span> <span class="op">&amp;</span><span class="st"> </span>time <span class="op">==</span><span class="st"> &quot;24h&quot;</span>)</span>
-<span id="cb34-3"><a href="#cb34-3"></a>DPN24ID &lt;-<span class="st"> </span><span class="kw">which</span>(treatment <span class="op">==</span><span class="st"> &quot;DPN&quot;</span> <span class="op">&amp;</span><span class="st"> </span>time <span class="op">==</span><span class="st"> &quot;24h&quot;</span>)</span>
-<span id="cb34-4"><a href="#cb34-4"></a>OHT24ID &lt;-<span class="st"> </span><span class="kw">which</span>(treatment <span class="op">==</span><span class="st"> &quot;OHT&quot;</span> <span class="op">&amp;</span><span class="st"> </span>time <span class="op">==</span><span class="st"> &quot;24h&quot;</span>)</span>
-<span id="cb34-5"><a href="#cb34-5"></a>cont48ID &lt;-<span class="st"> </span><span class="kw">which</span>(treatment <span class="op">==</span><span class="st"> &quot;Control&quot;</span> <span class="op">&amp;</span><span class="st"> </span>time <span class="op">==</span><span class="st"> &quot;48h&quot;</span>)</span>
-<span id="cb34-6"><a href="#cb34-6"></a>DPN48ID &lt;-<span class="st"> </span><span class="kw">which</span>(treatment <span class="op">==</span><span class="st"> &quot;DPN&quot;</span> <span class="op">&amp;</span><span class="st"> </span>time <span class="op">==</span><span class="st"> &quot;48h&quot;</span>)</span>
-<span id="cb34-7"><a href="#cb34-7"></a>OHT48ID &lt;-<span class="st"> </span><span class="kw">which</span>(treatment <span class="op">==</span><span class="st"> &quot;OHT&quot;</span> <span class="op">&amp;</span><span class="st"> </span>time <span class="op">==</span><span class="st"> &quot;48h&quot;</span>)</span>
-<span id="cb34-8"><a href="#cb34-8"></a>idList &lt;-<span class="st"> </span><span class="kw">list</span>(cont24ID, DPN24ID, OHT24ID, </span>
-<span id="cb34-9"><a href="#cb34-9"></a>               cont48ID, DPN48ID, OHT48ID)</span>
-<span id="cb34-10"><a href="#cb34-10"></a><span class="kw">names</span>(idList) &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="kw">rep</span>(<span class="kw">levels</span>(treatment),<span class="dv">2</span>), <span class="kw">rep</span>(<span class="kw">levels</span>(time), <span class="dt">each=</span><span class="dv">3</span>))</span>
-<span id="cb34-11"><a href="#cb34-11"></a></span>
-<span id="cb34-12"><a href="#cb34-12"></a><span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">3</span>,<span class="dv">2</span>), <span class="dt">mar=</span><span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">1</span>))</span>
-<span id="cb34-13"><a href="#cb34-13"></a><span class="cf">for</span>(kk <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(idList)){</span>
-<span id="cb34-14"><a href="#cb34-14"></a>  <span class="co"># extract counts for each condition</span></span>
-<span id="cb34-15"><a href="#cb34-15"></a>  curCounts &lt;-<span class="st"> </span><span class="kw">assays</span>(se)<span class="op">$</span>counts[,idList[[kk]]]</span>
-<span id="cb34-16"><a href="#cb34-16"></a>  <span class="kw">plot</span>(<span class="dt">x =</span> <span class="kw">rowMeans</span>(curCounts)<span class="op">+</span><span class="dv">1</span>,</span>
-<span id="cb34-17"><a href="#cb34-17"></a>       <span class="dt">y =</span> <span class="kw">rowVars</span>(curCounts)<span class="op">+</span><span class="dv">1</span>,</span>
-<span id="cb34-18"><a href="#cb34-18"></a>       <span class="dt">pch =</span> <span class="dv">16</span>, <span class="dt">cex=</span><span class="dv">1</span><span class="op">/</span><span class="dv">2</span>,</span>
-<span id="cb34-19"><a href="#cb34-19"></a>       <span class="dt">xlab =</span> <span class="st">&quot;Mean&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;Variance&quot;</span>,</span>
-<span id="cb34-20"><a href="#cb34-20"></a>       <span class="dt">log=</span><span class="st">&quot;xy&quot;</span>)</span>
-<span id="cb34-21"><a href="#cb34-21"></a>  <span class="kw">abline</span>(<span class="dv">0</span>,<span class="dv">1</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</span>
-<span id="cb34-22"><a href="#cb34-22"></a>  </span>
-<span id="cb34-23"><a href="#cb34-23"></a>  <span class="kw">smoothScatter</span>(<span class="dt">x =</span> <span class="kw">log1p</span>(<span class="kw">rowMeans</span>(curCounts)),</span>
-<span id="cb34-24"><a href="#cb34-24"></a>       <span class="dt">y =</span> <span class="kw">log1p</span>(<span class="kw">rowVars</span>(curCounts)),</span>
-<span id="cb34-25"><a href="#cb34-25"></a>       <span class="dt">pch =</span> <span class="dv">16</span>, <span class="dt">cex=</span><span class="dv">1</span><span class="op">/</span><span class="dv">2</span>,</span>
-<span id="cb34-26"><a href="#cb34-26"></a>       <span class="dt">xlab =</span> <span class="st">&quot;Mean&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;Variance&quot;</span>)</span>
-<span id="cb34-27"><a href="#cb34-27"></a>  <span class="kw">abline</span>(<span class="dv">0</span>,<span class="dv">1</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</span>
-<span id="cb34-28"><a href="#cb34-28"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a><span class="co"># Mean-variance trend within each experimental condition</span></span>
+<span id="cb27-2"><a href="#cb27-2"></a>cont24ID &lt;-<span class="st"> </span><span class="kw">which</span>(treatment <span class="op">==</span><span class="st"> &quot;Control&quot;</span> <span class="op">&amp;</span><span class="st"> </span>time <span class="op">==</span><span class="st"> &quot;24h&quot;</span>)</span>
+<span id="cb27-3"><a href="#cb27-3"></a>DPN24ID &lt;-<span class="st"> </span><span class="kw">which</span>(treatment <span class="op">==</span><span class="st"> &quot;DPN&quot;</span> <span class="op">&amp;</span><span class="st"> </span>time <span class="op">==</span><span class="st"> &quot;24h&quot;</span>)</span>
+<span id="cb27-4"><a href="#cb27-4"></a>OHT24ID &lt;-<span class="st"> </span><span class="kw">which</span>(treatment <span class="op">==</span><span class="st"> &quot;OHT&quot;</span> <span class="op">&amp;</span><span class="st"> </span>time <span class="op">==</span><span class="st"> &quot;24h&quot;</span>)</span>
+<span id="cb27-5"><a href="#cb27-5"></a>cont48ID &lt;-<span class="st"> </span><span class="kw">which</span>(treatment <span class="op">==</span><span class="st"> &quot;Control&quot;</span> <span class="op">&amp;</span><span class="st"> </span>time <span class="op">==</span><span class="st"> &quot;48h&quot;</span>)</span>
+<span id="cb27-6"><a href="#cb27-6"></a>DPN48ID &lt;-<span class="st"> </span><span class="kw">which</span>(treatment <span class="op">==</span><span class="st"> &quot;DPN&quot;</span> <span class="op">&amp;</span><span class="st"> </span>time <span class="op">==</span><span class="st"> &quot;48h&quot;</span>)</span>
+<span id="cb27-7"><a href="#cb27-7"></a>OHT48ID &lt;-<span class="st"> </span><span class="kw">which</span>(treatment <span class="op">==</span><span class="st"> &quot;OHT&quot;</span> <span class="op">&amp;</span><span class="st"> </span>time <span class="op">==</span><span class="st"> &quot;48h&quot;</span>)</span>
+<span id="cb27-8"><a href="#cb27-8"></a>idList &lt;-<span class="st"> </span><span class="kw">list</span>(cont24ID, DPN24ID, OHT24ID, </span>
+<span id="cb27-9"><a href="#cb27-9"></a>               cont48ID, DPN48ID, OHT48ID)</span>
+<span id="cb27-10"><a href="#cb27-10"></a><span class="kw">names</span>(idList) &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="kw">rep</span>(<span class="kw">levels</span>(treatment),<span class="dv">2</span>), <span class="kw">rep</span>(<span class="kw">levels</span>(time), <span class="dt">each=</span><span class="dv">3</span>))</span>
+<span id="cb27-11"><a href="#cb27-11"></a></span>
+<span id="cb27-12"><a href="#cb27-12"></a><span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">3</span>,<span class="dv">2</span>), <span class="dt">mar=</span><span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">1</span>))</span>
+<span id="cb27-13"><a href="#cb27-13"></a><span class="cf">for</span>(kk <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(idList)){</span>
+<span id="cb27-14"><a href="#cb27-14"></a>  <span class="co"># extract counts for each condition</span></span>
+<span id="cb27-15"><a href="#cb27-15"></a>  curCounts &lt;-<span class="st"> </span><span class="kw">assays</span>(se)<span class="op">$</span>counts[,idList[[kk]]]</span>
+<span id="cb27-16"><a href="#cb27-16"></a>  <span class="kw">plot</span>(<span class="dt">x =</span> <span class="kw">rowMeans</span>(curCounts)<span class="op">+</span><span class="dv">1</span>,</span>
+<span id="cb27-17"><a href="#cb27-17"></a>       <span class="dt">y =</span> <span class="kw">rowVars</span>(curCounts)<span class="op">+</span><span class="dv">1</span>,</span>
+<span id="cb27-18"><a href="#cb27-18"></a>       <span class="dt">pch =</span> <span class="dv">16</span>, <span class="dt">cex=</span><span class="dv">1</span><span class="op">/</span><span class="dv">2</span>,</span>
+<span id="cb27-19"><a href="#cb27-19"></a>       <span class="dt">xlab =</span> <span class="st">&quot;Mean&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;Variance&quot;</span>,</span>
+<span id="cb27-20"><a href="#cb27-20"></a>       <span class="dt">log=</span><span class="st">&quot;xy&quot;</span>)</span>
+<span id="cb27-21"><a href="#cb27-21"></a>  <span class="kw">abline</span>(<span class="dv">0</span>,<span class="dv">1</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</span>
+<span id="cb27-22"><a href="#cb27-22"></a>  </span>
+<span id="cb27-23"><a href="#cb27-23"></a>  <span class="kw">smoothScatter</span>(<span class="dt">x =</span> <span class="kw">log1p</span>(<span class="kw">rowMeans</span>(curCounts)),</span>
+<span id="cb27-24"><a href="#cb27-24"></a>       <span class="dt">y =</span> <span class="kw">log1p</span>(<span class="kw">rowVars</span>(curCounts)),</span>
+<span id="cb27-25"><a href="#cb27-25"></a>       <span class="dt">pch =</span> <span class="dv">16</span>, <span class="dt">cex=</span><span class="dv">1</span><span class="op">/</span><span class="dv">2</span>,</span>
+<span id="cb27-26"><a href="#cb27-26"></a>       <span class="dt">xlab =</span> <span class="st">&quot;Mean&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;Variance&quot;</span>)</span>
+<span id="cb27-27"><a href="#cb27-27"></a>  <span class="kw">abline</span>(<span class="dv">0</span>,<span class="dv">1</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</span>
+<span id="cb27-28"><a href="#cb27-28"></a>}</span></code></pre></div>
 <p><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-7-2.png" width="672" /><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-7-3.png" width="672" /></p>
 <ul>
 <li>Having data on thousands of genes provides the opportunity to empirically assess the mean-variance relationship.</li>
@@ -730,17 +718,17 @@ div.tocify {
 <li>This theoretical result has got some practical consequences. The Gamma-Poisson formulation makes it clear why we can sum technical replicates as the sum of Poisson random variables is again a Poisson random variable.</li>
 <li>The Poisson statement can thus be considered as capturing technical variation, while the Gamma statement can be considered to capture biological variation, i.e., variation in the expression mean across biological replicates.</li>
 </ul>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a>alpha &lt;-<span class="st"> </span><span class="dv">20</span></span>
-<span id="cb35-2"><a href="#cb35-2"></a>beta &lt;-<span class="st"> </span><span class="dv">10</span></span>
-<span id="cb35-3"><a href="#cb35-3"></a>lambda &lt;-<span class="st"> </span><span class="kw">rgamma</span>(<span class="dt">n =</span> <span class="fl">1e5</span>, <span class="dt">shape =</span> alpha, <span class="dt">rate =</span> beta)</span>
-<span id="cb35-4"><a href="#cb35-4"></a>y1 &lt;-<span class="st"> </span><span class="kw">rpois</span>(<span class="dt">n =</span> <span class="fl">1e5</span>, <span class="dt">lambda =</span> lambda)</span>
-<span id="cb35-5"><a href="#cb35-5"></a></span>
-<span id="cb35-6"><a href="#cb35-6"></a><span class="co"># note phi = 1 / size</span></span>
-<span id="cb35-7"><a href="#cb35-7"></a>y2 &lt;-<span class="st"> </span><span class="kw">rnbinom</span>(<span class="dt">n=</span><span class="fl">1e5</span>, <span class="dt">mu=</span>alpha <span class="op">/</span><span class="st"> </span>(beta), <span class="dt">size=</span>alpha)</span>
-<span id="cb35-8"><a href="#cb35-8"></a></span>
-<span id="cb35-9"><a href="#cb35-9"></a></span>
-<span id="cb35-10"><a href="#cb35-10"></a><span class="kw">plot</span>(<span class="kw">density</span>(y1))</span>
-<span id="cb35-11"><a href="#cb35-11"></a><span class="kw">lines</span>(<span class="kw">density</span>(y2), <span class="dt">col=</span><span class="st">&quot;steelblue&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a>alpha &lt;-<span class="st"> </span><span class="dv">20</span></span>
+<span id="cb28-2"><a href="#cb28-2"></a>beta &lt;-<span class="st"> </span><span class="dv">10</span></span>
+<span id="cb28-3"><a href="#cb28-3"></a>lambda &lt;-<span class="st"> </span><span class="kw">rgamma</span>(<span class="dt">n =</span> <span class="fl">1e5</span>, <span class="dt">shape =</span> alpha, <span class="dt">rate =</span> beta)</span>
+<span id="cb28-4"><a href="#cb28-4"></a>y1 &lt;-<span class="st"> </span><span class="kw">rpois</span>(<span class="dt">n =</span> <span class="fl">1e5</span>, <span class="dt">lambda =</span> lambda)</span>
+<span id="cb28-5"><a href="#cb28-5"></a></span>
+<span id="cb28-6"><a href="#cb28-6"></a><span class="co"># note phi = 1 / size</span></span>
+<span id="cb28-7"><a href="#cb28-7"></a>y2 &lt;-<span class="st"> </span><span class="kw">rnbinom</span>(<span class="dt">n=</span><span class="fl">1e5</span>, <span class="dt">mu=</span>alpha <span class="op">/</span><span class="st"> </span>(beta), <span class="dt">size=</span>alpha)</span>
+<span id="cb28-8"><a href="#cb28-8"></a></span>
+<span id="cb28-9"><a href="#cb28-9"></a></span>
+<span id="cb28-10"><a href="#cb28-10"></a><span class="kw">plot</span>(<span class="kw">density</span>(y1))</span>
+<span id="cb28-11"><a href="#cb28-11"></a><span class="kw">lines</span>(<span class="kw">density</span>(y2), <span class="dt">col=</span><span class="st">&quot;steelblue&quot;</span>)</span></code></pre></div>
 <p><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 <div id="challenge-ii-normalization" class="section level1">
@@ -753,24 +741,24 @@ div.tocify {
 </ul>
 <hr />
 <p>Let’s take a look at how comparable different replicates are in the Control condition at 48h in our dataset. We will investigate this using MD-plots (mean-difference plots as introduced by <a href="https://www.jstor.org/stable/24307038">Dudoit <em>et al.</em> (2002)</a>), also sometimes referred to as MA-plots.</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a>cont48ID <span class="co"># relevant samples</span></span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a>cont48ID <span class="co"># relevant samples</span></span></code></pre></div>
 <pre><code>## [1]  2  8 14 19</code></pre>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a><span class="kw">colSums</span>(<span class="kw">assays</span>(se)<span class="op">$</span>counts[,cont48ID]) <span class="op">/</span><span class="st"> </span><span class="fl">1e6</span></span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="kw">colSums</span>(<span class="kw">assays</span>(se)<span class="op">$</span>counts[,cont48ID]) <span class="op">/</span><span class="st"> </span><span class="fl">1e6</span></span></code></pre></div>
 <pre><code>## [1] 10.827109  6.844144  8.064268  7.701432</code></pre>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1"></a>combs &lt;-<span class="st"> </span><span class="kw">combn</span>(cont48ID, <span class="dt">m=</span><span class="dv">2</span>) <span class="co">#pairwise combinations between samples</span></span>
-<span id="cb40-2"><a href="#cb40-2"></a></span>
-<span id="cb40-3"><a href="#cb40-3"></a><span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">3</span>,<span class="dv">2</span>), <span class="dt">mar=</span><span class="kw">c</span>(<span class="dv">4</span>,<span class="dv">4</span>,<span class="dv">2</span>,<span class="dv">1</span>))</span>
-<span id="cb40-4"><a href="#cb40-4"></a><span class="cf">for</span>(cc <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">ncol</span>(combs)){</span>
-<span id="cb40-5"><a href="#cb40-5"></a>  curSamples &lt;-<span class="st"> </span>combs[,cc]</span>
-<span id="cb40-6"><a href="#cb40-6"></a>  M &lt;-<span class="st"> </span><span class="kw">rowMeans</span>(<span class="kw">assays</span>(se)<span class="op">$</span>counts[,curSamples])</span>
-<span id="cb40-7"><a href="#cb40-7"></a>  D &lt;-<span class="st"> </span><span class="kw">assays</span>(se)<span class="op">$</span>counts[,curSamples[<span class="dv">2</span>]] <span class="op">/</span><span class="st"> </span><span class="kw">assays</span>(se)<span class="op">$</span>counts[,curSamples[<span class="dv">1</span>]]</span>
-<span id="cb40-8"><a href="#cb40-8"></a>  <span class="kw">plot</span>(<span class="dt">x =</span> <span class="kw">log</span>(M), <span class="dt">y =</span> <span class="kw">log2</span>(D),</span>
-<span id="cb40-9"><a href="#cb40-9"></a>       <span class="dt">pch =</span> <span class="dv">16</span>, <span class="dt">cex=</span><span class="dv">1</span><span class="op">/</span><span class="dv">3</span>,</span>
-<span id="cb40-10"><a href="#cb40-10"></a>       <span class="dt">main =</span> <span class="kw">paste0</span>(<span class="st">&quot;Sample &quot;</span>, curSamples[<span class="dv">2</span>], <span class="st">&quot; vs sample &quot;</span>, curSamples[<span class="dv">1</span>]),</span>
-<span id="cb40-11"><a href="#cb40-11"></a>       <span class="dt">xlab =</span> <span class="st">&quot;Log mean&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Log2 fold-change&quot;</span>,</span>
-<span id="cb40-12"><a href="#cb40-12"></a>       <span class="dt">bty =</span> <span class="st">&#39;l&#39;</span>)</span>
-<span id="cb40-13"><a href="#cb40-13"></a>  <span class="kw">abline</span>(<span class="dt">h =</span> <span class="dv">0</span>, <span class="dt">col=</span><span class="st">&quot;orange&quot;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</span>
-<span id="cb40-14"><a href="#cb40-14"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>combs &lt;-<span class="st"> </span><span class="kw">combn</span>(cont48ID, <span class="dt">m=</span><span class="dv">2</span>) <span class="co">#pairwise combinations between samples</span></span>
+<span id="cb33-2"><a href="#cb33-2"></a></span>
+<span id="cb33-3"><a href="#cb33-3"></a><span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">3</span>,<span class="dv">2</span>), <span class="dt">mar=</span><span class="kw">c</span>(<span class="dv">4</span>,<span class="dv">4</span>,<span class="dv">2</span>,<span class="dv">1</span>))</span>
+<span id="cb33-4"><a href="#cb33-4"></a><span class="cf">for</span>(cc <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">ncol</span>(combs)){</span>
+<span id="cb33-5"><a href="#cb33-5"></a>  curSamples &lt;-<span class="st"> </span>combs[,cc]</span>
+<span id="cb33-6"><a href="#cb33-6"></a>  M &lt;-<span class="st"> </span><span class="kw">rowMeans</span>(<span class="kw">assays</span>(se)<span class="op">$</span>counts[,curSamples])</span>
+<span id="cb33-7"><a href="#cb33-7"></a>  D &lt;-<span class="st"> </span><span class="kw">assays</span>(se)<span class="op">$</span>counts[,curSamples[<span class="dv">2</span>]] <span class="op">/</span><span class="st"> </span><span class="kw">assays</span>(se)<span class="op">$</span>counts[,curSamples[<span class="dv">1</span>]]</span>
+<span id="cb33-8"><a href="#cb33-8"></a>  <span class="kw">plot</span>(<span class="dt">x =</span> <span class="kw">log</span>(M), <span class="dt">y =</span> <span class="kw">log2</span>(D),</span>
+<span id="cb33-9"><a href="#cb33-9"></a>       <span class="dt">pch =</span> <span class="dv">16</span>, <span class="dt">cex=</span><span class="dv">1</span><span class="op">/</span><span class="dv">3</span>,</span>
+<span id="cb33-10"><a href="#cb33-10"></a>       <span class="dt">main =</span> <span class="kw">paste0</span>(<span class="st">&quot;Sample &quot;</span>, curSamples[<span class="dv">2</span>], <span class="st">&quot; vs sample &quot;</span>, curSamples[<span class="dv">1</span>]),</span>
+<span id="cb33-11"><a href="#cb33-11"></a>       <span class="dt">xlab =</span> <span class="st">&quot;Log mean&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Log2 fold-change&quot;</span>,</span>
+<span id="cb33-12"><a href="#cb33-12"></a>       <span class="dt">bty =</span> <span class="st">&#39;l&#39;</span>)</span>
+<span id="cb33-13"><a href="#cb33-13"></a>  <span class="kw">abline</span>(<span class="dt">h =</span> <span class="dv">0</span>, <span class="dt">col=</span><span class="st">&quot;orange&quot;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb33-14"><a href="#cb33-14"></a>}</span></code></pre></div>
 <p><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <ul>
 <li>We see clear bias for some pairwise comparisons. For example, in the first plot comparing sample 8 versus sample 2, the log fold-changes are biased downwards. This means that, on average, a gene is lower expressed in sample 8 versus sample 2. Looking at the library sizes, we can indeed see that the library size for sample 2 is about <span class="math inline">\(11 \times 10^6\)</span> while it is only about <span class="math inline">\(7 \times 10^6\)</span> for sample 8! This is clear library size effect that we should take into account.</li>
@@ -808,8 +796,8 @@ div.tocify {
 \]</span> and <span class="math inline">\({\cal G}^*\)</span> represents the set of peaks after trimming those with the most extreme values.</p>
 <p>The procedure only takes peaks into account where both <span class="math inline">\(Y_{gi}&gt;0\)</span> and <span class="math inline">\(Y_{gr}&gt;0\)</span>. By default, TMM trims peaks with the <span class="math inline">\(30\%\)</span> most extreme <span class="math inline">\(M\)</span>-values and <span class="math inline">\(5\%\)</span> most extreme average gene expression, and chooses as reference <span class="math inline">\(r\)</span> the sample whose upper-quartile is closest to the across-sample average upper-quartile. The normalized counts are then given by <span class="math inline">\(\tilde{Y}_{gi} = Y_{gi} / N_i^s\)</span>, where <span class="math display">\[N_i^s = \frac{N_i F_i^{(r)}}{\sum_i N_i F_i^{(r)}/n}.\]</span></p>
 <p>TMM normalization may be performed from the <code>calcNormFactors</code> function implemented in <code>edgeR</code>:</p>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a>dge &lt;-<span class="st"> </span>edgeR<span class="op">::</span><span class="kw">calcNormFactors</span>(se)</span>
-<span id="cb41-2"><a href="#cb41-2"></a>dge<span class="op">$</span>samples <span class="co">#normalization factors added to colData</span></span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a>dge &lt;-<span class="st"> </span>edgeR<span class="op">::</span><span class="kw">calcNormFactors</span>(se)</span>
+<span id="cb34-2"><a href="#cb34-2"></a>dge<span class="op">$</span>samples <span class="co">#normalization factors added to colData</span></span></code></pre></div>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["group"],"name":[1],"type":["fct"],"align":["left"]},{"label":["lib.size"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["norm.factors"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["run"],"name":[4],"type":["chr"],"align":["left"]},{"label":["experiment"],"name":[5],"type":["fct"],"align":["left"]},{"label":["patient"],"name":[6],"type":["fct"],"align":["left"]},{"label":["treatment"],"name":[7],"type":["fct"],"align":["left"]},{"label":["time"],"name":[8],"type":["fct"],"align":["left"]},{"label":["submission"],"name":[9],"type":["fct"],"align":["left"]},{"label":["study"],"name":[10],"type":["fct"],"align":["left"]},{"label":["sample"],"name":[11],"type":["fct"],"align":["left"]}],"data":[{"1":"1","2":"9102683","3":"0.9782830","4":"SRR479052","5":"SRX140503","6":"1","7":"Control","8":"24h","9":"SRA051611","10":"SRP012167","11":"SRS308865","_rn_":"Sample1"},{"1":"1","2":"10827109","3":"0.9728700","4":"SRR479053","5":"SRX140504","6":"1","7":"Control","8":"48h","9":"SRA051611","10":"SRP012167","11":"SRS308866","_rn_":"Sample2"},{"1":"1","2":"5217761","3":"0.9898593","4":"SRR479054","5":"SRX140505","6":"1","7":"DPN","8":"24h","9":"SRA051611","10":"SRP012167","11":"SRS308867","_rn_":"Sample3"},{"1":"1","2":"9706035","3":"0.9930169","4":"SRR479055","5":"SRX140506","6":"1","7":"DPN","8":"48h","9":"SRA051611","10":"SRP012167","11":"SRS308868","_rn_":"Sample4"},{"1":"1","2":"5700022","3":"0.9850867","4":"SRR479056","5":"SRX140507","6":"1","7":"OHT","8":"24h","9":"SRA051611","10":"SRP012167","11":"SRS308869","_rn_":"Sample5"},{"1":"1","2":"7854568","3":"0.9897270","4":"SRR479057","5":"SRX140508","6":"1","7":"OHT","8":"48h","9":"SRA051611","10":"SRP012167","11":"SRS308870","_rn_":"Sample6"},{"1":"1","2":"8610014","3":"0.9266581","4":"SRR479058","5":"SRX140509","6":"2","7":"Control","8":"24h","9":"SRA051611","10":"SRP012167","11":"SRS308871","_rn_":"Sample7"},{"1":"1","2":"6844144","3":"0.9544240","4":"SRR479059","5":"SRX140510","6":"2","7":"Control","8":"48h","9":"SRA051611","10":"SRP012167","11":"SRS308872","_rn_":"Sample8"},{"1":"1","2":"24584280","3":"0.9188545","4":"SRR479060","5":"SRX140511","6":"2","7":"DPN","8":"24h","9":"SRA051611","10":"SRP012167","11":"SRS308873","_rn_":"Sample9"},{"1":"1","2":"8267977","3":"0.9398000","4":"SRR479062","5":"SRX140512","6":"2","7":"DPN","8":"48h","9":"SRA051611","10":"SRP012167","11":"SRS308874","_rn_":"Sample10"},{"1":"1","2":"23590411","3":"0.9096695","4":"SRR479063","5":"SRX140513","6":"2","7":"OHT","8":"24h","9":"SRA051611","10":"SRP012167","11":"SRS308875","_rn_":"Sample11"},{"1":"1","2":"8247122","3":"0.9369050","4":"SRR479065","5":"SRX140514","6":"2","7":"OHT","8":"48h","9":"SRA051611","10":"SRP012167","11":"SRS308876","_rn_":"Sample12"},{"1":"1","2":"7341000","3":"1.0668032","4":"SRR479066","5":"SRX140515","6":"3","7":"Control","8":"24h","9":"SRA051611","10":"SRP012167","11":"SRS308877","_rn_":"Sample13"},{"1":"1","2":"8064268","3":"1.0552688","4":"SRR479067","5":"SRX140516","6":"3","7":"Control","8":"48h","9":"SRA051611","10":"SRP012167","11":"SRS308878","_rn_":"Sample14"},{"1":"1","2":"12481958","3":"1.0461698","4":"SRR479068","5":"SRX140517","6":"3","7":"DPN","8":"24h","9":"SRA051611","10":"SRP012167","11":"SRS308879","_rn_":"Sample15"},{"1":"1","2":"16310090","3":"1.0260056","4":"SRR479069","5":"SRX140518","6":"3","7":"DPN","8":"48h","9":"SRA051611","10":"SRP012167","11":"SRS308880","_rn_":"Sample16"},{"1":"1","2":"23697329","3":"1.0268459","4":"SRR479070","5":"SRX140519","6":"3","7":"OHT","8":"24h","9":"SRA051611","10":"SRP012167","11":"SRS308881","_rn_":"Sample17"},{"1":"1","2":"7642648","3":"1.0409451","4":"SRR479071","5":"SRX140520","6":"3","7":"OHT","8":"48h","9":"SRA051611","10":"SRP012167","11":"SRS308882","_rn_":"Sample18"},{"1":"1","2":"7701432","3":"1.0559132","4":"SRR479072","5":"SRX140521","6":"4","7":"Control","8":"48h","9":"SRA051611","10":"SRP012167","11":"SRS308883","_rn_":"Sample19"},{"1":"1","2":"7135899","3":"1.0675040","4":"SRR479073","5":"SRX140522","6":"4","7":"DPN","8":"24h","9":"SRA051611","10":"SRP012167","11":"SRS308884","_rn_":"Sample20"},{"1":"1","2":"13818393","3":"1.0327004","4":"SRR479074","5":"SRX140523","6":"4","7":"DPN","8":"48h","9":"SRA051611","10":"SRP012167","11":"SRS308885","_rn_":"Sample21"},{"1":"1","2":"6099942","3":"1.0890994","4":"SRR479076","5":"SRX140524","6":"4","7":"OHT","8":"24h","9":"SRA051611","10":"SRP012167","11":"SRS308886","_rn_":"Sample22"},{"1":"1","2":"15825211","3":"1.0286470","4":"SRR479077","5":"SRX140525","6":"4","7":"OHT","8":"48h","9":"SRA051611","10":"SRP012167","11":"SRS308887","_rn_":"Sample23"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
@@ -817,23 +805,23 @@ div.tocify {
 </div>
 <p>Let’s check how our MD-plots look like after normalization. Note that, we can rewrite the GLM as <span class="math display">\[ \log\left( \frac{\mu_{gi}}{O_{gi}} \right) = \mathbf{X}_i^T \beta_g \]</span> and so <span class="math inline">\(\frac{\mu_{gi}}{O_{gi}}\)</span> can be considered as an ‘offset-corrected count’.</p>
 <p>We see that all MD-plots are now nicely centered around a log-fold-change of zero!</p>
-<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1"></a><span class="co">## normalize</span></span>
-<span id="cb42-2"><a href="#cb42-2"></a>effLibSize &lt;-<span class="st"> </span>dge<span class="op">$</span>samples<span class="op">$</span>lib.size <span class="op">*</span><span class="st"> </span>dge<span class="op">$</span>samples<span class="op">$</span>norm.factors</span>
-<span id="cb42-3"><a href="#cb42-3"></a>normCountTMM &lt;-<span class="st"> </span><span class="kw">sweep</span>(<span class="kw">assays</span>(se)<span class="op">$</span>counts, <span class="dv">2</span>, <span class="dt">FUN=</span><span class="st">&quot;/&quot;</span>, effLibSize)</span>
-<span id="cb42-4"><a href="#cb42-4"></a></span>
-<span id="cb42-5"><a href="#cb42-5"></a></span>
-<span id="cb42-6"><a href="#cb42-6"></a><span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">3</span>,<span class="dv">2</span>), <span class="dt">mar=</span><span class="kw">c</span>(<span class="dv">4</span>,<span class="dv">4</span>,<span class="dv">2</span>,<span class="dv">1</span>))</span>
-<span id="cb42-7"><a href="#cb42-7"></a><span class="cf">for</span>(cc <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">ncol</span>(combs)){</span>
-<span id="cb42-8"><a href="#cb42-8"></a>  curSamples &lt;-<span class="st"> </span>combs[,cc]</span>
-<span id="cb42-9"><a href="#cb42-9"></a>  M &lt;-<span class="st"> </span><span class="kw">rowMeans</span>(normCountTMM[,curSamples])</span>
-<span id="cb42-10"><a href="#cb42-10"></a>  D &lt;-<span class="st"> </span>normCountTMM[,curSamples[<span class="dv">2</span>]] <span class="op">/</span><span class="st"> </span>normCountTMM[,curSamples[<span class="dv">1</span>]]</span>
-<span id="cb42-11"><a href="#cb42-11"></a>  <span class="kw">plot</span>(<span class="dt">x =</span> <span class="kw">log</span>(M), <span class="dt">y =</span> <span class="kw">log2</span>(D),</span>
-<span id="cb42-12"><a href="#cb42-12"></a>       <span class="dt">pch =</span> <span class="dv">16</span>, <span class="dt">cex=</span><span class="dv">1</span><span class="op">/</span><span class="dv">3</span>,</span>
-<span id="cb42-13"><a href="#cb42-13"></a>       <span class="dt">main =</span> <span class="kw">paste0</span>(<span class="st">&quot;Sample &quot;</span>, curSamples[<span class="dv">2</span>], <span class="st">&quot; vs sample &quot;</span>, curSamples[<span class="dv">1</span>]),</span>
-<span id="cb42-14"><a href="#cb42-14"></a>       <span class="dt">xlab =</span> <span class="st">&quot;Log mean&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Log2 fold-change&quot;</span>,</span>
-<span id="cb42-15"><a href="#cb42-15"></a>       <span class="dt">bty =</span> <span class="st">&#39;l&#39;</span>)</span>
-<span id="cb42-16"><a href="#cb42-16"></a>  <span class="kw">abline</span>(<span class="dt">h =</span> <span class="dv">0</span>, <span class="dt">col=</span><span class="st">&quot;orange&quot;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</span>
-<span id="cb42-17"><a href="#cb42-17"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a><span class="co">## normalize</span></span>
+<span id="cb35-2"><a href="#cb35-2"></a>effLibSize &lt;-<span class="st"> </span>dge<span class="op">$</span>samples<span class="op">$</span>lib.size <span class="op">*</span><span class="st"> </span>dge<span class="op">$</span>samples<span class="op">$</span>norm.factors</span>
+<span id="cb35-3"><a href="#cb35-3"></a>normCountTMM &lt;-<span class="st"> </span><span class="kw">sweep</span>(<span class="kw">assays</span>(se)<span class="op">$</span>counts, <span class="dv">2</span>, <span class="dt">FUN=</span><span class="st">&quot;/&quot;</span>, effLibSize)</span>
+<span id="cb35-4"><a href="#cb35-4"></a></span>
+<span id="cb35-5"><a href="#cb35-5"></a></span>
+<span id="cb35-6"><a href="#cb35-6"></a><span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">3</span>,<span class="dv">2</span>), <span class="dt">mar=</span><span class="kw">c</span>(<span class="dv">4</span>,<span class="dv">4</span>,<span class="dv">2</span>,<span class="dv">1</span>))</span>
+<span id="cb35-7"><a href="#cb35-7"></a><span class="cf">for</span>(cc <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">ncol</span>(combs)){</span>
+<span id="cb35-8"><a href="#cb35-8"></a>  curSamples &lt;-<span class="st"> </span>combs[,cc]</span>
+<span id="cb35-9"><a href="#cb35-9"></a>  M &lt;-<span class="st"> </span><span class="kw">rowMeans</span>(normCountTMM[,curSamples])</span>
+<span id="cb35-10"><a href="#cb35-10"></a>  D &lt;-<span class="st"> </span>normCountTMM[,curSamples[<span class="dv">2</span>]] <span class="op">/</span><span class="st"> </span>normCountTMM[,curSamples[<span class="dv">1</span>]]</span>
+<span id="cb35-11"><a href="#cb35-11"></a>  <span class="kw">plot</span>(<span class="dt">x =</span> <span class="kw">log</span>(M), <span class="dt">y =</span> <span class="kw">log2</span>(D),</span>
+<span id="cb35-12"><a href="#cb35-12"></a>       <span class="dt">pch =</span> <span class="dv">16</span>, <span class="dt">cex=</span><span class="dv">1</span><span class="op">/</span><span class="dv">3</span>,</span>
+<span id="cb35-13"><a href="#cb35-13"></a>       <span class="dt">main =</span> <span class="kw">paste0</span>(<span class="st">&quot;Sample &quot;</span>, curSamples[<span class="dv">2</span>], <span class="st">&quot; vs sample &quot;</span>, curSamples[<span class="dv">1</span>]),</span>
+<span id="cb35-14"><a href="#cb35-14"></a>       <span class="dt">xlab =</span> <span class="st">&quot;Log mean&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Log2 fold-change&quot;</span>,</span>
+<span id="cb35-15"><a href="#cb35-15"></a>       <span class="dt">bty =</span> <span class="st">&#39;l&#39;</span>)</span>
+<span id="cb35-16"><a href="#cb35-16"></a>  <span class="kw">abline</span>(<span class="dt">h =</span> <span class="dv">0</span>, <span class="dt">col=</span><span class="st">&quot;orange&quot;</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb35-17"><a href="#cb35-17"></a>}</span></code></pre></div>
 <p><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 </div>
 </div>
@@ -844,12 +832,12 @@ div.tocify {
 s_i = \text{median}_{\{{g:Y^{*}_{gr} \ne 0}\}} \frac{Y_{gi}}{Y^{*}_{gr}},
 \]</span> with <span class="math display">\[ Y^{*}_{gr} = \left( \prod_{i=1}^n Y_{gi} \right)^{1/n}. \]</span> From this, we calculate the normalized count as <span class="math inline">\(\tilde{Y}_{gi} = Y_{gi} / s_{i}\)</span>.</p>
 <p>Median-of-ratios normalization is implemented in the <code>DESeq2</code> package:</p>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a>dds &lt;-<span class="st"> </span>DESeq2<span class="op">::</span><span class="kw">DESeqDataSetFromMatrix</span>(<span class="dt">countData =</span> <span class="kw">assays</span>(se)<span class="op">$</span>counts,</span>
-<span id="cb43-2"><a href="#cb43-2"></a>                                      <span class="dt">colData =</span> <span class="kw">colData</span>(se),</span>
-<span id="cb43-3"><a href="#cb43-3"></a>                                      <span class="dt">design =</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>) <span class="co">#just add intercept to showcase normalization</span></span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a>dds &lt;-<span class="st"> </span>DESeq2<span class="op">::</span><span class="kw">DESeqDataSetFromMatrix</span>(<span class="dt">countData =</span> <span class="kw">assays</span>(se)<span class="op">$</span>counts,</span>
+<span id="cb36-2"><a href="#cb36-2"></a>                                      <span class="dt">colData =</span> <span class="kw">colData</span>(se),</span>
+<span id="cb36-3"><a href="#cb36-3"></a>                                      <span class="dt">design =</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>) <span class="co">#just add intercept to showcase normalization</span></span></code></pre></div>
 <pre><code>## converting counts to integer mode</code></pre>
-<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1"></a>dds &lt;-<span class="st"> </span>DESeq2<span class="op">::</span><span class="kw">estimateSizeFactors</span>(dds)</span>
-<span id="cb45-2"><a href="#cb45-2"></a><span class="kw">sizeFactors</span>(dds)</span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a>dds &lt;-<span class="st"> </span>DESeq2<span class="op">::</span><span class="kw">estimateSizeFactors</span>(dds)</span>
+<span id="cb38-2"><a href="#cb38-2"></a><span class="kw">sizeFactors</span>(dds)</span></code></pre></div>
 <pre><code>##  [1] 0.9187624 1.0644717 0.5232069 0.9826698 0.5676212 0.7807662 0.8284089
 ##  [8] 0.6600848 2.3955069 0.7906917 2.2784591 0.7860386 0.7807842 0.8445577
 ## [15] 1.3345483 1.7011973 2.5001652 0.7889061 0.8138720 0.7632306 1.4518320
@@ -906,18 +894,18 @@ The authors are acknowledging the relatedness of samples derived from the same d
 <div id="in-practice" class="section level2">
 <h2><span class="header-section-number">4.3</span> In practice</h2>
 <p>Let’s fit the model using <code>edgeR</code>.</p>
-<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a>design &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(<span class="op">~</span><span class="st"> </span>treatment<span class="op">*</span>time <span class="op">+</span><span class="st"> </span>patient, <span class="dt">data=</span><span class="kw">colData</span>(se))</span>
-<span id="cb47-2"><a href="#cb47-2"></a></span>
-<span id="cb47-3"><a href="#cb47-3"></a><span class="co"># independent filtering</span></span>
-<span id="cb47-4"><a href="#cb47-4"></a>keep &lt;-<span class="st"> </span><span class="kw">filterByExpr</span>(se, <span class="dt">design =</span> design)</span>
-<span id="cb47-5"><a href="#cb47-5"></a>se &lt;-<span class="st"> </span>se[keep,]</span>
-<span id="cb47-6"><a href="#cb47-6"></a></span>
-<span id="cb47-7"><a href="#cb47-7"></a>dge &lt;-<span class="st"> </span><span class="kw">calcNormFactors</span>(se)</span>
-<span id="cb47-8"><a href="#cb47-8"></a>dge &lt;-<span class="st"> </span><span class="kw">estimateDisp</span>(dge, design) <span class="co"># estimate dispersion estimates</span></span>
-<span id="cb47-9"><a href="#cb47-9"></a><span class="kw">plotBCV</span>(dge)</span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1"></a>design &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(<span class="op">~</span><span class="st"> </span>treatment<span class="op">*</span>time <span class="op">+</span><span class="st"> </span>patient, <span class="dt">data=</span><span class="kw">colData</span>(se))</span>
+<span id="cb40-2"><a href="#cb40-2"></a></span>
+<span id="cb40-3"><a href="#cb40-3"></a><span class="co"># independent filtering</span></span>
+<span id="cb40-4"><a href="#cb40-4"></a>keep &lt;-<span class="st"> </span><span class="kw">filterByExpr</span>(se, <span class="dt">design =</span> design)</span>
+<span id="cb40-5"><a href="#cb40-5"></a>se &lt;-<span class="st"> </span>se[keep,]</span>
+<span id="cb40-6"><a href="#cb40-6"></a></span>
+<span id="cb40-7"><a href="#cb40-7"></a>dge &lt;-<span class="st"> </span><span class="kw">calcNormFactors</span>(se)</span>
+<span id="cb40-8"><a href="#cb40-8"></a>dge &lt;-<span class="st"> </span><span class="kw">estimateDisp</span>(dge, design) <span class="co"># estimate dispersion estimates</span></span>
+<span id="cb40-9"><a href="#cb40-9"></a><span class="kw">plotBCV</span>(dge)</span></code></pre></div>
 <p><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
-<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1"></a>fit &lt;-<span class="st"> </span><span class="kw">glmFit</span>(dge, design)</span>
-<span id="cb48-2"><a href="#cb48-2"></a><span class="kw">head</span>(fit<span class="op">$</span>coefficients)</span></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a>fit &lt;-<span class="st"> </span><span class="kw">glmFit</span>(dge, design)</span>
+<span id="cb41-2"><a href="#cb41-2"></a><span class="kw">head</span>(fit<span class="op">$</span>coefficients)</span></code></pre></div>
 <pre><code>##                 (Intercept) treatmentDPN treatmentOHT     time48h   patient2
 ## ENSG00000000003   -9.331882   0.11123447   0.08546850  0.13117317 -0.5174796
 ## ENSG00000000419  -10.373781  -0.05315770  -0.03584722 -0.09477144  0.1387269
@@ -957,28 +945,28 @@ The authors are acknowledging the relatedness of samples derived from the same d
 <p><strong>OHT vs control interaction.</strong> The time effect for each condition is <span class="math display">\[ \delta_{OHT} = \log \mu_{g,OHT,48h} - \log \mu_{g,OHT,24h} = \beta_{g3} + \beta_{g8},\]</span> <span class="math display">\[ \delta_{con} = \log \mu_{g,con,48h} - \log \mu_{g,con,24h} = \beta_{g3}. \]</span> So the interaction effect is <span class="math display">\[\delta_{DPN-con} = \beta_{g8}.\]</span></p>
 <p><strong>OHT vs DPN interaction.</strong> The time effect for each condition is <span class="math display">\[ \delta_{OHT} = \log \mu_{g,OHT,48h} - \log \mu_{g,OHT,24h} = \beta_{g3} + \beta_{g8},\]</span> <span class="math display">\[ \delta_{DPN} = \log \mu_{g,DPN,48h} - \log \mu_{g,DPN,24h} = \beta_{g3} + \beta_{g7},\]</span> So the interaction effect is <span class="math display">\[\delta_{OHT-DPN} = \beta_{g8} - \beta_{g7}.\]</span></p>
 <p>Let’s implement all of these in a contrast matrix.</p>
-<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1"></a>L &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, <span class="dt">nrow =</span> <span class="kw">ncol</span>(fit<span class="op">$</span>coefficients), <span class="dt">ncol =</span> <span class="dv">7</span>)</span>
-<span id="cb50-2"><a href="#cb50-2"></a><span class="kw">rownames</span>(L) &lt;-<span class="st"> </span><span class="kw">colnames</span>(fit<span class="op">$</span>coefficients)</span>
-<span id="cb50-3"><a href="#cb50-3"></a><span class="kw">colnames</span>(L) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;DPNvsCON24&quot;</span>, <span class="st">&quot;DPNvsCON48&quot;</span>,</span>
-<span id="cb50-4"><a href="#cb50-4"></a>                 <span class="st">&quot;OHTvsCON24&quot;</span>, <span class="st">&quot;OHTvsCON48&quot;</span>,</span>
-<span id="cb50-5"><a href="#cb50-5"></a>                 <span class="st">&quot;DPNvsCONInt&quot;</span>, <span class="st">&quot;OHTvsCONInt&quot;</span>,</span>
-<span id="cb50-6"><a href="#cb50-6"></a>                 <span class="st">&quot;OHTvsDPNInt&quot;</span>)</span>
-<span id="cb50-7"><a href="#cb50-7"></a><span class="co"># DPN vs control at 24h</span></span>
-<span id="cb50-8"><a href="#cb50-8"></a>L[<span class="dv">2</span>,<span class="st">&quot;DPNvsCON24&quot;</span>] &lt;-<span class="st"> </span><span class="dv">1</span></span>
-<span id="cb50-9"><a href="#cb50-9"></a><span class="co"># DPN vs control at 48h</span></span>
-<span id="cb50-10"><a href="#cb50-10"></a>L[<span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">8</span>),<span class="st">&quot;DPNvsCON48&quot;</span>] &lt;-<span class="st"> </span><span class="dv">1</span></span>
-<span id="cb50-11"><a href="#cb50-11"></a><span class="co"># OHT vs control at 24h</span></span>
-<span id="cb50-12"><a href="#cb50-12"></a>L[<span class="dv">3</span>,<span class="st">&quot;OHTvsCON24&quot;</span>] &lt;-<span class="st"> </span><span class="dv">1</span></span>
-<span id="cb50-13"><a href="#cb50-13"></a><span class="co"># OHT vs control at 48h</span></span>
-<span id="cb50-14"><a href="#cb50-14"></a>L[<span class="kw">c</span>(<span class="dv">3</span>,<span class="dv">9</span>),<span class="st">&quot;OHTvsCON48&quot;</span>] &lt;-<span class="st"> </span><span class="dv">1</span></span>
-<span id="cb50-15"><a href="#cb50-15"></a><span class="co"># DPN control interaction</span></span>
-<span id="cb50-16"><a href="#cb50-16"></a>L[<span class="dv">8</span>,<span class="st">&quot;DPNvsCONInt&quot;</span>] &lt;-<span class="st"> </span><span class="dv">1</span></span>
-<span id="cb50-17"><a href="#cb50-17"></a><span class="co"># OHT control interaction</span></span>
-<span id="cb50-18"><a href="#cb50-18"></a>L[<span class="dv">9</span>,<span class="st">&quot;OHTvsCONInt&quot;</span>] &lt;-<span class="st"> </span><span class="dv">1</span></span>
-<span id="cb50-19"><a href="#cb50-19"></a><span class="co"># OHT DPN interaction</span></span>
-<span id="cb50-20"><a href="#cb50-20"></a>L[<span class="kw">c</span>(<span class="dv">9</span>,<span class="dv">8</span>),<span class="st">&quot;OHTvsDPNInt&quot;</span>] &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">-1</span>)</span>
-<span id="cb50-21"><a href="#cb50-21"></a></span>
-<span id="cb50-22"><a href="#cb50-22"></a>L</span></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a>L &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, <span class="dt">nrow =</span> <span class="kw">ncol</span>(fit<span class="op">$</span>coefficients), <span class="dt">ncol =</span> <span class="dv">7</span>)</span>
+<span id="cb43-2"><a href="#cb43-2"></a><span class="kw">rownames</span>(L) &lt;-<span class="st"> </span><span class="kw">colnames</span>(fit<span class="op">$</span>coefficients)</span>
+<span id="cb43-3"><a href="#cb43-3"></a><span class="kw">colnames</span>(L) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;DPNvsCON24&quot;</span>, <span class="st">&quot;DPNvsCON48&quot;</span>,</span>
+<span id="cb43-4"><a href="#cb43-4"></a>                 <span class="st">&quot;OHTvsCON24&quot;</span>, <span class="st">&quot;OHTvsCON48&quot;</span>,</span>
+<span id="cb43-5"><a href="#cb43-5"></a>                 <span class="st">&quot;DPNvsCONInt&quot;</span>, <span class="st">&quot;OHTvsCONInt&quot;</span>,</span>
+<span id="cb43-6"><a href="#cb43-6"></a>                 <span class="st">&quot;OHTvsDPNInt&quot;</span>)</span>
+<span id="cb43-7"><a href="#cb43-7"></a><span class="co"># DPN vs control at 24h</span></span>
+<span id="cb43-8"><a href="#cb43-8"></a>L[<span class="dv">2</span>,<span class="st">&quot;DPNvsCON24&quot;</span>] &lt;-<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb43-9"><a href="#cb43-9"></a><span class="co"># DPN vs control at 48h</span></span>
+<span id="cb43-10"><a href="#cb43-10"></a>L[<span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">8</span>),<span class="st">&quot;DPNvsCON48&quot;</span>] &lt;-<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb43-11"><a href="#cb43-11"></a><span class="co"># OHT vs control at 24h</span></span>
+<span id="cb43-12"><a href="#cb43-12"></a>L[<span class="dv">3</span>,<span class="st">&quot;OHTvsCON24&quot;</span>] &lt;-<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb43-13"><a href="#cb43-13"></a><span class="co"># OHT vs control at 48h</span></span>
+<span id="cb43-14"><a href="#cb43-14"></a>L[<span class="kw">c</span>(<span class="dv">3</span>,<span class="dv">9</span>),<span class="st">&quot;OHTvsCON48&quot;</span>] &lt;-<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb43-15"><a href="#cb43-15"></a><span class="co"># DPN control interaction</span></span>
+<span id="cb43-16"><a href="#cb43-16"></a>L[<span class="dv">8</span>,<span class="st">&quot;DPNvsCONInt&quot;</span>] &lt;-<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb43-17"><a href="#cb43-17"></a><span class="co"># OHT control interaction</span></span>
+<span id="cb43-18"><a href="#cb43-18"></a>L[<span class="dv">9</span>,<span class="st">&quot;OHTvsCONInt&quot;</span>] &lt;-<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb43-19"><a href="#cb43-19"></a><span class="co"># OHT DPN interaction</span></span>
+<span id="cb43-20"><a href="#cb43-20"></a>L[<span class="kw">c</span>(<span class="dv">9</span>,<span class="dv">8</span>),<span class="st">&quot;OHTvsDPNInt&quot;</span>] &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">-1</span>)</span>
+<span id="cb43-21"><a href="#cb43-21"></a></span>
+<span id="cb43-22"><a href="#cb43-22"></a>L</span></code></pre></div>
 <pre><code>##                      DPNvsCON24 DPNvsCON48 OHTvsCON24 OHTvsCON48 DPNvsCONInt
 ## (Intercept)                   0          0          0          0           0
 ## treatmentDPN                  1          1          0          0           0
@@ -1000,17 +988,17 @@ The authors are acknowledging the relatedness of samples derived from the same d
 ## treatmentDPN:time48h           0          -1
 ## treatmentOHT:time48h           1           1</code></pre>
 <p>And, finally, we can assess each hypothesis using the <code>glmLRT</code> function implemented in <code>edgeR</code>. We can assess each hypothesis separately by looping over the contrasts.</p>
-<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1"></a>lrtList &lt;-<span class="st"> </span><span class="kw">list</span>() <span class="co">#list of results</span></span>
-<span id="cb52-2"><a href="#cb52-2"></a><span class="cf">for</span>(cc <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">ncol</span>(L)) lrtList[[cc]] &lt;-<span class="st"> </span><span class="kw">glmLRT</span>(fit, <span class="dt">contrast =</span> L[,cc])</span>
-<span id="cb52-3"><a href="#cb52-3"></a></span>
-<span id="cb52-4"><a href="#cb52-4"></a><span class="co"># p-value histograms</span></span>
-<span id="cb52-5"><a href="#cb52-5"></a>pvalList &lt;-<span class="st"> </span><span class="kw">lapply</span>(lrtList, <span class="cf">function</span>(x) x<span class="op">$</span>table<span class="op">$</span>PValue)</span>
-<span id="cb52-6"><a href="#cb52-6"></a>pvalMat &lt;-<span class="st"> </span><span class="kw">do.call</span>(cbind,  pvalList)</span>
-<span id="cb52-7"><a href="#cb52-7"></a><span class="kw">colnames</span>(pvalMat) &lt;-<span class="st"> </span><span class="kw">colnames</span>(L)</span>
-<span id="cb52-8"><a href="#cb52-8"></a><span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">3</span>,<span class="dv">3</span>))</span>
-<span id="cb52-9"><a href="#cb52-9"></a><span class="kw">sapply</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">ncol</span>(pvalMat), <span class="cf">function</span>(ii) <span class="kw">hist</span>(pvalMat[,ii], </span>
-<span id="cb52-10"><a href="#cb52-10"></a>                                          <span class="dt">main =</span> <span class="kw">colnames</span>(pvalMat)[ii],</span>
-<span id="cb52-11"><a href="#cb52-11"></a>                                          <span class="dt">xlab =</span> <span class="st">&quot;p-value&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1"></a>lrtList &lt;-<span class="st"> </span><span class="kw">list</span>() <span class="co">#list of results</span></span>
+<span id="cb45-2"><a href="#cb45-2"></a><span class="cf">for</span>(cc <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">ncol</span>(L)) lrtList[[cc]] &lt;-<span class="st"> </span><span class="kw">glmLRT</span>(fit, <span class="dt">contrast =</span> L[,cc])</span>
+<span id="cb45-3"><a href="#cb45-3"></a></span>
+<span id="cb45-4"><a href="#cb45-4"></a><span class="co"># p-value histograms</span></span>
+<span id="cb45-5"><a href="#cb45-5"></a>pvalList &lt;-<span class="st"> </span><span class="kw">lapply</span>(lrtList, <span class="cf">function</span>(x) x<span class="op">$</span>table<span class="op">$</span>PValue)</span>
+<span id="cb45-6"><a href="#cb45-6"></a>pvalMat &lt;-<span class="st"> </span><span class="kw">do.call</span>(cbind,  pvalList)</span>
+<span id="cb45-7"><a href="#cb45-7"></a><span class="kw">colnames</span>(pvalMat) &lt;-<span class="st"> </span><span class="kw">colnames</span>(L)</span>
+<span id="cb45-8"><a href="#cb45-8"></a><span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">3</span>,<span class="dv">3</span>))</span>
+<span id="cb45-9"><a href="#cb45-9"></a><span class="kw">sapply</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">ncol</span>(pvalMat), <span class="cf">function</span>(ii) <span class="kw">hist</span>(pvalMat[,ii], </span>
+<span id="cb45-10"><a href="#cb45-10"></a>                                          <span class="dt">main =</span> <span class="kw">colnames</span>(pvalMat)[ii],</span>
+<span id="cb45-11"><a href="#cb45-11"></a>                                          <span class="dt">xlab =</span> <span class="st">&quot;p-value&quot;</span>))</span></code></pre></div>
 <pre><code>##          [,1]            [,2]            [,3]            [,4]           
 ## breaks   Numeric,21      Numeric,21      Numeric,21      Numeric,21     
 ## counts   Integer,20      Integer,20      Integer,20      Integer,20     
@@ -1028,9 +1016,9 @@ The authors are acknowledging the relatedness of samples derived from the same d
 <p><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 <div id="multiple-testing" class="section level3">
 <h3><span class="header-section-number">5.1.1</span> Multiple testing</h3>
-<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1"></a><span class="co"># number of DE genes</span></span>
-<span id="cb54-2"><a href="#cb54-2"></a>padjMat &lt;-<span class="st"> </span><span class="kw">apply</span>(pvalMat, <span class="dv">2</span>, p.adjust, <span class="dt">method=</span><span class="st">&quot;fdr&quot;</span>)</span>
-<span id="cb54-3"><a href="#cb54-3"></a><span class="kw">colSums</span>(padjMat <span class="op">&lt;=</span><span class="st"> </span><span class="fl">0.05</span> )</span></code></pre></div>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a><span class="co"># number of DE genes</span></span>
+<span id="cb47-2"><a href="#cb47-2"></a>padjMat &lt;-<span class="st"> </span><span class="kw">apply</span>(pvalMat, <span class="dv">2</span>, p.adjust, <span class="dt">method=</span><span class="st">&quot;fdr&quot;</span>)</span>
+<span id="cb47-3"><a href="#cb47-3"></a><span class="kw">colSums</span>(padjMat <span class="op">&lt;=</span><span class="st"> </span><span class="fl">0.05</span> )</span></code></pre></div>
 <pre><code>##  DPNvsCON24  DPNvsCON48  OHTvsCON24  OHTvsCON48 DPNvsCONInt OHTvsCONInt 
 ##           2          64           0          23           0           0 
 ## OHTvsDPNInt 
@@ -1040,34 +1028,34 @@ The authors are acknowledging the relatedness of samples derived from the same d
 <div id="visualization" class="section level3">
 <h3><span class="header-section-number">5.1.2</span> Visualization</h3>
 <p>Let’s visualize some results for the DPN vs control at 48h contrast.</p>
-<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1"></a><span class="kw">library</span>(scales) <span class="co"># for scales::alpha()</span></span>
-<span id="cb56-2"><a href="#cb56-2"></a>deGenes &lt;-<span class="st"> </span><span class="kw">p.adjust</span>(lrtList[[<span class="dv">2</span>]]<span class="op">$</span>table<span class="op">$</span>PValue, <span class="st">&quot;fdr&quot;</span>) <span class="op">&lt;=</span><span class="st"> </span><span class="fl">0.05</span></span>
-<span id="cb56-3"><a href="#cb56-3"></a></span>
-<span id="cb56-4"><a href="#cb56-4"></a><span class="co">## volcano plot</span></span>
-<span id="cb56-5"><a href="#cb56-5"></a><span class="kw">plot</span>(<span class="dt">x =</span> lrtList[[<span class="dv">2</span>]]<span class="op">$</span>table<span class="op">$</span>logFC,</span>
-<span id="cb56-6"><a href="#cb56-6"></a>     <span class="dt">y =</span> <span class="op">-</span><span class="kw">log10</span>(lrtList[[<span class="dv">2</span>]]<span class="op">$</span>table<span class="op">$</span>PValue),</span>
-<span id="cb56-7"><a href="#cb56-7"></a>     <span class="dt">xlab =</span> <span class="st">&quot;log Fold-change&quot;</span>,</span>
-<span id="cb56-8"><a href="#cb56-8"></a>     <span class="dt">ylab =</span> <span class="st">&quot;-log10 P-value&quot;</span>,</span>
-<span id="cb56-9"><a href="#cb56-9"></a>     <span class="dt">pch =</span> <span class="dv">16</span>, <span class="dt">col =</span> <span class="kw">alpha</span>(deGenes<span class="op">+</span><span class="dv">1</span>, <span class="fl">.4</span>), </span>
-<span id="cb56-10"><a href="#cb56-10"></a>     <span class="dt">cex=</span><span class="dv">2</span><span class="op">/</span><span class="dv">3</span>, <span class="dt">bty=</span><span class="st">&#39;l&#39;</span>)</span>
-<span id="cb56-11"><a href="#cb56-11"></a><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;DE&quot;</span>, <span class="st">&quot;not DE&quot;</span>),</span>
-<span id="cb56-12"><a href="#cb56-12"></a>       <span class="dt">col =</span> <span class="dv">2</span><span class="op">:</span><span class="dv">1</span>, <span class="dt">pch=</span><span class="dv">16</span>, <span class="dt">bty=</span><span class="st">&#39;n&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1"></a><span class="kw">library</span>(scales) <span class="co"># for scales::alpha()</span></span>
+<span id="cb49-2"><a href="#cb49-2"></a>deGenes &lt;-<span class="st"> </span><span class="kw">p.adjust</span>(lrtList[[<span class="dv">2</span>]]<span class="op">$</span>table<span class="op">$</span>PValue, <span class="st">&quot;fdr&quot;</span>) <span class="op">&lt;=</span><span class="st"> </span><span class="fl">0.05</span></span>
+<span id="cb49-3"><a href="#cb49-3"></a></span>
+<span id="cb49-4"><a href="#cb49-4"></a><span class="co">## volcano plot</span></span>
+<span id="cb49-5"><a href="#cb49-5"></a><span class="kw">plot</span>(<span class="dt">x =</span> lrtList[[<span class="dv">2</span>]]<span class="op">$</span>table<span class="op">$</span>logFC,</span>
+<span id="cb49-6"><a href="#cb49-6"></a>     <span class="dt">y =</span> <span class="op">-</span><span class="kw">log10</span>(lrtList[[<span class="dv">2</span>]]<span class="op">$</span>table<span class="op">$</span>PValue),</span>
+<span id="cb49-7"><a href="#cb49-7"></a>     <span class="dt">xlab =</span> <span class="st">&quot;log Fold-change&quot;</span>,</span>
+<span id="cb49-8"><a href="#cb49-8"></a>     <span class="dt">ylab =</span> <span class="st">&quot;-log10 P-value&quot;</span>,</span>
+<span id="cb49-9"><a href="#cb49-9"></a>     <span class="dt">pch =</span> <span class="dv">16</span>, <span class="dt">col =</span> <span class="kw">alpha</span>(deGenes<span class="op">+</span><span class="dv">1</span>, <span class="fl">.4</span>), </span>
+<span id="cb49-10"><a href="#cb49-10"></a>     <span class="dt">cex=</span><span class="dv">2</span><span class="op">/</span><span class="dv">3</span>, <span class="dt">bty=</span><span class="st">&#39;l&#39;</span>)</span>
+<span id="cb49-11"><a href="#cb49-11"></a><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;DE&quot;</span>, <span class="st">&quot;not DE&quot;</span>),</span>
+<span id="cb49-12"><a href="#cb49-12"></a>       <span class="dt">col =</span> <span class="dv">2</span><span class="op">:</span><span class="dv">1</span>, <span class="dt">pch=</span><span class="dv">16</span>, <span class="dt">bty=</span><span class="st">&#39;n&#39;</span>)</span></code></pre></div>
 <p><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
-<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1"></a><span class="co">## MD-plot</span></span>
-<span id="cb57-2"><a href="#cb57-2"></a><span class="kw">plot</span>(<span class="dt">x =</span> lrtList[[<span class="dv">2</span>]]<span class="op">$</span>table<span class="op">$</span>logCPM,</span>
-<span id="cb57-3"><a href="#cb57-3"></a>     <span class="dt">y =</span> lrtList[[<span class="dv">2</span>]]<span class="op">$</span>table<span class="op">$</span>logFC,</span>
-<span id="cb57-4"><a href="#cb57-4"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Average log CPM&quot;</span>,</span>
-<span id="cb57-5"><a href="#cb57-5"></a>     <span class="dt">ylab =</span> <span class="st">&quot;Log fold-change&quot;</span>,</span>
-<span id="cb57-6"><a href="#cb57-6"></a>     <span class="dt">pch =</span> <span class="dv">16</span>, <span class="dt">col =</span> <span class="kw">alpha</span>(deGenes<span class="op">+</span><span class="dv">1</span>, <span class="fl">.4</span>), </span>
-<span id="cb57-7"><a href="#cb57-7"></a>     <span class="dt">cex=</span><span class="dv">2</span><span class="op">/</span><span class="dv">3</span>, <span class="dt">bty=</span><span class="st">&#39;l&#39;</span>)</span>
-<span id="cb57-8"><a href="#cb57-8"></a><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;DE&quot;</span>, <span class="st">&quot;not DE&quot;</span>),</span>
-<span id="cb57-9"><a href="#cb57-9"></a>       <span class="dt">col =</span> <span class="dv">2</span><span class="op">:</span><span class="dv">1</span>, <span class="dt">pch=</span><span class="dv">16</span>, <span class="dt">bty=</span><span class="st">&#39;n&#39;</span>)</span>
-<span id="cb57-10"><a href="#cb57-10"></a><span class="kw">abline</span>(<span class="dt">h=</span><span class="dv">0</span>, <span class="dt">col=</span><span class="st">&quot;orange&quot;</span>, <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">lty=</span><span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1"></a><span class="co">## MD-plot</span></span>
+<span id="cb50-2"><a href="#cb50-2"></a><span class="kw">plot</span>(<span class="dt">x =</span> lrtList[[<span class="dv">2</span>]]<span class="op">$</span>table<span class="op">$</span>logCPM,</span>
+<span id="cb50-3"><a href="#cb50-3"></a>     <span class="dt">y =</span> lrtList[[<span class="dv">2</span>]]<span class="op">$</span>table<span class="op">$</span>logFC,</span>
+<span id="cb50-4"><a href="#cb50-4"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Average log CPM&quot;</span>,</span>
+<span id="cb50-5"><a href="#cb50-5"></a>     <span class="dt">ylab =</span> <span class="st">&quot;Log fold-change&quot;</span>,</span>
+<span id="cb50-6"><a href="#cb50-6"></a>     <span class="dt">pch =</span> <span class="dv">16</span>, <span class="dt">col =</span> <span class="kw">alpha</span>(deGenes<span class="op">+</span><span class="dv">1</span>, <span class="fl">.4</span>), </span>
+<span id="cb50-7"><a href="#cb50-7"></a>     <span class="dt">cex=</span><span class="dv">2</span><span class="op">/</span><span class="dv">3</span>, <span class="dt">bty=</span><span class="st">&#39;l&#39;</span>)</span>
+<span id="cb50-8"><a href="#cb50-8"></a><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;DE&quot;</span>, <span class="st">&quot;not DE&quot;</span>),</span>
+<span id="cb50-9"><a href="#cb50-9"></a>       <span class="dt">col =</span> <span class="dv">2</span><span class="op">:</span><span class="dv">1</span>, <span class="dt">pch=</span><span class="dv">16</span>, <span class="dt">bty=</span><span class="st">&#39;n&#39;</span>)</span>
+<span id="cb50-10"><a href="#cb50-10"></a><span class="kw">abline</span>(<span class="dt">h=</span><span class="dv">0</span>, <span class="dt">col=</span><span class="st">&quot;orange&quot;</span>, <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">lty=</span><span class="dv">2</span>)</span></code></pre></div>
 <p><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-20-2.png" width="672" /></p>
 <hr />
-<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1"></a><span class="co"># extract all DE genes</span></span>
-<span id="cb58-2"><a href="#cb58-2"></a>deGenes &lt;-<span class="st"> </span><span class="kw">rownames</span>(lrtList[[<span class="dv">2</span>]]<span class="op">$</span>table)[<span class="kw">p.adjust</span>(lrtList[[<span class="dv">2</span>]]<span class="op">$</span>table<span class="op">$</span>PValue, <span class="st">&quot;fdr&quot;</span>) <span class="op">&lt;=</span><span class="st"> </span><span class="fl">0.05</span>]</span>
-<span id="cb58-3"><a href="#cb58-3"></a>deGenes</span></code></pre></div>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1"></a><span class="co"># extract all DE genes</span></span>
+<span id="cb51-2"><a href="#cb51-2"></a>deGenes &lt;-<span class="st"> </span><span class="kw">rownames</span>(lrtList[[<span class="dv">2</span>]]<span class="op">$</span>table)[<span class="kw">p.adjust</span>(lrtList[[<span class="dv">2</span>]]<span class="op">$</span>table<span class="op">$</span>PValue, <span class="st">&quot;fdr&quot;</span>) <span class="op">&lt;=</span><span class="st"> </span><span class="fl">0.05</span>]</span>
+<span id="cb51-3"><a href="#cb51-3"></a>deGenes</span></code></pre></div>
 <pre><code>##  [1] &quot;ENSG00000035928&quot; &quot;ENSG00000044574&quot; &quot;ENSG00000070882&quot; &quot;ENSG00000075790&quot;
 ##  [5] &quot;ENSG00000091137&quot; &quot;ENSG00000092621&quot; &quot;ENSG00000099864&quot; &quot;ENSG00000099875&quot;
 ##  [9] &quot;ENSG00000100219&quot; &quot;ENSG00000100867&quot; &quot;ENSG00000101255&quot; &quot;ENSG00000101974&quot;
@@ -1084,14 +1072,14 @@ The authors are acknowledging the relatedness of samples derived from the same d
 ## [53] &quot;ENSG00000182836&quot; &quot;ENSG00000183401&quot; &quot;ENSG00000185818&quot; &quot;ENSG00000187908&quot;
 ## [57] &quot;ENSG00000188783&quot; &quot;ENSG00000197976&quot; &quot;ENSG00000219481&quot; &quot;ENSG00000226887&quot;
 ## [61] &quot;ENSG00000233705&quot; &quot;ENSG00000234431&quot; &quot;ENSG00000236044&quot; &quot;ENSG00000243927&quot;</code></pre>
-<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1"></a><span class="co"># order according to absolute fold-change</span></span>
-<span id="cb60-2"><a href="#cb60-2"></a>orderedDEGenes &lt;-<span class="st"> </span>deGenes[<span class="kw">order</span>(<span class="kw">abs</span>(lrtList[[<span class="dv">2</span>]]<span class="op">$</span>table[deGenes, <span class="st">&quot;logFC&quot;</span>]), <span class="dt">decreasing =</span> <span class="ot">TRUE</span>)]</span>
-<span id="cb60-3"><a href="#cb60-3"></a></span>
-<span id="cb60-4"><a href="#cb60-4"></a><span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">3</span>,<span class="dv">3</span>))</span>
-<span id="cb60-5"><a href="#cb60-5"></a><span class="cf">for</span>(kk <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(orderedDEGenes)){</span>
-<span id="cb60-6"><a href="#cb60-6"></a>  <span class="kw">boxplot</span>(<span class="kw">log1p</span>(<span class="kw">assays</span>(se)<span class="op">$</span>counts[orderedDEGenes[kk],]) <span class="op">~</span><span class="st"> </span><span class="kw">interaction</span>(treatment, time))</span>
-<span id="cb60-7"><a href="#cb60-7"></a>  <span class="kw">boxplot</span>(fit<span class="op">$</span>fitted.values[orderedDEGenes[kk],] <span class="op">~</span><span class="st"> </span><span class="kw">interaction</span>(treatment, time))</span>
-<span id="cb60-8"><a href="#cb60-8"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1"></a><span class="co"># order according to absolute fold-change</span></span>
+<span id="cb53-2"><a href="#cb53-2"></a>orderedDEGenes &lt;-<span class="st"> </span>deGenes[<span class="kw">order</span>(<span class="kw">abs</span>(lrtList[[<span class="dv">2</span>]]<span class="op">$</span>table[deGenes, <span class="st">&quot;logFC&quot;</span>]), <span class="dt">decreasing =</span> <span class="ot">TRUE</span>)]</span>
+<span id="cb53-3"><a href="#cb53-3"></a></span>
+<span id="cb53-4"><a href="#cb53-4"></a><span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">3</span>,<span class="dv">3</span>))</span>
+<span id="cb53-5"><a href="#cb53-5"></a><span class="cf">for</span>(kk <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(orderedDEGenes)){</span>
+<span id="cb53-6"><a href="#cb53-6"></a>  <span class="kw">boxplot</span>(<span class="kw">log1p</span>(<span class="kw">assays</span>(se)<span class="op">$</span>counts[orderedDEGenes[kk],]) <span class="op">~</span><span class="st"> </span><span class="kw">interaction</span>(treatment, time))</span>
+<span id="cb53-7"><a href="#cb53-7"></a>  <span class="kw">boxplot</span>(fit<span class="op">$</span>fitted.values[orderedDEGenes[kk],] <span class="op">~</span><span class="st"> </span><span class="kw">interaction</span>(treatment, time))</span>
+<span id="cb53-8"><a href="#cb53-8"></a>}</span></code></pre></div>
 <p><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-21-1.png" width="672" /><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-21-2.png" width="672" /><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-21-3.png" width="672" /><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-21-4.png" width="672" /><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-21-5.png" width="672" /><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-21-6.png" width="672" /><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-21-7.png" width="672" /><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-21-8.png" width="672" /><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-21-9.png" width="672" /><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-21-10.png" width="672" /><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-21-11.png" width="672" /><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-21-12.png" width="672" /><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-21-13.png" width="672" /><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-21-14.png" width="672" /><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-21-15.png" width="672" /></p>
 </div>
 </div>
@@ -1101,33 +1089,33 @@ The authors are acknowledging the relatedness of samples derived from the same d
 <p>Mean of time 24h: <span class="math display">\[\log \mu_{g,24h} = \frac{1}{3} \left\{ \underbrace{(\beta_{g0})}_\text{Control, 24h} + \underbrace{(\beta_{g0} + \beta_{g1})}_\text{DPN, 24h} + \underbrace{(\beta_{g0} + \beta_{g2})}_\text{OHT, 24h} \right\}\]</span></p>
 <p>Mean of time 48h: <span class="math display">\[\log \mu_{g,48h} = \frac{1}{3} \left\{ \underbrace{(\beta_{g0} + \beta_{g3})}_\text{Control, 48h} + \underbrace{(\beta_{g0} + \beta_{g1} + \beta_{g3} + \beta_{g7})}_\text{DPN, 48h} + \underbrace{(\beta_{g0} + \beta_{g2}+ \beta_{g3} + \beta_{g8})}_\text{OHT, 48h} \right\}\]</span></p>
 <p>Difference: <span class="math display">\[ \log \left( \frac{\mu_{g,48h}}{\mu_{g,24h}} \right) = \beta_{g3} + \frac{1}{3}(\beta_{g7} + \beta_{g8}) \]</span></p>
-<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1"></a>Ltime &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, <span class="dt">nrow =</span> <span class="kw">ncol</span>(fit<span class="op">$</span>coefficients), <span class="dt">ncol =</span> <span class="dv">1</span>)</span>
-<span id="cb61-2"><a href="#cb61-2"></a><span class="kw">rownames</span>(Ltime) &lt;-<span class="st"> </span><span class="kw">colnames</span>(fit<span class="op">$</span>coefficients)</span>
-<span id="cb61-3"><a href="#cb61-3"></a>Ltime[<span class="kw">c</span>(<span class="st">&quot;time48h&quot;</span>, <span class="st">&quot;treatmentDPN:time48h&quot;</span>, <span class="st">&quot;treatmentOHT:time48h&quot;</span>),<span class="dv">1</span>] &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span><span class="op">/</span><span class="dv">3</span>, <span class="dv">1</span><span class="op">/</span><span class="dv">3</span>)</span>
-<span id="cb61-4"><a href="#cb61-4"></a></span>
-<span id="cb61-5"><a href="#cb61-5"></a>lrtTime &lt;-<span class="st"> </span><span class="kw">glmLRT</span>(fit, <span class="dt">contrast=</span>Ltime)</span>
-<span id="cb61-6"><a href="#cb61-6"></a><span class="kw">hist</span>(lrtTime<span class="op">$</span>table<span class="op">$</span>PValue) <span class="co"># very different p-value distribution</span></span></code></pre></div>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1"></a>Ltime &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, <span class="dt">nrow =</span> <span class="kw">ncol</span>(fit<span class="op">$</span>coefficients), <span class="dt">ncol =</span> <span class="dv">1</span>)</span>
+<span id="cb54-2"><a href="#cb54-2"></a><span class="kw">rownames</span>(Ltime) &lt;-<span class="st"> </span><span class="kw">colnames</span>(fit<span class="op">$</span>coefficients)</span>
+<span id="cb54-3"><a href="#cb54-3"></a>Ltime[<span class="kw">c</span>(<span class="st">&quot;time48h&quot;</span>, <span class="st">&quot;treatmentDPN:time48h&quot;</span>, <span class="st">&quot;treatmentOHT:time48h&quot;</span>),<span class="dv">1</span>] &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span><span class="op">/</span><span class="dv">3</span>, <span class="dv">1</span><span class="op">/</span><span class="dv">3</span>)</span>
+<span id="cb54-4"><a href="#cb54-4"></a></span>
+<span id="cb54-5"><a href="#cb54-5"></a>lrtTime &lt;-<span class="st"> </span><span class="kw">glmLRT</span>(fit, <span class="dt">contrast=</span>Ltime)</span>
+<span id="cb54-6"><a href="#cb54-6"></a><span class="kw">hist</span>(lrtTime<span class="op">$</span>table<span class="op">$</span>PValue) <span class="co"># very different p-value distribution</span></span></code></pre></div>
 <p><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
-<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1"></a><span class="kw">sum</span>(<span class="kw">p.adjust</span>(lrtTime<span class="op">$</span>table<span class="op">$</span>PValue, <span class="st">&quot;fdr&quot;</span>) <span class="op">&lt;=</span><span class="st"> </span><span class="fl">0.05</span>) <span class="co"># many DE genes</span></span></code></pre></div>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1"></a><span class="kw">sum</span>(<span class="kw">p.adjust</span>(lrtTime<span class="op">$</span>table<span class="op">$</span>PValue, <span class="st">&quot;fdr&quot;</span>) <span class="op">&lt;=</span><span class="st"> </span><span class="fl">0.05</span>) <span class="co"># many DE genes</span></span></code></pre></div>
 <pre><code>## [1] 6105</code></pre>
 </div>
 </div>
 <div id="alternative-parameterizations" class="section level1">
 <h1><span class="header-section-number">6</span> Alternative parameterizations</h1>
 <p>While our design matrix here was parameterized as <code>~ treatment*time + patient</code> alternative, equivalent parameterizations are also possible. Below, we demonstrate another parameterization that could work, too, and can be more intuitive. In this parameterization, we estimate a mean for each experimental condition, without an intercept, which can be convenient to think about how to set up contrasts.</p>
-<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1"></a>treatTime &lt;-<span class="st"> </span><span class="kw">as.factor</span>(<span class="kw">paste0</span>(treatment, time))</span>
-<span id="cb64-2"><a href="#cb64-2"></a><span class="kw">table</span>(treatTime)</span></code></pre></div>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1"></a>treatTime &lt;-<span class="st"> </span><span class="kw">as.factor</span>(<span class="kw">paste0</span>(treatment, time))</span>
+<span id="cb57-2"><a href="#cb57-2"></a><span class="kw">table</span>(treatTime)</span></code></pre></div>
 <pre><code>## treatTime
 ## Control24h Control48h     DPN24h     DPN48h     OHT24h     OHT48h 
 ##          3          4          4          4          4          4</code></pre>
-<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1"></a>design2 &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(<span class="op">~</span><span class="st"> </span><span class="dv">0</span> <span class="op">+</span><span class="st"> </span>treatTime <span class="op">+</span><span class="st"> </span>patient)</span>
-<span id="cb66-2"><a href="#cb66-2"></a></span>
-<span id="cb66-3"><a href="#cb66-3"></a>dge2 &lt;-<span class="st"> </span><span class="kw">calcNormFactors</span>(se)</span>
-<span id="cb66-4"><a href="#cb66-4"></a>dge2 &lt;-<span class="st"> </span><span class="kw">estimateDisp</span>(dge2, design2)</span>
-<span id="cb66-5"><a href="#cb66-5"></a><span class="kw">plotBCV</span>(dge2)</span></code></pre></div>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1"></a>design2 &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(<span class="op">~</span><span class="st"> </span><span class="dv">0</span> <span class="op">+</span><span class="st"> </span>treatTime <span class="op">+</span><span class="st"> </span>patient)</span>
+<span id="cb59-2"><a href="#cb59-2"></a></span>
+<span id="cb59-3"><a href="#cb59-3"></a>dge2 &lt;-<span class="st"> </span><span class="kw">calcNormFactors</span>(se)</span>
+<span id="cb59-4"><a href="#cb59-4"></a>dge2 &lt;-<span class="st"> </span><span class="kw">estimateDisp</span>(dge2, design2)</span>
+<span id="cb59-5"><a href="#cb59-5"></a><span class="kw">plotBCV</span>(dge2)</span></code></pre></div>
 <p><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
-<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1"></a>fit2 &lt;-<span class="st"> </span><span class="kw">glmFit</span>(dge2, design2)</span>
-<span id="cb67-2"><a href="#cb67-2"></a><span class="kw">head</span>(fit2<span class="op">$</span>coefficients)</span></code></pre></div>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1"></a>fit2 &lt;-<span class="st"> </span><span class="kw">glmFit</span>(dge2, design2)</span>
+<span id="cb60-2"><a href="#cb60-2"></a><span class="kw">head</span>(fit2<span class="op">$</span>coefficients)</span></code></pre></div>
 <pre><code>##                 treatTimeControl24h treatTimeControl48h treatTimeDPN24h
 ## ENSG00000000003           -9.331882           -9.200708       -9.220647
 ## ENSG00000000419          -10.373781          -10.468552      -10.426939
@@ -1149,19 +1137,19 @@ The authors are acknowledging the relatedness of samples derived from the same d
 ## ENSG00000000460 -0.33688177 -0.1340312
 ## ENSG00000000938  0.53981205  0.8188658
 ## ENSG00000000971  0.93631262 -0.2692062</code></pre>
-<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1"></a><span class="co">## for example: the estimate for the DPN24h vs control 24h is still the same,</span></span>
-<span id="cb69-2"><a href="#cb69-2"></a><span class="co">## but requires a different combination of parameters</span></span>
-<span id="cb69-3"><a href="#cb69-3"></a><span class="kw">plot</span>(fit<span class="op">$</span>coefficients[,<span class="st">&quot;treatmentDPN&quot;</span>], </span>
-<span id="cb69-4"><a href="#cb69-4"></a>     fit2<span class="op">$</span>coefficients[,<span class="st">&quot;treatTimeDPN24h&quot;</span>] <span class="op">-</span><span class="st"> </span>fit2<span class="op">$</span>coefficients[,<span class="st">&quot;treatTimeControl24h&quot;</span>])</span></code></pre></div>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1"></a><span class="co">## for example: the estimate for the DPN24h vs control 24h is still the same,</span></span>
+<span id="cb62-2"><a href="#cb62-2"></a><span class="co">## but requires a different combination of parameters</span></span>
+<span id="cb62-3"><a href="#cb62-3"></a><span class="kw">plot</span>(fit<span class="op">$</span>coefficients[,<span class="st">&quot;treatmentDPN&quot;</span>], </span>
+<span id="cb62-4"><a href="#cb62-4"></a>     fit2<span class="op">$</span>coefficients[,<span class="st">&quot;treatTimeDPN24h&quot;</span>] <span class="op">-</span><span class="st"> </span>fit2<span class="op">$</span>coefficients[,<span class="st">&quot;treatTimeControl24h&quot;</span>])</span></code></pre></div>
 <p><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-23-2.png" width="672" /></p>
-<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1"></a><span class="co"># Let&#39;s implement the DPNvsCON48 contrast</span></span>
-<span id="cb70-2"><a href="#cb70-2"></a>L2 &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, <span class="dt">nrow =</span> <span class="kw">ncol</span>(fit2<span class="op">$</span>coefficients), <span class="dt">ncol =</span> <span class="dv">1</span>)</span>
-<span id="cb70-3"><a href="#cb70-3"></a><span class="kw">rownames</span>(L2) &lt;-<span class="st"> </span><span class="kw">colnames</span>(fit2<span class="op">$</span>coefficients)</span>
-<span id="cb70-4"><a href="#cb70-4"></a>L2[<span class="kw">c</span>(<span class="st">&quot;treatTimeDPN48h&quot;</span>, <span class="st">&quot;treatTimeControl48h&quot;</span>),<span class="dv">1</span>] &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">-1</span>)</span>
-<span id="cb70-5"><a href="#cb70-5"></a>lrt2 &lt;-<span class="st"> </span><span class="kw">glmLRT</span>(fit2, <span class="dt">contrast=</span>L2[,<span class="dv">1</span>])</span>
-<span id="cb70-6"><a href="#cb70-6"></a><span class="kw">hist</span>(lrt2<span class="op">$</span>table<span class="op">$</span>PValue)</span></code></pre></div>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1"></a><span class="co"># Let&#39;s implement the DPNvsCON48 contrast</span></span>
+<span id="cb63-2"><a href="#cb63-2"></a>L2 &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, <span class="dt">nrow =</span> <span class="kw">ncol</span>(fit2<span class="op">$</span>coefficients), <span class="dt">ncol =</span> <span class="dv">1</span>)</span>
+<span id="cb63-3"><a href="#cb63-3"></a><span class="kw">rownames</span>(L2) &lt;-<span class="st"> </span><span class="kw">colnames</span>(fit2<span class="op">$</span>coefficients)</span>
+<span id="cb63-4"><a href="#cb63-4"></a>L2[<span class="kw">c</span>(<span class="st">&quot;treatTimeDPN48h&quot;</span>, <span class="st">&quot;treatTimeControl48h&quot;</span>),<span class="dv">1</span>] &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">-1</span>)</span>
+<span id="cb63-5"><a href="#cb63-5"></a>lrt2 &lt;-<span class="st"> </span><span class="kw">glmLRT</span>(fit2, <span class="dt">contrast=</span>L2[,<span class="dv">1</span>])</span>
+<span id="cb63-6"><a href="#cb63-6"></a><span class="kw">hist</span>(lrt2<span class="op">$</span>table<span class="op">$</span>PValue)</span></code></pre></div>
 <p><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-23-3.png" width="672" /></p>
-<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1"></a><span class="kw">plot</span>(<span class="dt">x=</span>lrt2<span class="op">$</span>table<span class="op">$</span>PValue, <span class="dt">y=</span>lrtList[[<span class="dv">2</span>]]<span class="op">$</span>table<span class="op">$</span>PValue)</span></code></pre></div>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1"></a><span class="kw">plot</span>(<span class="dt">x=</span>lrt2<span class="op">$</span>table<span class="op">$</span>PValue, <span class="dt">y=</span>lrtList[[<span class="dv">2</span>]]<span class="op">$</span>table<span class="op">$</span>PValue)</span></code></pre></div>
 <p><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-23-4.png" width="672" /></p>
 </div>
 <div id="additional-challenge-opportunity-the-importance-of-reproducible-analysis" class="section level1">
