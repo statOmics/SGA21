@@ -24,30 +24,30 @@ This is part of the online course [Statistical Genomics 2021 (SGA21)](https://st
 Association of histologic grade on expression of KPNA2 gene that is known to be associated with poor BC prognosis.
 - Population: all current and future breast cancer patients
 
-![](./figures/statGenomicsGent201718-1.jpeg)
+![](https://raw.githubusercontent.com/statOmics/SGA21/master/figures/statGenomicsGent201718-1.jpeg)
 
 ---
 
-![](./figures/statGenomicsGent201718-2.jpeg)
+![](https://raw.githubusercontent.com/statOmics/SGA21/master/figures/statGenomicsGent201718-2.jpeg)
 
 ---
 
-![](./figures/statGenomicsGent201718-3.jpeg)
-
----
-
-
-![](./figures/statGenomicsGent201718-4.jpeg)
+![](https://raw.githubusercontent.com/statOmics/SGA21/master/figures/statGenomicsGent201718-3.jpeg)
 
 ---
 
 
-![](./figures/statGenomicsGent201718-5.jpeg)
+![](https://raw.githubusercontent.com/statOmics/SGA21/master/figures/statGenomicsGent201718-4.jpeg)
 
 ---
 
 
-![](./figures/statGenomicsGent201718-6.jpeg)
+![](https://raw.githubusercontent.com/statOmics/SGA21/master/figures/statGenomicsGent201718-5.jpeg)
+
+---
+
+
+![](https://raw.githubusercontent.com/statOmics/SGA21/master/figures/statGenomicsGent201718-6.jpeg)
 
 ---
 
@@ -57,7 +57,7 @@ Association of histologic grade on expression of KPNA2 gene that is known to be 
 
 ```{r}
 library(tidyverse)
-gene <- read.table("https://raw.githubusercontent.com/statOmics/SGA21/data/gse2990BreastcancerOneGene.txt",header=TRUE)
+gene <- read.table("https://raw.githubusercontent.com/statOmics/SGA21/master/data/kpna2.txt",header=TRUE)
 head(gene)
 ```
 
@@ -87,7 +87,7 @@ geneSum
 gene %>%
   ggplot(aes(x=grade,y=gene)) +
   geom_boxplot(outlier.shape=NA) +
-  geom_point()
+  geom_jitter()
 ```
 
 We can also save the plots as objects for later use!
@@ -96,7 +96,7 @@ We can also save the plots as objects for later use!
 p1 <- gene %>%
   ggplot(aes(x=grade,y=gene)) +
   geom_boxplot(outlier.shape=NA) +
-  geom_point()
+  geom_jitter()
 
 p2 <- gene %>%
   ggplot(aes(sample=gene)) +
@@ -116,7 +116,7 @@ Researchers want to assess the association of the histological grade on KPNA2 ge
 
 
 
-![](./figures/statGenomicsGent201718-6.jpeg)
+![](https://raw.githubusercontent.com/statOmics/SGA21/master/figures/statGenomicsGent201718-6.jpeg)
 
 ---
 
@@ -141,7 +141,7 @@ effectSize
 
 ---
 
-![](./figures/statGenomicsGent201718-7.jpeg)
+![](https://raw.githubusercontent.com/statOmics/SGA21/master/figures/statGenomicsGent201718-7.jpeg)
 
 ---
 
@@ -196,7 +196,7 @@ $$
 
 
 
-![](./figures/statGenomicsGent201718-8.jpeg)
+![](https://raw.githubusercontent.com/statOmics/SGA21/master/figures/statGenomicsGent201718-8.jpeg)
 
 ---
 
@@ -209,7 +209,7 @@ gene <- gene %>%
 p1 <- gene %>%
   ggplot(aes(x=grade,y=lgene)) +
   geom_boxplot(outlier.shape=NA) +
-  geom_point()
+  geom_jitter()
 
 p2 <- gene %>%
   ggplot(aes(sample=lgene)) +
@@ -220,7 +220,7 @@ p2 <- gene %>%
 p1
 p2
 
-logtest <- t.test(lgene~grade,data=gene)
+logtest <- t.test(lgene~grade,data=gene,var.equal=TRUE)
 logtest
 
 log2FC <- logtest$estimate[2]-logtest$estimate[1]
@@ -231,17 +231,17 @@ names(log2FC) <- "g3-g1"
 
 ## Conclusion
 
-There is a extremely significant association of the histological grade on the gene expression in tumor tissue.  On average, the gene expression for the grade 3 patients is `r 2^log2FC` times higher than the gene expression in grade 1 patients (95\% CI  [`r paste(round(2^-logtest$conf.int[2:1],2),collapse=", ")`], $p<<0.001$).
+There is a extremely significant association of the histological grade on the gene expression in tumor tissue.  On average, the gene expression for the grade 3 patients is `r round(2^log2FC,2)` times higher than the gene expression in grade 1 patients (95\% CI  [`r paste(round(2^-logtest$conf.int[2:1],2),collapse=", ")`], $p<<0.001$).
 
 
 
 
-![](./figures/statGenomicsGent201718-10.jpeg)
+![](https://raw.githubusercontent.com/statOmics/SGA21/master/figures/statGenomicsGent201718-10.jpeg)
 
 ---
 
 
-![](./figures/statGenomicsGent201718-11.jpeg)
+![](https://raw.githubusercontent.com/statOmics/SGA21/master/figures/statGenomicsGent201718-11.jpeg)
 
 ---
 
@@ -249,7 +249,7 @@ The patients also differ in the their lymph node status. Hence, we have a two fa
 
 Solution??
 
-![](./figures/statGenomicsGent201718-12.jpeg)
+![](https://raw.githubusercontent.com/statOmics/SGA21/master/figures/statGenomicsGent201718-12.jpeg)
 
 ---
 
@@ -560,7 +560,7 @@ e.g.
 # Homework: Adopt the gene analysis on log scale in matrix form!
 
 1. Study the solution of the exercise to understand the analysis in R
-https://gtpb.github.io/PSLS20/pages/08-multipleRegression/08-multipleRegression_KPNA2.html
+
 
 2. Calculate
 - model parameters and contrasts of interest
