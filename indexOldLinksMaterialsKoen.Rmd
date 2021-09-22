@@ -3,9 +3,7 @@ title: "Statistical Genomics Analysis 2021-2022"
 ---
 
 
-```{r}
-knitr::include_graphics("./figures/wpGraph.jpeg")
-```
+**Picture**
 
 # Course Description
 
@@ -37,9 +35,12 @@ All lecture material will be provided on this website. Please check the 'Lecture
 
 | Week | Class | Topic | HTML | PDF | Details |
 |------|-------|------|----|------|-------|
-| 1 | Introduction | Position of the course | link to HTML | link to PDF | |
-| 1 | Introduction | Recap Linear Models | [HTML](./recapGeneralLinearModel.html) | [PDF](./recapGeneralLinearModel.pdf) | |
-| 1 | Introduction | KPNA2 Example | [HTML](./multipleRegression_KPNA2.html) | [PDF](./multipleRegression_KPNA2.pdf) | |
+| 1 | Proteomics | Introduction | link to HTML | link to PDF | link to papers etc. |
+| 1 | ... | ... | ... | ... | ... |
+| 7 | Bulk RNA-seq | Introduction to sequencing | [HTML](./sequencing_intro.html) | [PDF](./sequencing_intro.pdf) | [Van den Berge *et al.* (2019)](https://www.annualreviews.org/doi/abs/10.1146/annurev-biodatasci-072018-021255): Review paper on expression analysis. |
+| 7-8 | Bulk RNA-seq | Working with count data | [HTML](./sequencing_countData.html) | [PDF](./sequencing_countData.pdf) | ... |
+| 8 | Bulk RNA-seq | Lab session \& lecture: RNA-seq analysis challenges | [Rmd](./sequencing_rnaseqIntro.Rmd), [HTML](./sequencing_rnaseqIntro.html) | [PDF](./sequencing_rnaseqIntro.pdf) | `edgeR` [paper](https://academic.oup.com/nar/article/40/10/4288/2411520), [chapter](http://www.statsci.org/smyth/pubs/edgeRChapterPreprint.pdf) and [vignette](https://bioconductor.org/packages/release/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf), `DESeq2` [paper](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8) and [vignette](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html) |
+| 8-9 | Bulk RNA-seq | Homework on bulk RNA-seq analysis 💻 | TBD | TBD | ... |
 
 
 
