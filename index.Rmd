@@ -37,7 +37,7 @@ All lecture material will be provided on this website. Please check the 'Lecture
 
 | Week | Class | Topic | HTML | PDF | Details |
 |------|-------|------|----|------|-------|
-| 1 | Introduction | Position of the course | link to HTML | link to PDF | |
+| 1 | Introduction | Position of the course |  | [PDF](./docs/intro.pdf) | |
 | 1 | Introduction | Recap Linear Models | [HTML](./recapGeneralLinearModel.html) | [PDF](./recapGeneralLinearModel.pdf) | |
 | 1 | Introduction | KPNA2 Example | [HTML](./multipleRegression_KPNA2.html) | [PDF](./multipleRegression_KPNA2.pdf) | |
 
