@@ -3,7 +3,7 @@ title: "Statistical Genomics Analysis 2021-2022"
 ---
 
 
-```{r}
+```{r echo=FALSE, warning=FALSE, message=FALSE}
 knitr::include_graphics("./figures/wpGraph.jpeg")
 ```
 
