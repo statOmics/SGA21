@@ -29,6 +29,7 @@ In addition, knowledge of programming in `R` is preferred. A primer to `R` and D
 
  - [Koen Van den Berge](https://koenvandenberge.github.io/)
  - [Lieven Clement](https://statomics.github.io/pages/about.html)
+ - [Lennart Martens](https://www.compomics.com/people/lennart-martens/)
  
 # Lecture material
 
