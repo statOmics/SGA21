@@ -1,5 +1,28 @@
 ## Add packages used in Rmd files
+
 pkgs <- c(
-  'rmarkdown','knitr','tidyverse','car','multcomp','gridExtra','ExploreModelMatrix','plot3D','ggplot2','MASS','BiocManager','SummarizedExperiment','parathyroidSE','edgeR','limma','DESeq2','scales')
+  'remotes', 
+  'latex2exp',
+  'plotly',
+  'devtools',
+  'rmarkdown',
+  'knitr',
+  'tidyverse',
+  'car',
+  'multcomp',
+  'gridExtra',
+  'ExploreModelMatrix',
+  'plot3D',
+  'ggplot2',
+  'MASS',
+  'BiocManager',
+  'SummarizedExperiment',
+  'parathyroidSE',
+  'edgeR',
+  'limma',
+  'DESeq2',
+  'scales',
+  'QFeatures',
+  'msqrob2')
 install.packages("BiocManager", Ncpus = 2L)
 BiocManager::install(pkgs)

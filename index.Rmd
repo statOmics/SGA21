@@ -25,22 +25,65 @@ In addition, knowledge of programming in `R` is preferred. A primer to `R` and D
  - `R` Basics: https://dodona.ugent.be/nl/courses/335/
  - `R` Data Exploration: https://dodona.ugent.be/nl/courses/345/
 
+
+# Software 
+
+- Participants are required to bring their own laptop with [R](https://www.r-project.org/) version 4.1.1 or greater. 
+
+- We also recommend to also install the latest version of [RStudio](https://www.rstudio.com/products/rstudio/download/).
+
+- Installation script: to install all required packages, please copy and paste this line of code in your R console.
+
+```
+source("https://raw.githubusercontent.com/statOmics/SGA21/master/install.R")
+```
+
+# Detailed Program
+
+## Introduction (Week 1)
+
+1. Position of the course: [PDF](./docs/intro.pdf) 
+
+2. Recap Linear Models
+
+   - Lecture: [HTML](./recapGeneralLinearModel.html), [PDF](./recapGeneralLinearModel.pdf)
+   - Tutorial KPNA2: [HTML](./multipleRegression_KPNA2.html),  [PDF](./multipleRegression_KPNA2.pdf)
+
+
+## Module I: Proteomics Data Analysis (Week 1-5)
+
+
+1. Bioinformatics for proteomics
+   
+   - Lecture: [PDF](./docs/martens_proteomics_bioinformatics.pdf), [youtube](https://www.youtube.com/watch?v=ZgwNWRul98o)
+   - Tutorials: [identification](https://www.compomics.com/bioinformatics-for-proteomics/)
+
+\newline
+
+2. Preprocessing & Analysis of Simple Designs (week 3)
+   
+   - Lecture: [Preprocessing](./pda_quantification_preprocessing.html) [[PDF](./pda_quantification_preprocessing.pdf)]
+   - Tutorial: [Preprocessing](./pda_tutorialPreprocessing.html)
+   - Wrap-up: [Peptide-based Models](./pda_robustSummarisation_peptideModels.html) [[PDF](./pda_robustSummarisation_peptideModels.pdf)]
+
+\newline
+
+3. Statistical Inference & Analysis of Factorial Designs (Week 3-4)
+   
+   - Lecture: [Differential Abundance Analysis](./pda_quantification_inference.html) [[PDF](./pda_quantification_inference.pdf)]
+   - Tutorial: [Design](pda_tutorialDesign.html)
+   - Wrap-up: [Blocking](./pda_blocking_wrapup.html) [[PDF](./pda_blocking_wrapup.pdf)]
+
+
 # Lecturers
 
  - [Koen Van den Berge](https://koenvandenberge.github.io/)
  - [Lieven Clement](https://statomics.github.io/pages/about.html)
  - [Lennart Martens](https://www.compomics.com/people/lennart-martens/)
- 
-# Lecture material
 
-All lecture material will be provided on this website. Please check the 'Lectures' tab at the top of the homepage.
+# License
 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
 
-| Week | Class | Topic | HTML | PDF | Details |
-|------|-------|------|----|------|-------|
-| 1 | Introduction | Position of the course |  | [PDF](./docs/intro.pdf) | |
-| 1 | Introduction | Recap Linear Models | [HTML](./recapGeneralLinearModel.html) | [PDF](./recapGeneralLinearModel.pdf) | |
-| 1 | Introduction | KPNA2 Example | [HTML](./multipleRegression_KPNA2.html) | [PDF](./multipleRegression_KPNA2.pdf) | |
-
-
+This project is licensed under the [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)](https://creativecommons.org/licenses/by-nc-sa/4.0)
 

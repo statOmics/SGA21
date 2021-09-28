@@ -1,0 +1,54 @@
+---
+title: 2. Software for Proteomics Data Analysis 2021 (PDA21) 
+author: "Lieven Clement"
+date: "[statOmics](https://statomics.github.io), Ghent University"
+output:
+    html_document:
+      theme: cosmo      
+      code_download: false
+      toc: false
+      toc_float: false
+      number_sections: false
+
+---
+
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
+
+- Install [R version 4.1 or higher] (https://cran.r-project.org/)
+- Install [Rstudio](https://www.rstudio.com/products/rstudio/download/)
+- Install *msqrob2*, start R and run the following command.
+
+```
+if(!requireNamespace("BiocManager", quietly = TRUE)) {
+ install.packages("BiocManager")
+}
+BiocManager::install("msqrob2")
+```
+
+- Participants who want to use the graphical user interface (GUI) can install the msqrob2gui shiny app, start R and run the following commands
+
+```
+if(!requireNamespace("BiocManager", quietly = TRUE)) {
+ install.packages("BiocManager")
+}
+if(!requireNamespace("remotes", quietly = TRUE)) {
+ BiocManager::install("remotes")
+}
+BiocManager::install("statomics/msqrob2gui")
+```
+
+- check if your installation is working with the following example
+library(msqrob2)
+
+``` 
+data(pe)
+pe <- aggregateFeatures(pe,i="peptide",fcol="Proteins",name="protein")
+pe <- msqrob(pe,i="protein",formula=~condition,modelColumnName="rlm")
+getCoef(rowData(pe[["protein"]])$rlm[[1]])
+```
+
+
+
+- For testing our package without installation: you can launch an R studio interface in an R docker along with bioconductor packages for proteomics that is running on top of one of our github repositories.
+
+[![Binder](http://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/statOmics/shinyTest/master?urlpath=rstudio)

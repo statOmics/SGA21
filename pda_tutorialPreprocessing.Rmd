@@ -1,0 +1,62 @@
+---
+title: 2. Preprocessing and statistical analysis wit msqrob2 for experiments with simple designs
+author: "Lieven Clement"
+date: "[statOmics](https://statomics.github.io), Ghent University"
+output:
+    html_document:
+      theme: cosmo      
+      code_download: false
+      toc: false
+      toc_float: false
+      number_sections: false
+bibliography: msqrob2.bib
+
+---
+
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
+
+### 2.1 The CPTAC A vs B dataset
+
+The result of a quantitative analysis is a list of peptide and/or protein abundances for every protein in different samples, or abundance ratios between the samples. In this chapter we will describe a generic workflow for differential analysis of quantitative datasets with simple experimental designs.
+
+In order to extract relevant information from these massive datasets, we will use our [msqrob2](https://www.bioconductor.org/packages/release/bioc/html/msqrob2.html) software tool [@goeminne2016], [@goeminne2020] and [@sticker2020]. 
+
+The tutorial can be done using R/Rmarkdown scripts or using the graphical user interface that is provided by the `msqrob2gui` Shiny App. 
+
+
+### 2.2 The CPTAC A vs B dataset
+
+Our first case-study is a subset of the data of the 6th study of the Clinical Proteomic Technology Assessment for Cancer (CPTAC). In this experiment, the authors spiked the Sigma Universal Protein Standard mixture 1 (UPS1) containing 48 different human proteins in a protein background of 60 ng/μL Saccharomyces cerevisiae strain BY4741 (MATa, leu2Δ0, met15Δ0, ura3Δ0, his3Δ1). Two different spike-in concentrations were used: 6A (0.25 fmol UPS1 proteins/μL) and 6B (0.74 fmol UPS1 proteins/μL) [5]. 
+
+We limited ourselves to the data of LTQ-Orbitrap W at site 56. The data were searched with MaxQuant version 1.5.2.8, and detailed search settings were described in [@goeminne2016]. Three replicates are available for each concentration.
+
+- The raw data files can be downloaded from https://cptac-data-portal.georgetown.edu/cptac/public?scope=Phase+I (Study 6) 
+
+-  The MaxQuant data can be downloaded [zip file with data](https://github.com/statOmics/PDA21/archive/refs/heads/data.zip). The peptides.txt file can be found in data/quantification/cptacAvsB_lab3. 
+
+- Note, that participants who use R/Rmarkdown scripts do not have to download the data as they can directly import the data from the web in R within their script. 
+
+
+[2.3.a] Participants can perform an analysis using the [GUI](./cptac_robust_gui.html) or an [Rmarkdown script](./cptac_robust.html)
+
+Follow the steps in the GUI or in the script and try to understand each of the analysis steps. We know the real FC for the spike in proteins and the yeast proteins (see description of the data). What do you observe?
+
+[2.3.b] Repeat the analysis for the median summarization method. What do you observe, how does that compare to the robust summarisation and try to explain this?
+
+
+
+### 2.3 Breast cancer example
+
+Eighteen Estrogen Receptor Positive Breast cancer tissues from from patients treated with tamoxifen upon recurrence have been assessed in a proteomics study. Nine patients had a good outcome (or) and the other nine had a poor outcome (pd).
+The proteomes have been assessed using an LTQ-Orbitrap  and the thermo output .RAW files were searched with MaxQuant (version 1.4.1.2) against the human proteome database (FASTA version 2012-09, human canonical proteome).
+
+
+Three peptides txt files are available:
+
+1. For a 3 vs 3 comparison
+2. For a 6 vs 6 comparison
+3. For a 9 vs 9 comparison
+
+
+
+### References

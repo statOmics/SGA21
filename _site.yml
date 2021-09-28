@@ -9,13 +9,35 @@ navbar:
     - text: "Lectures"
       icon: fa-chalkboard-teacher
       menu:
-      - text: Sequencing - Introduction to sequencing
-        href: sequencing_intro.html
-      - text: Sequencing - Working with count data
-        href: sequencing_countData.html
-      - text: Sequencing - RNA-seq analysis challenges
-        href: sequencing_rnaseqIntro.html
-  right:
+      - text: Position
+        href: ./docs/intro.pdf
+      - text: Recap linear model
+        href: recapGeneralLinearModel.html
+      - text: PDA - identification
+        href: ./docs/martens_proteomics_bioinformatics.pdf
+      - text: Quantification - Preprocessing
+        href: pda_quantification_preprocessing.html
+      - text: Wrap-up Preprocessing - Peptide-Level-Models
+        href: pda_robustSummarisation_peptideModels.html
+      - text: Quantification - Differential Abundance Analysis
+        href: pda_quantification_inference.html
+      - text: Wrap-up DA - Blocking
+        href: pda_blocking_wrapup.html
+    - text: "tutorials"
+      icon: fa-laptop
+      menu:
+      - text: Intro KPNA2
+        href: multipleRegression_KPNA2.html
+      - text: Identification 
+        href: https://www.compomics.com/bioinformatics-for-proteomics/
+      - text: DA - Preprocessing
+        href: pda_tutorialPreprocessing.html
+      - text: DA - Design
+        href: pda_tutorialDesign.html
+
+        
+
+right:
     - icon: fab fa-github      
       href: https://github.com/statOmics/SGA21
     - text: "statOmics"
