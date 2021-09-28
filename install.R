@@ -15,7 +15,6 @@ pkgs <- c(
   'plot3D',
   'ggplot2',
   'MASS',
-  'BiocManager',
   'SummarizedExperiment',
   'parathyroidSE',
   'edgeR',
