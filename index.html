@@ -335,27 +335,54 @@ div.tocify {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="sequencing_intro.html">Sequencing - Introduction to sequencing</a>
+      <a href="./docs/intro.pdf">Position</a>
     </li>
     <li>
-      <a href="sequencing_countData.html">Sequencing - Working with count data</a>
+      <a href="recapGeneralLinearModel.html">Recap linear model</a>
     </li>
     <li>
-      <a href="sequencing_rnaseqIntro.html">Sequencing - RNA-seq analysis challenges</a>
+      <a href="./docs/martens_proteomics_bioinformatics.pdf">PDA - identification</a>
+    </li>
+    <li>
+      <a href="pda_quantification_preprocessing.html">Quantification - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_robustSummarisation_peptideModels.html">Wrap-up Preprocessing - Peptide-Level-Models</a>
+    </li>
+    <li>
+      <a href="pda_quantification_inference.html">Quantification - Differential Abundance Analysis</a>
+    </li>
+    <li>
+      <a href="pda_blocking_wrapup.html">Wrap-up DA - Blocking</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-laptop"></span>
+     
+    tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="multipleRegression_KPNA2.html">Intro KPNA2</a>
+    </li>
+    <li>
+      <a href="https://www.compomics.com/bioinformatics-for-proteomics/">Identification</a>
+    </li>
+    <li>
+      <a href="pda_tutorialPreprocessing.html">DA - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_tutorialDesign.html">DA - Design</a>
     </li>
   </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li>
-  <a href="https://github.com/statOmics/SGA21">
-    <span class="fab fa-github"></span>
-     
-  </a>
-</li>
-<li>
-  <a href="http://statomics.github.io/">statOmics</a>
-</li>
+        
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -395,58 +422,72 @@ div.tocify {
 <li><code>R</code> Data Exploration: <a href="https://dodona.ugent.be/nl/courses/345/" class="uri">https://dodona.ugent.be/nl/courses/345/</a></li>
 </ul>
 </div>
+<div id="software" class="section level1">
+<h1><span class="header-section-number">4</span> Software</h1>
+<ul>
+<li><p>Participants are required to bring their own laptop with <a href="https://www.r-project.org/">R</a> version 4.1.1 or greater.</p></li>
+<li><p>We also recommend to also install the latest version of <a href="https://www.rstudio.com/products/rstudio/download/">RStudio</a>.</p></li>
+<li><p>Installation script: to install all required packages, please copy and paste this line of code in your R console.</p></li>
+</ul>
+<pre><code>source(&quot;https://raw.githubusercontent.com/statOmics/SGA21/master/install.R&quot;)</code></pre>
+</div>
+<div id="detailed-program" class="section level1">
+<h1><span class="header-section-number">5</span> Detailed Program</h1>
+<div id="introduction-week-1" class="section level2">
+<h2><span class="header-section-number">5.1</span> Introduction (Week 1)</h2>
+<ol style="list-style-type: decimal">
+<li><p>Position of the course: <a href="./docs/intro.pdf">PDF</a></p></li>
+<li><p>Recap Linear Models</p>
+<ul>
+<li>Lecture: <a href="./recapGeneralLinearModel.html">HTML</a>, <a href="./recapGeneralLinearModel.pdf">PDF</a></li>
+<li>Tutorial KPNA2: <a href="./multipleRegression_KPNA2.html">HTML</a>, <a href="./multipleRegression_KPNA2.pdf">PDF</a></li>
+</ul></li>
+</ol>
+</div>
+<div id="module-i-proteomics-data-analysis-week-1-5" class="section level2">
+<h2><span class="header-section-number">5.2</span> Module I: Proteomics Data Analysis (Week 1-5)</h2>
+<ol style="list-style-type: decimal">
+<li><p>Bioinformatics for proteomics</p>
+<ul>
+<li>Lecture: <a href="./docs/martens_proteomics_bioinformatics.pdf">PDF</a>, <a href="https://www.youtube.com/watch?v=ZgwNWRul98o">youtube</a></li>
+<li>Tutorials: <a href="https://www.compomics.com/bioinformatics-for-proteomics/">identification</a></li>
+</ul></li>
+</ol>
+
+<ol start="2" style="list-style-type: decimal">
+<li><p>Preprocessing &amp; Analysis of Simple Designs (week 3)</p>
+<ul>
+<li>Lecture: <a href="./pda_quantification_preprocessing.html">Preprocessing</a> [<a href="./pda_quantification_preprocessing.pdf">PDF</a>]</li>
+<li>Tutorial: <a href="./pda_tutorialPreprocessing.html">Preprocessing</a></li>
+<li>Wrap-up: <a href="./pda_robustSummarisation_peptideModels.html">Peptide-based Models</a> [<a href="./pda_robustSummarisation_peptideModels.pdf">PDF</a>]</li>
+</ul></li>
+</ol>
+
+<ol start="3" style="list-style-type: decimal">
+<li><p>Statistical Inference &amp; Analysis of Factorial Designs (Week 3-4)</p>
+<ul>
+<li>Lecture: <a href="./pda_quantification_inference.html">Differential Abundance Analysis</a> [<a href="./pda_quantification_inference.pdf">PDF</a>]</li>
+<li>Tutorial: <a href="pda_tutorialDesign.html">Design</a></li>
+<li>Wrap-up: <a href="./pda_blocking_wrapup.html">Blocking</a> [<a href="./pda_blocking_wrapup.pdf">PDF</a>]</li>
+</ul></li>
+</ol>
+</div>
+</div>
 <div id="lecturers" class="section level1">
-<h1><span class="header-section-number">4</span> Lecturers</h1>
+<h1><span class="header-section-number">6</span> Lecturers</h1>
 <ul>
 <li><a href="https://koenvandenberge.github.io/">Koen Van den Berge</a></li>
 <li><a href="https://statomics.github.io/pages/about.html">Lieven Clement</a></li>
 <li><a href="https://www.compomics.com/people/lennart-martens/">Lennart Martens</a></li>
 </ul>
 </div>
-<div id="lecture-material" class="section level1">
-<h1><span class="header-section-number">5</span> Lecture material</h1>
-<p>All lecture material will be provided on this website. Please check the ‘Lectures’ tab at the top of the homepage.</p>
-<table>
-<thead>
-<tr class="header">
-<th>Week</th>
-<th>Class</th>
-<th>Topic</th>
-<th>HTML</th>
-<th>PDF</th>
-<th>Details</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>1</td>
-<td>Introduction</td>
-<td>Position of the course</td>
-<td></td>
-<td><a href="./docs/intro.pdf">PDF</a></td>
-<td></td>
-</tr>
-<tr class="even">
-<td>1</td>
-<td>Introduction</td>
-<td>Recap Linear Models</td>
-<td><a href="./recapGeneralLinearModel.html">HTML</a></td>
-<td><a href="./recapGeneralLinearModel.pdf">PDF</a></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>1</td>
-<td>Introduction</td>
-<td>KPNA2 Example</td>
-<td><a href="./multipleRegression_KPNA2.html">HTML</a></td>
-<td><a href="./multipleRegression_KPNA2.pdf">PDF</a></td>
-<td></td>
-</tr>
-</tbody>
-</table>
+<div id="license" class="section level1">
+<h1><span class="header-section-number">7</span> License</h1>
+<p><a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a></p>
+<p>This project is licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)</a></p>
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiU3RhdGlzdGljYWwgR2Vub21pY3MgQW5hbHlzaXMgMjAyMS0yMDIyIgotLS0KCgpgYGB7ciBlY2hvPUZBTFNFLCB3YXJuaW5nPUZBTFNFLCBtZXNzYWdlPUZBTFNFfQprbml0cjo6aW5jbHVkZV9ncmFwaGljcygiLi9maWd1cmVzL3dwR3JhcGguanBlZyIpCmBgYAoKIyBDb3Vyc2UgRGVzY3JpcHRpb24KCkhpZ2gtdGhyb3VnaHB1dCAnb21pY3Mgc3R1ZGllcyBnZW5lcmF0ZSBldmVyIGxhcmdlciBkYXRhc2V0cyBhbmQsIGFzIGEgY29uc2VxdWVuY2UsIGNvbXBsZXggZGF0YSBpbnRlcnByZXRhdGlvbiBjaGFsbGVuZ2VzLiBUaGlzIGNvdXJzZSBmb2N1c3NlcyBvbiBzdGF0aXN0aWNhbCBjb25jZXB0cyBpbnZvbHZlZCBpbiBwcmVwcm9jZXNzaW5nLCBxdWFudGlmaWNhdGlvbiBhbmQgZGlmZmVyZW50aWFsIGFuYWx5c2lzIG9mIGhpZ2gtdGhyb3VnaHB1dCAnb21pY3MgZGF0YS4gVGhlIGNvcmUgZm9jdXMgd2lsbCBiZSBvbiBzaG90Z3VuIHByb3Rlb21pY3MgYW5kIChidWxrIGFuZCBzaW5nbGUtY2VsbCkgUk5BLXNlcXVlbmNpbmcuIEV4cGVyaW1lbnRhbCBkZXNpZ24gaXMgZXNzZW50aWFsIHRvIGFsbG93IGZvciBjb3JyZWN0IGludGVycHJldGF0aW9uIGluIGFsbCAnb21pY3Mgc3R1ZGllcywgYW5kIHdlIHdpbGwgY292ZXIgaG93IHRvIGRlc2lnbiBhIHN0YXRpc3RpY2FsbHkgZWZmaWNpZW50IGV4cGVyaW1lbnQsIGFzIHdlbGwgYXMgZGlzY3VzcyB0aGUgaW1wYWN0IGV4cGVyaW1lbnRhbCBkZXNpZ24gaGFzIG9uIGhvdyB3ZSBtb2RlbCAnb21pY3MgZGF0YSwgaW50cm9kdWNpbmcgY29uY2VwdHMgc3VjaCBhcyBibG9ja2luZy4gVGhlIGNvdXJzZSB3aWxsIHJlbHkgZXhjbHVzaXZlbHkgb24gZnJlZSBhbmQgdXNlci1mcmllbmRseSBvcGVuLXNvdXJjZSB0b29scyBpbiBSL0Jpb2NvbmR1Y3Rvci4gV2UgaG9wZSB0aGF0IHRoaXMgd2lsbCBwcm92aWRlIGEgc29saWQgYmFzaXMgZm9yIGJlZ2lubmVycywgYnV0IHdpbGwgYWxzbyBicmluZyBuZXcgcGVyc3BlY3RpdmVzIHRvIHRob3NlIGFscmVhZHkgZmFtaWxpYXIgd2l0aCBzdGFuZGFyZCBkYXRhIGFuYWx5c2lzIHdvcmtmbG93cyBmb3IgcHJvdGVvbWljcyBhbmQgbmV4dC1nZW5lcmF0aW9uIHNlcXVlbmNpbmcgYXBwbGljYXRpb25zLgoKIyBUYXJnZXQgQXVkaWVuY2UKClRoaXMgY291cnNlIGlzIG9yaWVudGVkIHRvd2FyZHMgYmlvbG9naXN0cyBhbmQgYmlvaW5mb3JtYXRpY2lhbnMgd2l0aCBhIHBhcnRpY3VsYXIgaW50ZXJlc3QgaW4gZGlmZmVyZW50aWFsIGFuYWx5c2lzIGZvciBxdWFudGl0YXRpdmUgJ29taWNzIGRhdGEuCgojIFByZXJlcXVpc2l0ZXMKClRoZSBwcmVyZXF1aXNpdGVzIGZvciB0aGUgU3RhdGlzdGljYWwgR2Vub21pY3MgQW5hbHlzaXMgY291cnNlIGFyZSB0aGUgc3VjY2Vzc2Z1bCBjb21wbGV0aW9uIG9mIGEgYmFzaWMgY291cnNlIG9mIHN0YXRpc3RpY3MgdGhhdCBjb3ZlcnMgdG9waWNzIG9uIGRhdGEgZXhwbG9yYXRpb24gYW5kIGRlc2NyaXB0aXZlIHN0YXRpc3RpY3MsIHN0YXRpc3RpY2FsIG1vZGVsaW5nLCBhbmQgaW5mZXJlbmNlOiBsaW5lYXIgbW9kZWxzLCBjb25maWRlbmNlIGludGVydmFscywgdC10ZXN0cywgRi10ZXN0cywgYW5vdmEsIGNoaS1zcXVhcmVkIHRlc3QuClRoZSBiYXNpcyBjb25jZXB0cyBtYXkgYmUgcmV2aXNpdGVkIGluIHRoZSBvbmxpbmUgY291cnNlIGF0IGh0dHBzOi8vZ3RwYi5naXRodWIuaW8vUFNMUzIwLyAoRW5nbGlzaCkgYW5kIGluIGh0dHBzOi8vc3RhdG9taWNzLmdpdGh1Yi5pby9zdGF0aXN0aWVrQ3Vyc3VzTm90YXMvIChEdXRjaCkuCgpJbiBhZGRpdGlvbiwga25vd2xlZGdlIG9mIHByb2dyYW1taW5nIGluIGBSYCBpcyBwcmVmZXJyZWQuIEEgcHJpbWVyIHRvIGBSYCBhbmQgRGF0YSB2aXN1YWxpemF0aW9uIGluIGBSYCBjYW4gYmUgZm91bmQgYXQ6CgogLSBgUmAgQmFzaWNzOiBodHRwczovL2RvZG9uYS51Z2VudC5iZS9ubC9jb3Vyc2VzLzMzNS8KIC0gYFJgIERhdGEgRXhwbG9yYXRpb246IGh0dHBzOi8vZG9kb25hLnVnZW50LmJlL25sL2NvdXJzZXMvMzQ1LwoKIyBMZWN0dXJlcnMKCiAtIFtLb2VuIFZhbiBkZW4gQmVyZ2VdKGh0dHBzOi8va29lbnZhbmRlbmJlcmdlLmdpdGh1Yi5pby8pCiAtIFtMaWV2ZW4gQ2xlbWVudF0oaHR0cHM6Ly9zdGF0b21pY3MuZ2l0aHViLmlvL3BhZ2VzL2Fib3V0Lmh0bWwpCiAtIFtMZW5uYXJ0IE1hcnRlbnNdKGh0dHBzOi8vd3d3LmNvbXBvbWljcy5jb20vcGVvcGxlL2xlbm5hcnQtbWFydGVucy8pCiAKIyBMZWN0dXJlIG1hdGVyaWFsCgpBbGwgbGVjdHVyZSBtYXRlcmlhbCB3aWxsIGJlIHByb3ZpZGVkIG9uIHRoaXMgd2Vic2l0ZS4gUGxlYXNlIGNoZWNrIHRoZSAnTGVjdHVyZXMnIHRhYiBhdCB0aGUgdG9wIG9mIHRoZSBob21lcGFnZS4KCgp8IFdlZWsgfCBDbGFzcyB8IFRvcGljIHwgSFRNTCB8IFBERiB8IERldGFpbHMgfAp8LS0tLS0tfC0tLS0tLS18LS0tLS0tfC0tLS18LS0tLS0tfC0tLS0tLS18CnwgMSB8IEludHJvZHVjdGlvbiB8IFBvc2l0aW9uIG9mIHRoZSBjb3Vyc2UgfCAgfCBbUERGXSguL2RvY3MvaW50cm8ucGRmKSB8IHwKfCAxIHwgSW50cm9kdWN0aW9uIHwgUmVjYXAgTGluZWFyIE1vZGVscyB8IFtIVE1MXSguL3JlY2FwR2VuZXJhbExpbmVhck1vZGVsLmh0bWwpIHwgW1BERl0oLi9yZWNhcEdlbmVyYWxMaW5lYXJNb2RlbC5wZGYpIHwgfAp8IDEgfCBJbnRyb2R1Y3Rpb24gfCBLUE5BMiBFeGFtcGxlIHwgW0hUTUxdKC4vbXVsdGlwbGVSZWdyZXNzaW9uX0tQTkEyLmh0bWwpIHwgW1BERl0oLi9tdWx0aXBsZVJlZ3Jlc3Npb25fS1BOQTIucGRmKSB8IHwKCgoK</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiU3RhdGlzdGljYWwgR2Vub21pY3MgQW5hbHlzaXMgMjAyMS0yMDIyIgotLS0KCgpgYGB7ciBlY2hvPUZBTFNFLCB3YXJuaW5nPUZBTFNFLCBtZXNzYWdlPUZBTFNFfQprbml0cjo6aW5jbHVkZV9ncmFwaGljcygiLi9maWd1cmVzL3dwR3JhcGguanBlZyIpCmBgYAoKIyBDb3Vyc2UgRGVzY3JpcHRpb24KCkhpZ2gtdGhyb3VnaHB1dCAnb21pY3Mgc3R1ZGllcyBnZW5lcmF0ZSBldmVyIGxhcmdlciBkYXRhc2V0cyBhbmQsIGFzIGEgY29uc2VxdWVuY2UsIGNvbXBsZXggZGF0YSBpbnRlcnByZXRhdGlvbiBjaGFsbGVuZ2VzLiBUaGlzIGNvdXJzZSBmb2N1c3NlcyBvbiBzdGF0aXN0aWNhbCBjb25jZXB0cyBpbnZvbHZlZCBpbiBwcmVwcm9jZXNzaW5nLCBxdWFudGlmaWNhdGlvbiBhbmQgZGlmZmVyZW50aWFsIGFuYWx5c2lzIG9mIGhpZ2gtdGhyb3VnaHB1dCAnb21pY3MgZGF0YS4gVGhlIGNvcmUgZm9jdXMgd2lsbCBiZSBvbiBzaG90Z3VuIHByb3Rlb21pY3MgYW5kIChidWxrIGFuZCBzaW5nbGUtY2VsbCkgUk5BLXNlcXVlbmNpbmcuIEV4cGVyaW1lbnRhbCBkZXNpZ24gaXMgZXNzZW50aWFsIHRvIGFsbG93IGZvciBjb3JyZWN0IGludGVycHJldGF0aW9uIGluIGFsbCAnb21pY3Mgc3R1ZGllcywgYW5kIHdlIHdpbGwgY292ZXIgaG93IHRvIGRlc2lnbiBhIHN0YXRpc3RpY2FsbHkgZWZmaWNpZW50IGV4cGVyaW1lbnQsIGFzIHdlbGwgYXMgZGlzY3VzcyB0aGUgaW1wYWN0IGV4cGVyaW1lbnRhbCBkZXNpZ24gaGFzIG9uIGhvdyB3ZSBtb2RlbCAnb21pY3MgZGF0YSwgaW50cm9kdWNpbmcgY29uY2VwdHMgc3VjaCBhcyBibG9ja2luZy4gVGhlIGNvdXJzZSB3aWxsIHJlbHkgZXhjbHVzaXZlbHkgb24gZnJlZSBhbmQgdXNlci1mcmllbmRseSBvcGVuLXNvdXJjZSB0b29scyBpbiBSL0Jpb2NvbmR1Y3Rvci4gV2UgaG9wZSB0aGF0IHRoaXMgd2lsbCBwcm92aWRlIGEgc29saWQgYmFzaXMgZm9yIGJlZ2lubmVycywgYnV0IHdpbGwgYWxzbyBicmluZyBuZXcgcGVyc3BlY3RpdmVzIHRvIHRob3NlIGFscmVhZHkgZmFtaWxpYXIgd2l0aCBzdGFuZGFyZCBkYXRhIGFuYWx5c2lzIHdvcmtmbG93cyBmb3IgcHJvdGVvbWljcyBhbmQgbmV4dC1nZW5lcmF0aW9uIHNlcXVlbmNpbmcgYXBwbGljYXRpb25zLgoKIyBUYXJnZXQgQXVkaWVuY2UKClRoaXMgY291cnNlIGlzIG9yaWVudGVkIHRvd2FyZHMgYmlvbG9naXN0cyBhbmQgYmlvaW5mb3JtYXRpY2lhbnMgd2l0aCBhIHBhcnRpY3VsYXIgaW50ZXJlc3QgaW4gZGlmZmVyZW50aWFsIGFuYWx5c2lzIGZvciBxdWFudGl0YXRpdmUgJ29taWNzIGRhdGEuCgojIFByZXJlcXVpc2l0ZXMKClRoZSBwcmVyZXF1aXNpdGVzIGZvciB0aGUgU3RhdGlzdGljYWwgR2Vub21pY3MgQW5hbHlzaXMgY291cnNlIGFyZSB0aGUgc3VjY2Vzc2Z1bCBjb21wbGV0aW9uIG9mIGEgYmFzaWMgY291cnNlIG9mIHN0YXRpc3RpY3MgdGhhdCBjb3ZlcnMgdG9waWNzIG9uIGRhdGEgZXhwbG9yYXRpb24gYW5kIGRlc2NyaXB0aXZlIHN0YXRpc3RpY3MsIHN0YXRpc3RpY2FsIG1vZGVsaW5nLCBhbmQgaW5mZXJlbmNlOiBsaW5lYXIgbW9kZWxzLCBjb25maWRlbmNlIGludGVydmFscywgdC10ZXN0cywgRi10ZXN0cywgYW5vdmEsIGNoaS1zcXVhcmVkIHRlc3QuClRoZSBiYXNpcyBjb25jZXB0cyBtYXkgYmUgcmV2aXNpdGVkIGluIHRoZSBvbmxpbmUgY291cnNlIGF0IGh0dHBzOi8vZ3RwYi5naXRodWIuaW8vUFNMUzIwLyAoRW5nbGlzaCkgYW5kIGluIGh0dHBzOi8vc3RhdG9taWNzLmdpdGh1Yi5pby9zdGF0aXN0aWVrQ3Vyc3VzTm90YXMvIChEdXRjaCkuCgpJbiBhZGRpdGlvbiwga25vd2xlZGdlIG9mIHByb2dyYW1taW5nIGluIGBSYCBpcyBwcmVmZXJyZWQuIEEgcHJpbWVyIHRvIGBSYCBhbmQgRGF0YSB2aXN1YWxpemF0aW9uIGluIGBSYCBjYW4gYmUgZm91bmQgYXQ6CgogLSBgUmAgQmFzaWNzOiBodHRwczovL2RvZG9uYS51Z2VudC5iZS9ubC9jb3Vyc2VzLzMzNS8KIC0gYFJgIERhdGEgRXhwbG9yYXRpb246IGh0dHBzOi8vZG9kb25hLnVnZW50LmJlL25sL2NvdXJzZXMvMzQ1LwoKCiMgU29mdHdhcmUgCgotIFBhcnRpY2lwYW50cyBhcmUgcmVxdWlyZWQgdG8gYnJpbmcgdGhlaXIgb3duIGxhcHRvcCB3aXRoIFtSXShodHRwczovL3d3dy5yLXByb2plY3Qub3JnLykgdmVyc2lvbiA0LjEuMSBvciBncmVhdGVyLiAKCi0gV2UgYWxzbyByZWNvbW1lbmQgdG8gYWxzbyBpbnN0YWxsIHRoZSBsYXRlc3QgdmVyc2lvbiBvZiBbUlN0dWRpb10oaHR0cHM6Ly93d3cucnN0dWRpby5jb20vcHJvZHVjdHMvcnN0dWRpby9kb3dubG9hZC8pLgoKLSBJbnN0YWxsYXRpb24gc2NyaXB0OiB0byBpbnN0YWxsIGFsbCByZXF1aXJlZCBwYWNrYWdlcywgcGxlYXNlIGNvcHkgYW5kIHBhc3RlIHRoaXMgbGluZSBvZiBjb2RlIGluIHlvdXIgUiBjb25zb2xlLgoKYGBgCnNvdXJjZSgiaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3N0YXRPbWljcy9TR0EyMS9tYXN0ZXIvaW5zdGFsbC5SIikKYGBgCgojIERldGFpbGVkIFByb2dyYW0KCiMjIEludHJvZHVjdGlvbiAoV2VlayAxKQoKMS4gUG9zaXRpb24gb2YgdGhlIGNvdXJzZTogW1BERl0oLi9kb2NzL2ludHJvLnBkZikgCgoyLiBSZWNhcCBMaW5lYXIgTW9kZWxzCgogICAtIExlY3R1cmU6IFtIVE1MXSguL3JlY2FwR2VuZXJhbExpbmVhck1vZGVsLmh0bWwpLCBbUERGXSguL3JlY2FwR2VuZXJhbExpbmVhck1vZGVsLnBkZikKICAgLSBUdXRvcmlhbCBLUE5BMjogW0hUTUxdKC4vbXVsdGlwbGVSZWdyZXNzaW9uX0tQTkEyLmh0bWwpLCAgW1BERl0oLi9tdWx0aXBsZVJlZ3Jlc3Npb25fS1BOQTIucGRmKQoKCiMjIE1vZHVsZSBJOiBQcm90ZW9taWNzIERhdGEgQW5hbHlzaXMgKFdlZWsgMS01KQoKCjEuIEJpb2luZm9ybWF0aWNzIGZvciBwcm90ZW9taWNzCiAgIAogICAtIExlY3R1cmU6IFtQREZdKC4vZG9jcy9tYXJ0ZW5zX3Byb3Rlb21pY3NfYmlvaW5mb3JtYXRpY3MucGRmKSwgW3lvdXR1YmVdKGh0dHBzOi8vd3d3LnlvdXR1YmUuY29tL3dhdGNoP3Y9Wmd3TldSdWw5OG8pCiAgIC0gVHV0b3JpYWxzOiBbaWRlbnRpZmljYXRpb25dKGh0dHBzOi8vd3d3LmNvbXBvbWljcy5jb20vYmlvaW5mb3JtYXRpY3MtZm9yLXByb3Rlb21pY3MvKQoKXG5ld2xpbmUKCjIuIFByZXByb2Nlc3NpbmcgJiBBbmFseXNpcyBvZiBTaW1wbGUgRGVzaWducyAod2VlayAzKQogICAKICAgLSBMZWN0dXJlOiBbUHJlcHJvY2Vzc2luZ10oLi9wZGFfcXVhbnRpZmljYXRpb25fcHJlcHJvY2Vzc2luZy5odG1sKSBbW1BERl0oLi9wZGFfcXVhbnRpZmljYXRpb25fcHJlcHJvY2Vzc2luZy5wZGYpXQogICAtIFR1dG9yaWFsOiBbUHJlcHJvY2Vzc2luZ10oLi9wZGFfdHV0b3JpYWxQcmVwcm9jZXNzaW5nLmh0bWwpCiAgIC0gV3JhcC11cDogW1BlcHRpZGUtYmFzZWQgTW9kZWxzXSguL3BkYV9yb2J1c3RTdW1tYXJpc2F0aW9uX3BlcHRpZGVNb2RlbHMuaHRtbCkgW1tQREZdKC4vcGRhX3JvYnVzdFN1bW1hcmlzYXRpb25fcGVwdGlkZU1vZGVscy5wZGYpXQoKXG5ld2xpbmUKCjMuIFN0YXRpc3RpY2FsIEluZmVyZW5jZSAmIEFuYWx5c2lzIG9mIEZhY3RvcmlhbCBEZXNpZ25zIChXZWVrIDMtNCkKICAgCiAgIC0gTGVjdHVyZTogW0RpZmZlcmVudGlhbCBBYnVuZGFuY2UgQW5hbHlzaXNdKC4vcGRhX3F1YW50aWZpY2F0aW9uX2luZmVyZW5jZS5odG1sKSBbW1BERl0oLi9wZGFfcXVhbnRpZmljYXRpb25faW5mZXJlbmNlLnBkZildCiAgIC0gVHV0b3JpYWw6IFtEZXNpZ25dKHBkYV90dXRvcmlhbERlc2lnbi5odG1sKQogICAtIFdyYXAtdXA6IFtCbG9ja2luZ10oLi9wZGFfYmxvY2tpbmdfd3JhcHVwLmh0bWwpIFtbUERGXSguL3BkYV9ibG9ja2luZ193cmFwdXAucGRmKV0KCgojIExlY3R1cmVycwoKIC0gW0tvZW4gVmFuIGRlbiBCZXJnZV0oaHR0cHM6Ly9rb2VudmFuZGVuYmVyZ2UuZ2l0aHViLmlvLykKIC0gW0xpZXZlbiBDbGVtZW50XShodHRwczovL3N0YXRvbWljcy5naXRodWIuaW8vcGFnZXMvYWJvdXQuaHRtbCkKIC0gW0xlbm5hcnQgTWFydGVuc10oaHR0cHM6Ly93d3cuY29tcG9taWNzLmNvbS9wZW9wbGUvbGVubmFydC1tYXJ0ZW5zLykKCiMgTGljZW5zZQoKPGEgcmVsPSJsaWNlbnNlIiBocmVmPSJodHRwczovL2NyZWF0aXZlY29tbW9ucy5vcmcvbGljZW5zZXMvYnktbmMtc2EvNC4wIj48aW1nIGFsdD0iQ3JlYXRpdmUgQ29tbW9ucyBMaWNlbnNlIiBzdHlsZT0iYm9yZGVyLXdpZHRoOjAiIHNyYz0iaHR0cHM6Ly9pLmNyZWF0aXZlY29tbW9ucy5vcmcvbC9ieS1uYy1zYS80LjAvODh4MzEucG5nIiAvPjwvYT4KClRoaXMgcHJvamVjdCBpcyBsaWNlbnNlZCB1bmRlciB0aGUgW0NyZWF0aXZlIENvbW1vbnMgQXR0cmlidXRpb24tTm9uQ29tbWVyY2lhbC1TaGFyZUFsaWtlIDQuMCBJbnRlcm5hdGlvbmFsIChDQyBCWS1OQy1TQSA0LjApXShodHRwczovL2NyZWF0aXZlY29tbW9ucy5vcmcvbGljZW5zZXMvYnktbmMtc2EvNC4wKQoK</div>
 
 
 </div>

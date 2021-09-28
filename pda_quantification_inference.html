@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Lieven Clement" />
+
+
+<title>Statistical Methods for Quantitative MS-based Proteomics: Part II. Differential Abundance Analysis</title>
+
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<script src="site_libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+<style type="text/css">
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SGA21</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-chalkboard-teacher"></span>
+     
+    Lectures
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="./docs/intro.pdf">Position</a>
+    </li>
+    <li>
+      <a href="recapGeneralLinearModel.html">Recap linear model</a>
+    </li>
+    <li>
+      <a href="./docs/martens_proteomics_bioinformatics.pdf">PDA - identification</a>
+    </li>
+    <li>
+      <a href="pda_quantification_preprocessing.html">Quantification - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_robustSummarisation_peptideModels.html">Wrap-up Preprocessing - Peptide-Level-Models</a>
+    </li>
+    <li>
+      <a href="pda_quantification_inference.html">Quantification - Differential Abundance Analysis</a>
+    </li>
+    <li>
+      <a href="pda_blocking_wrapup.html">Wrap-up DA - Blocking</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-laptop"></span>
+     
+    tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="multipleRegression_KPNA2.html">Intro KPNA2</a>
+    </li>
+    <li>
+      <a href="https://www.compomics.com/bioinformatics-for-proteomics/">Identification</a>
+    </li>
+    <li>
+      <a href="pda_tutorialPreprocessing.html">DA - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_tutorialDesign.html">DA - Design</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Statistical Methods for Quantitative MS-based Proteomics: Part II. Differential Abundance Analysis</h1>
+<h4 class="author">Lieven Clement</h4>
+<h4 class="date"><a href="https://statomics.github.io">statOmics</a>, Ghent University</h4>
+
+</div>
+
+
+<p><a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a></p>
+<p>This is part of the online course <a href="https://statomics.github.io/PDA21/">Proteomics Data Analysis 2021 (PDA21)</a></p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/1mhg3BCuEm8" frameborder="0" style="display: block; margin: auto;" allow="autoplay; encrypted-media" allowfullscreen>
+</iframe>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=1mhg3BCuEm8&amp;list=PLZH1hP8_LbJKqnPSS4hxTkn-tQolSCGjP">Playlist PDA Preprocessing</a></li>
+</ul>
+<div id="outline" class="section level1 unnumbered">
+<h1>Outline</h1>
+<ul>
+<li>Francisella tularensis Example</li>
+<li>Hypothesis testing</li>
+<li>Multiple testing</li>
+<li>Moderated statistics</li>
+<li>Experimental design</li>
+</ul>
+<p>Note, that the R-code is included for learners who are aiming to develop R/markdown scripts to automate their quantitative proteomics data analyses. According to the target audience of the course we either work with a graphical user interface (GUI) in a R/shiny App msqrob2gui (e.g. Proteomics Bioinformatics course of the EBI and the Proteomics Data Analysis course at the Gulbenkian institute) or with R/markdowns scripts (e.g. Bioinformatics Summer School at UCLouvain or the Statistical Genomics Course at Ghent University).</p>
+<hr />
+</div>
+<div id="francisella-tularensis-experiment" class="section level1">
+<h1><span class="header-section-number">1</span> Francisella tularensis experiment</h1>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/TW5rk1y7aOc" frameborder="0" style="display: block; margin: auto;" allow="autoplay; encrypted-media" allowfullscreen>
+</iframe>
+<p><img src="figures/francisella.jpg" width="50%" /></p>
+<p><img src="figures/tularemia_lesion.jpg" /><!-- --></p>
+<ul>
+<li>Pathogen: causes tularemia</li>
+<li>Metabolic adaptation key for intracellular life cycle of pathogenic microorganisms.</li>
+<li>Upon entry into host cells quick phasomal escape and active multiplication in cytosolic compartment.</li>
+<li>Franciscella is auxotroph for several amino acids, including arginine.</li>
+<li>Inactivation of arginine transporter delayed bacterial phagosomal escape and intracellular multiplication.</li>
+<li>Experiment to assess difference in proteome using 3 WT vs 3 ArgP KO mutants</li>
+</ul>
+<div id="import-the-data-in-r" class="section level2">
+<h2><span class="header-section-number">1.1</span> Import the data in R</h2>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/2Ljd95IE_AY" frameborder="0" style="display: block; margin: auto;" allow="autoplay; encrypted-media" allowfullscreen>
+</iframe>
+<details>
+<summary> Click to see code </summary>
+<p>
+<ol style="list-style-type: decimal">
+<li>Load libraries</li>
+</ol>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(limma)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">library</span>(QFeatures)</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="kw">library</span>(msqrob2)</span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="kw">library</span>(plotly)</span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="kw">library</span>(ggplot2)</span></code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li>We use a peptides.txt file from MS-data quantified with maxquant that contains MS1 intensities summarized at the peptide level.</li>
+</ol>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>peptidesFile &lt;-<span class="st"> &quot;https://raw.githubusercontent.com/statOmics/PDA21/data/quantification/francisella/peptides.txt&quot;</span></span></code></pre></div>
+<ol start="3" style="list-style-type: decimal">
+<li>Maxquant stores the intensity data for the different samples in columnns that start with Intensity. We can retreive the column names with the intensity data with the code below:</li>
+</ol>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>ecols &lt;-<span class="st"> </span><span class="kw">grep</span>(<span class="st">&quot;Intensity</span><span class="ch">\\</span><span class="st">.&quot;</span>, <span class="kw">names</span>(<span class="kw">read.delim</span>(peptidesFile)))</span></code></pre></div>
+<ol start="4" style="list-style-type: decimal">
+<li>Read the data and store it in QFeatures object</li>
+</ol>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>pe &lt;-<span class="st"> </span><span class="kw">readQFeatures</span>(</span>
+<span id="cb4-2"><a href="#cb4-2"></a>  <span class="dt">table =</span> peptidesFile,</span>
+<span id="cb4-3"><a href="#cb4-3"></a>  <span class="dt">fnames =</span> <span class="dv">1</span>,</span>
+<span id="cb4-4"><a href="#cb4-4"></a>  <span class="dt">ecol =</span> ecols,</span>
+<span id="cb4-5"><a href="#cb4-5"></a>  <span class="dt">name =</span> <span class="st">&quot;peptideRaw&quot;</span>, <span class="dt">sep=</span><span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>)</span></code></pre></div>
+<ol start="5" style="list-style-type: decimal">
+<li>Update data with information on design</li>
+</ol>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">colData</span>(pe)<span class="op">$</span>genotype &lt;-<span class="st"> </span>pe[[<span class="dv">1</span>]] <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="st">  </span>colnames <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="st">  </span><span class="kw">substr</span>(<span class="dv">12</span>,<span class="dv">13</span>) <span class="op">%&gt;%</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="st">  </span>as.factor <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="st">  </span><span class="kw">relevel</span>(<span class="st">&quot;WT&quot;</span>)</span>
+<span id="cb5-6"><a href="#cb5-6"></a>pe <span class="op">%&gt;%</span><span class="st"> </span>colData</span></code></pre></div>
+<pre><code>## DataFrame with 6 rows and 1 column
+##                          genotype
+##                          &lt;factor&gt;
+## Intensity.1WT_20_2h_n3_3       WT
+## Intensity.1WT_20_2h_n4_3       WT
+## Intensity.1WT_20_2h_n5_3       WT
+## Intensity.3D8_20_2h_n3_3       D8
+## Intensity.3D8_20_2h_n4_3       D8
+## Intensity.3D8_20_2h_n5_3       D8</code></pre>
+</p>
+</details>
+</div>
+<div id="preprocessing" class="section level2">
+<h2><span class="header-section-number">1.2</span> Preprocessing</h2>
+<details>
+<summary> Click to see code to log-transfrom the data </summary>
+<p>
+<ol style="list-style-type: decimal">
+<li>Log transform</li>
+</ol>
+<ul>
+<li>Calculate number of non zero intensities for each peptide</li>
+</ul>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">rowData</span>(pe[[<span class="st">&quot;peptideRaw&quot;</span>]])<span class="op">$</span>nNonZero &lt;-<span class="st"> </span><span class="kw">rowSums</span>(<span class="kw">assay</span>(pe[[<span class="st">&quot;peptideRaw&quot;</span>]]) <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>)</span></code></pre></div>
+<ul>
+<li>Peptides with zero intensities are missing peptides and should be represent with a <code>NA</code> value rather than <code>0</code>.</li>
+</ul>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>pe &lt;-<span class="st"> </span><span class="kw">zeroIsNA</span>(pe, <span class="st">&quot;peptideRaw&quot;</span>) <span class="co"># convert 0 to NA</span></span></code></pre></div>
+<ul>
+<li>Logtransform data with base 2</li>
+</ul>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>pe &lt;-<span class="st"> </span><span class="kw">logTransform</span>(pe, <span class="dt">base =</span> <span class="dv">2</span>, <span class="dt">i =</span> <span class="st">&quot;peptideRaw&quot;</span>, <span class="dt">name =</span> <span class="st">&quot;peptideLog&quot;</span>)</span></code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li>Filtering</li>
+</ol>
+<ul>
+<li>Handling overlapping protein groups</li>
+</ul>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>pe &lt;-<span class="st"> </span><span class="kw">filterFeatures</span>(pe, <span class="op">~</span><span class="st"> </span>Proteins <span class="op">%in%</span><span class="st"> </span><span class="kw">smallestUniqueGroups</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;peptideLog&quot;</span>]])<span class="op">$</span>Proteins))</span></code></pre></div>
+<ul>
+<li>Remove reverse sequences (decoys) and contaminants. Note that this is indicated by the column names Reverse and depending on the version of maxQuant with Potential.contaminants or Contaminants.</li>
+</ul>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>pe &lt;-<span class="st"> </span><span class="kw">filterFeatures</span>(pe,<span class="op">~</span>Reverse <span class="op">!=</span><span class="st"> &quot;+&quot;</span>)</span>
+<span id="cb11-2"><a href="#cb11-2"></a>pe &lt;-<span class="st"> </span><span class="kw">filterFeatures</span>(pe,<span class="op">~</span><span class="st"> </span>Contaminant <span class="op">!=</span><span class="st"> &quot;+&quot;</span>)</span></code></pre></div>
+<ul>
+<li>Drop peptides that were only identified in one sample</li>
+</ul>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>pe &lt;-<span class="st"> </span><span class="kw">filterFeatures</span>(pe,<span class="op">~</span><span class="st"> </span>nNonZero <span class="op">&gt;=</span><span class="dv">2</span>)</span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="kw">nrow</span>(pe[[<span class="st">&quot;peptideLog&quot;</span>]])</span></code></pre></div>
+<pre><code>## [1] 6525</code></pre>
+<p>We keep 6525 peptides upon filtering.</p>
+<ol start="3" style="list-style-type: decimal">
+<li>Normalization by median centering</li>
+</ol>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>pe &lt;-<span class="st"> </span><span class="kw">normalize</span>(pe, </span>
+<span id="cb14-2"><a href="#cb14-2"></a>                <span class="dt">i =</span> <span class="st">&quot;peptideLog&quot;</span>, </span>
+<span id="cb14-3"><a href="#cb14-3"></a>                <span class="dt">name =</span> <span class="st">&quot;peptideNorm&quot;</span>, </span>
+<span id="cb14-4"><a href="#cb14-4"></a>                <span class="dt">method =</span> <span class="st">&quot;center.median&quot;</span>)</span></code></pre></div>
+<ol start="4" style="list-style-type: decimal">
+<li>Summarization. We use the standard sumarisation in aggregateFeatures, which is a robust summarisation method.</li>
+</ol>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>pe &lt;-<span class="st"> </span><span class="kw">aggregateFeatures</span>(pe,</span>
+<span id="cb15-2"><a href="#cb15-2"></a>    <span class="dt">i =</span> <span class="st">&quot;peptideNorm&quot;</span>, </span>
+<span id="cb15-3"><a href="#cb15-3"></a>    <span class="dt">fcol =</span> <span class="st">&quot;Proteins&quot;</span>, </span>
+<span id="cb15-4"><a href="#cb15-4"></a>    <span class="dt">na.rm =</span> <span class="ot">TRUE</span>,</span>
+<span id="cb15-5"><a href="#cb15-5"></a>    <span class="dt">name =</span> <span class="st">&quot;protein&quot;</span>)</span></code></pre></div>
+<pre><code>## Your quantitative and row data contain missing values. Please read the
+## relevant section(s) in the aggregateFeatures manual page regarding the
+## effects of missing values on data aggregation.</code></pre>
+<p>Plot of preprocessed data</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>pe[[<span class="st">&quot;peptideNorm&quot;</span>]] <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="st">  </span>assay <span class="op">%&gt;%</span></span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="st">  </span><span class="kw">as.data.frame</span>() <span class="op">%&gt;%</span></span>
+<span id="cb17-4"><a href="#cb17-4"></a><span class="st">  </span><span class="kw">gather</span>(sample, intensity) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb17-5"><a href="#cb17-5"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">genotype =</span> <span class="kw">colData</span>(pe)[sample,<span class="st">&quot;genotype&quot;</span>]) <span class="op">%&gt;%</span></span>
+<span id="cb17-6"><a href="#cb17-6"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> intensity,<span class="dt">group =</span> sample,<span class="dt">color =</span> genotype)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb17-7"><a href="#cb17-7"></a><span class="st">    </span><span class="kw">geom_density</span>() <span class="op">+</span></span>
+<span id="cb17-8"><a href="#cb17-8"></a><span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;Peptide-level&quot;</span>)</span></code></pre></div>
+<pre><code>## Warning: Removed 7561 rows containing non-finite values (stat_density).</code></pre>
+<p><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>pe[[<span class="st">&quot;protein&quot;</span>]] <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-2"><a href="#cb19-2"></a><span class="st">  </span>assay <span class="op">%&gt;%</span></span>
+<span id="cb19-3"><a href="#cb19-3"></a><span class="st">  </span><span class="kw">as.data.frame</span>() <span class="op">%&gt;%</span></span>
+<span id="cb19-4"><a href="#cb19-4"></a><span class="st">  </span><span class="kw">gather</span>(sample, intensity) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-5"><a href="#cb19-5"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">genotype =</span> <span class="kw">colData</span>(pe)[sample,<span class="st">&quot;genotype&quot;</span>]) <span class="op">%&gt;%</span></span>
+<span id="cb19-6"><a href="#cb19-6"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> intensity,<span class="dt">group =</span> sample,<span class="dt">color =</span> genotype)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb19-7"><a href="#cb19-7"></a><span class="st">    </span><span class="kw">geom_density</span>() <span class="op">+</span></span>
+<span id="cb19-8"><a href="#cb19-8"></a><span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;Protein-level&quot;</span>)</span></code></pre></div>
+<pre><code>## Warning: Removed 428 rows containing non-finite values (stat_density).</code></pre>
+<img src="pda_quantification_inference_files/figure-html/unnamed-chunk-16-2.png" width="672" />
+</p>
+</details>
+</div>
+<div id="summarized-data-structure" class="section level2">
+<h2><span class="header-section-number">1.3</span> Summarized data structure</h2>
+<div id="design" class="section level3">
+<h3><span class="header-section-number">1.3.1</span> Design</h3>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>pe <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="st">  </span>colData <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb21-3"><a href="#cb21-3"></a><span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">genotype</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Intensity.1WT_20_2h_n3_3</td>
+<td align="left">WT</td>
+</tr>
+<tr class="even">
+<td align="left">Intensity.1WT_20_2h_n4_3</td>
+<td align="left">WT</td>
+</tr>
+<tr class="odd">
+<td align="left">Intensity.1WT_20_2h_n5_3</td>
+<td align="left">WT</td>
+</tr>
+<tr class="even">
+<td align="left">Intensity.3D8_20_2h_n3_3</td>
+<td align="left">D8</td>
+</tr>
+<tr class="odd">
+<td align="left">Intensity.3D8_20_2h_n4_3</td>
+<td align="left">D8</td>
+</tr>
+<tr class="even">
+<td align="left">Intensity.3D8_20_2h_n5_3</td>
+<td align="left">D8</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>WT vs KO</li>
+<li>3 vs 3 repeats</li>
+</ul>
+</div>
+<div id="summarized-intensity-matrix" class="section level3">
+<h3><span class="header-section-number">1.3.2</span> Summarized intensity matrix</h3>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>pe[[<span class="st">&quot;protein&quot;</span>]] <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">assay</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">head</span>() <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw">kable</span>()</span></code></pre></div>
+<table>
+<colgroup>
+<col width="7%" />
+<col width="15%" />
+<col width="15%" />
+<col width="15%" />
+<col width="15%" />
+<col width="15%" />
+<col width="15%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">Intensity.1WT_20_2h_n3_3</th>
+<th align="right">Intensity.1WT_20_2h_n4_3</th>
+<th align="right">Intensity.1WT_20_2h_n5_3</th>
+<th align="right">Intensity.3D8_20_2h_n3_3</th>
+<th align="right">Intensity.3D8_20_2h_n4_3</th>
+<th align="right">Intensity.3D8_20_2h_n5_3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">WP_003013731</td>
+<td align="right">-0.2748775</td>
+<td align="right">-0.0856247</td>
+<td align="right">0.1595370</td>
+<td align="right">-0.2809009</td>
+<td align="right">0.0035526</td>
+<td align="right">0.0567110</td>
+</tr>
+<tr class="even">
+<td align="left">WP_003013860</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">-0.2512039</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">-0.4865646</td>
+</tr>
+<tr class="odd">
+<td align="left">WP_003013909</td>
+<td align="right">-0.6851118</td>
+<td align="right">-0.8161658</td>
+<td align="right">-0.7557906</td>
+<td align="right">-0.4591476</td>
+<td align="right">-0.5449424</td>
+<td align="right">-0.4962482</td>
+</tr>
+<tr class="even">
+<td align="left">WP_003014068</td>
+<td align="right">0.6495386</td>
+<td align="right">0.8522239</td>
+<td align="right">1.1344852</td>
+<td align="right">0.5459176</td>
+<td align="right">0.9187714</td>
+<td align="right">0.5974741</td>
+</tr>
+<tr class="odd">
+<td align="left">WP_003014122</td>
+<td align="right">-0.7630863</td>
+<td align="right">-1.0430741</td>
+<td align="right">-0.8091715</td>
+<td align="right">-1.1743951</td>
+<td align="right">-1.1924725</td>
+<td align="right">-1.2565893</td>
+</tr>
+<tr class="even">
+<td align="left">WP_003014123</td>
+<td align="right">-0.2051672</td>
+<td align="right">-0.3361704</td>
+<td align="right">-0.2151930</td>
+<td align="right">-0.3855747</td>
+<td align="right">-0.2802011</td>
+<td align="right">-0.5801771</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>1115 proteins</li>
+</ul>
+</div>
+<div id="hypothesis-testing-a-single-protein" class="section level3">
+<h3><span class="header-section-number">1.3.3</span> Hypothesis testing: a single protein</h3>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/myP6SUlSwsM" frameborder="0" style="display: block; margin: auto;" allow="autoplay; encrypted-media" allowfullscreen>
+</iframe>
+<p><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<div id="t-test" class="section level4">
+<h4><span class="header-section-number">1.3.3.1</span> T-test</h4>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/cVw5kdSRZCE" frameborder="0" style="display: block; margin: auto;" allow="autoplay; encrypted-media" allowfullscreen>
+</iframe>
+<p><span class="math display">\[
+ \log_2 \text{FC} = \bar{y}_{p1}-\bar{y}_{p2}
+\]</span></p>
+<p><span class="math display">\[
+T_g=\frac{\log_2 \text{FC}}{\text{se}_{\log_2 \text{FC}}}
+\]</span></p>
+<p><span class="math display">\[
+T_g=\frac{\widehat{\text{signal}}}{\widehat{\text{Noise}}}
+\]</span></p>
+<p>If we can assume equal variance in both treatment groups:</p>
+<p><span class="math display">\[
+\text{se}_{\log_2 \text{FC}}=\text{SD}\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}
+\]</span></p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a>WP_<span class="dv">003023392</span> &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</span>
+<span id="cb23-2"><a href="#cb23-2"></a>    <span class="dt">intensity =</span> <span class="kw">assay</span>(pe[[<span class="st">&quot;protein&quot;</span>]][<span class="st">&quot;WP_003023392&quot;</span>,]) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">c</span>(), </span>
+<span id="cb23-3"><a href="#cb23-3"></a>    <span class="dt">genotype =</span> <span class="kw">colData</span>(pe)[,<span class="dv">1</span>]) </span>
+<span id="cb23-4"><a href="#cb23-4"></a></span>
+<span id="cb23-5"><a href="#cb23-5"></a>WP_<span class="dv">003023392</span> <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-6"><a href="#cb23-6"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x=</span>genotype,<span class="dt">y=</span>intensity)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb23-7"><a href="#cb23-7"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
+<span id="cb23-8"><a href="#cb23-8"></a><span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">&quot;Protein WP_003023392&quot;</span>)</span></code></pre></div>
+<p><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p><span class="math display">\[
+t=\frac{\log_2\widehat{\text{FC}}}{\text{se}_{\log_2\widehat{\text{FC}}}}=\frac{-1.43}{0.0577}=-24.7
+\]</span></p>
+<ul>
+<li><p>Is t = -24.7 indicating that there is an effect?</p></li>
+<li><p>How likely is it to observe t = -24.7 when there is no effect of the argP KO on the protein expression?</p></li>
+</ul>
+</div>
+<div id="null-hypothesis-h_0-and-alternative-hypothesis-h_1" class="section level4">
+<h4><span class="header-section-number">1.3.3.2</span> Null hypothesis (<span class="math inline">\(H_0\)</span>) and alternative hypothesis (<span class="math inline">\(H_1\)</span>)</h4>
+<ul>
+<li><p>With data we can never prove a hypothesis (falsification principle of Popper)</p></li>
+<li><p>With data we can only reject a hypothesis</p></li>
+<li><p>In general we start from <em>alternative hypothese</em> <span class="math inline">\(H_1\)</span>: we want to show an effect of the KO on a protein</p></li>
+</ul>
+<center>
+<span class="math inline">\(H_1\)</span>: On average the protein abundance in WT is different from that in KO
+</center>
+<ul>
+<li>But, we will assess this by falsifying the opposite:
+<center>
+<span class="math inline">\(H_0\)</span>: On average the protein abundance in WT is equal to that in KO&lt;-
+</center></li>
+</ul>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="kw">t.test</span>(intensity <span class="op">~</span><span class="st"> </span>genotype, <span class="dt">data =</span> WP_<span class="dv">003023392</span>, <span class="dt">var.equal=</span><span class="ot">TRUE</span>)</span></code></pre></div>
+<pre><code>## 
+##  Two Sample t-test
+## 
+## data:  intensity by genotype
+## t = 24.747, df = 4, p-value = 1.582e-05
+## alternative hypothesis: true difference in means between group WT and group D8 is not equal to 0
+## 95 percent confidence interval:
+##  1.267666 1.588058
+## sample estimates:
+## mean in group WT mean in group D8 
+##       -0.1821147       -1.6099769</code></pre>
+<ul>
+<li><p>How likely is it to observe an equal or more extreme effect than the one observed in the sample when the null hypothesis is true?</p></li>
+<li><p>When we make assumptions about the distribution of our test statistic we can quantify this probability: <em>p-value</em>. The p-value will only be calculated correctly if the underlying assumptions hold!</p></li>
+<li><p>When we repeat the experiment, the probability to observe a fold change for this gene that is more extreme than a 2.69 fold (<span class="math inline">\(\log_2 FC=-1.43\)</span>) down or up regulation by random change (if <span class="math inline">\(H_0\)</span> is true) is 16 out of 1 000 000.<br />
+</p></li>
+<li><p>If the p-value is below a significance threshold <span class="math inline">\(\alpha\)</span> we reject the null hypothesis. <em>We control the probability on a false positive result at the <span class="math inline">\(\alpha\)</span>-level (type I error)</em></p></li>
+<li><p>Note, that the p-values are uniform under the null hypothesis, i.e. when <span class="math inline">\(H_0\)</span> is true all p-values are equally likely.</p></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="multiple-hypothesis-testing" class="section level2">
+<h2><span class="header-section-number">1.4</span> Multiple hypothesis testing</h2>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/cLn-CFyA6ps" frameborder="0" style="display: block; margin: auto;" allow="autoplay; encrypted-media" allowfullscreen>
+</iframe>
+<ul>
+<li><p>Consider testing DA for all <span class="math inline">\(m=1066\)</span> proteins simultaneously</p></li>
+<li><p>What if we assess each individual test at level <span class="math inline">\(\alpha\)</span>? <span class="math inline">\(\rightarrow\)</span> Probability to have a false positive (FP) among all m simultatenous test <span class="math inline">\(&gt;&gt;&gt; \alpha= 0.05\)</span></p></li>
+<li><p>Indeed for each non DA protein we have a probability of 5% to return a FP.</p></li>
+<li><p>In a typical experiment the majority of the proteins are non DA.</p></li>
+<li><p>So an upperbound of the expected FP is <span class="math inline">\(m \times \alpha\)</span> or <span class="math inline">\(1066 \times 0.05=53\)</span>.</p></li>
+</ul>
+<p><span class="math inline">\(\rightarrow\)</span> Hence, we are bound to call many false positive proteins each time we run the experiment.</p>
+<div id="multiple-testing" class="section level3">
+<h3><span class="header-section-number">1.4.1</span> Multiple testing</h3>
+<div id="family-wise-error-rate" class="section level4">
+<h4><span class="header-section-number">1.4.1.1</span> Family-wise error rate</h4>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/IL_eUSyRDRA" frameborder="0" style="display: block; margin: auto;" allow="autoplay; encrypted-media" allowfullscreen>
+</iframe>
+<p>The family-wise error rate (FWER) addresses the multiple testing issue by no longer controlling the individual type I error for each protein, instead it controls:</p>
+<p><span class="math display">\[
+   \text{FWER} = 
+   \text{P}\left[FP \geq 1 \right].
+\]</span></p>
+<p>The Bonferroni method is widely used to control the type I error:</p>
+<ul>
+<li>assess each test at <span class="math display">\[\alpha_\text{adj}=\frac{\alpha}{m}\]</span></li>
+<li>or use adjusted p-values and compare them to <span class="math inline">\(\alpha\)</span>: <span class="math display">\[p_\text{adj}=\text{min}\left(p \times m,1\right)\]</span></li>
+</ul>
+<p>Problem, the method is very conservative!</p>
+</div>
+<div id="false-discovery-rate" class="section level4">
+<h4><span class="header-section-number">1.4.1.2</span> False discovery rate</h4>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/envDqvEwRcc" frameborder="0" style="display: block; margin: auto;" allow="autoplay; encrypted-media" allowfullscreen>
+</iframe>
+<ul>
+<li>FDR: Expected proportion of false positives on the total number of positives you return.</li>
+<li>An FDR of 1% means that on average we expect 1% false positive proteins in the list of proteins that are called significant.</li>
+<li>Defined by Benjamini and Hochberg in their seminal paper Benjamini, Y. and Hochberg, Y. (1995). “Controlling the false discovery rate: a practical and powerful approach to multiple testing”. Journal of the Royal Statistical Society Series B, 57 (1): 289–300.</li>
+</ul>
+<p>The <strong>False Discovery Proportion (FDP)</strong> is the fraction of false positives that are returned, i.e. </p>
+<p><span class="math display">\[
+FDP = \frac{FP}{R}
+\]</span></p>
+<ul>
+<li>However, this quantity cannot be observed because in practice we only know the number of proteins for which we rejected <span class="math inline">\(H_0\)</span>, <span class="math inline">\(R\)</span>.</li>
+<li>But, we do not know the number of false positives, <span class="math inline">\(FP\)</span>.</li>
+</ul>
+<p>Therefore, Benjamini and Hochberg, 1995, defined The <strong>False Discovery Rate (FDR)</strong> as <span class="math display">\[
+   \text{FDR} = \text{E}\left[\frac{FP}{R}\right] =\text{E}\left[\text{FDP}\right]
+\]</span> the expected FDP.</p>
+<ul>
+<li>Controlling the FDR allows for more discoveries (i.e. longer lists with significant results), while the fraction of false discoveries among the significant results in well controlled on average. As a consequence, more of the true positive hypotheses will be detected.</li>
+</ul>
+</div>
+<div id="intuition-of-bh-fdr-procedure" class="section level4">
+<h4><span class="header-section-number">1.4.1.3</span> Intuition of BH-FDR procedure</h4>
+<p>Consider <span class="math inline">\(m = 1000\)</span> tests</p>
+<ul>
+<li><p>Suppose that a researcher rejects all null hypotheses for which <span class="math inline">\(p &lt; 0.01\)</span>.</p></li>
+<li><p>If we use <span class="math inline">\(p &lt; 0.01\)</span>, we expect <span class="math inline">\(0.01 \times m_0\)</span> tests to return false positives.</p></li>
+<li><p>A conservative estimate of the number of false positives that we can expect can be obtained by considering that the null hypotheses are true for all features, <span class="math inline">\(m_0 = m = 1000\)</span>.</p></li>
+<li><p>We then would expect <span class="math inline">\(0.01 \times 1000 = 10\)</span> false positives (<span class="math inline">\(FP=10\)</span>).</p></li>
+<li><p>Suppose that the researcher found 200 genes with <span class="math inline">\(p&lt;0.01\)</span> (<span class="math inline">\(R=200\)</span>).</p></li>
+<li><p>The proportion of false positive results (FDP = false positive proportion) among the list of <span class="math inline">\(R=200\)</span> genes can then be estimated as <span class="math display">\[
+ \widehat{\text{FDP}}=\frac{FP}{R}=\frac{10}{200}=\frac{0.01 \times 1000}{200} = 0.05.
+ \]</span></p></li>
+</ul>
+</div>
+<div id="benjamini-and-hochberg-1995-procedure-for-controlling-the-fdr-at-alpha" class="section level4">
+<h4><span class="header-section-number">1.4.1.4</span> Benjamini and Hochberg (1995) procedure for controlling the FDR at <span class="math inline">\(\alpha\)</span></h4>
+<ol style="list-style-type: decimal">
+<li><p>Let <span class="math inline">\(p_{(1)}\leq \ldots \leq p_{(m)}\)</span> denote the ordered <span class="math inline">\(p\)</span>-values.</p></li>
+<li><p>Find the largest integer <span class="math inline">\(k\)</span> so that <span class="math display">\[
+\frac{p_{(k)} \times m}{k} \leq \alpha
+\]</span> <span class="math display">\[\text{or}\]</span> <span class="math display">\[
+p_{(k)} \leq k \times \alpha/m
+\]</span></p></li>
+<li><p>If such a <span class="math inline">\(k\)</span> exists, reject the <span class="math inline">\(k\)</span> null hypotheses associated with <span class="math inline">\(p_{(1)}, \ldots, p_{(k)}\)</span>. Otherwise none of the null hypotheses is rejected.</p></li>
+</ol>
+<p>The adjusted <span class="math inline">\(p\)</span>-value (also known as the <span class="math inline">\(q\)</span>-value in FDR literature): <span class="math display">\[
+   q_{(i)}=\tilde{p}_{(i)} = \min\left[\min_{j=i,\ldots, m}\left(m p_{(j)}/j\right), 1 \right].
+ \]</span> In the hypothetical example above: <span class="math inline">\(k=200\)</span>, <span class="math inline">\(p_{(k)}=0.01\)</span>, <span class="math inline">\(m=1000\)</span> and <span class="math inline">\(\alpha=0.05\)</span>.</p>
+</div>
+<div id="francisella-example" class="section level4">
+<h4><span class="header-section-number">1.4.1.5</span> Francisella Example</h4>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/B3BmnOLkYg4" frameborder="0" style="display: block; margin: auto;" allow="autoplay; encrypted-media" allowfullscreen>
+</iframe>
+<details>
+<summary> Click to see code </summary>
+<p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a>ttestMx &lt;-<span class="st"> </span><span class="cf">function</span>(y,group) {</span>
+<span id="cb26-2"><a href="#cb26-2"></a>    test &lt;-<span class="st"> </span><span class="kw">try</span>(<span class="kw">t.test</span>(y[group],y[<span class="op">!</span>group],<span class="dt">var.equal=</span><span class="ot">TRUE</span>),<span class="dt">silent=</span><span class="ot">TRUE</span>)</span>
+<span id="cb26-3"><a href="#cb26-3"></a>    <span class="cf">if</span>(<span class="kw">is</span>(test,<span class="st">&quot;try-error&quot;</span>)) {</span>
+<span id="cb26-4"><a href="#cb26-4"></a>      <span class="kw">return</span>(<span class="kw">c</span>(<span class="dt">log2FC=</span><span class="ot">NA</span>,<span class="dt">se=</span><span class="ot">NA</span>,<span class="dt">tstat=</span><span class="ot">NA</span>,<span class="dt">p=</span><span class="ot">NA</span>))</span>
+<span id="cb26-5"><a href="#cb26-5"></a>      } <span class="cf">else</span> {</span>
+<span id="cb26-6"><a href="#cb26-6"></a>      <span class="kw">return</span>(<span class="kw">c</span>(<span class="dt">log2FC=</span> (test<span class="op">$</span>estimate<span class="op">%*%</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="op">-</span><span class="dv">1</span>)),<span class="dt">se=</span>test<span class="op">$</span>stderr,<span class="dt">tstat=</span>test<span class="op">$</span>statistic,<span class="dt">pval=</span>test<span class="op">$</span>p.value))</span>
+<span id="cb26-7"><a href="#cb26-7"></a>      }</span>
+<span id="cb26-8"><a href="#cb26-8"></a> }</span>
+<span id="cb26-9"><a href="#cb26-9"></a> </span>
+<span id="cb26-10"><a href="#cb26-10"></a> res &lt;-<span class="st"> </span><span class="kw">apply</span>(</span>
+<span id="cb26-11"><a href="#cb26-11"></a>    <span class="kw">assay</span>(pe[[<span class="st">&quot;protein&quot;</span>]]), </span>
+<span id="cb26-12"><a href="#cb26-12"></a>    <span class="dv">1</span>, </span>
+<span id="cb26-13"><a href="#cb26-13"></a>    ttestMx,</span>
+<span id="cb26-14"><a href="#cb26-14"></a>    <span class="dt">group =</span> <span class="kw">colData</span>(pe)<span class="op">$</span>genotype<span class="op">==</span><span class="st">&quot;D8&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb26-15"><a href="#cb26-15"></a><span class="st">  </span>t </span>
+<span id="cb26-16"><a href="#cb26-16"></a> <span class="kw">colnames</span>(res) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;logFC&quot;</span>,<span class="st">&quot;se&quot;</span>,<span class="st">&quot;tstat&quot;</span>,<span class="st">&quot;pval&quot;</span>)</span>
+<span id="cb26-17"><a href="#cb26-17"></a> res &lt;-<span class="st"> </span>res <span class="op">%&gt;%</span><span class="st"> </span>as.data.frame <span class="op">%&gt;%</span><span class="st"> </span>na.exclude <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">arrange</span>(pval)</span>
+<span id="cb26-18"><a href="#cb26-18"></a> res<span class="op">$</span>adjPval &lt;-<span class="st"> </span><span class="kw">p.adjust</span>(res<span class="op">$</span>pval, <span class="st">&quot;fdr&quot;</span>)</span>
+<span id="cb26-19"><a href="#cb26-19"></a> alpha &lt;-<span class="st"> </span><span class="fl">0.05</span></span>
+<span id="cb26-20"><a href="#cb26-20"></a>res<span class="op">$</span>adjAlphaForm &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(res),<span class="st">&quot; x &quot;</span>,alpha,<span class="st">&quot;/&quot;</span>,<span class="kw">nrow</span>(res))</span>
+<span id="cb26-21"><a href="#cb26-21"></a>res<span class="op">$</span>adjAlpha &lt;-<span class="st"> </span>alpha <span class="op">*</span><span class="st"> </span>(<span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(res))<span class="op">/</span><span class="kw">nrow</span>(res) </span>
+<span id="cb26-22"><a href="#cb26-22"></a>res<span class="op">$</span><span class="st">&quot;pval &lt; adjAlpha&quot;</span> &lt;-<span class="st"> </span>res<span class="op">$</span>pval <span class="op">&lt;</span><span class="st"> </span>res<span class="op">$</span>adjAlpha </span>
+<span id="cb26-23"><a href="#cb26-23"></a>res<span class="op">$</span><span class="st">&quot;adjPval &lt; alpha&quot;</span> &lt;-<span class="st"> </span>res<span class="op">$</span>adjPval <span class="op">&lt;</span><span class="st"> </span>alpha </span></code></pre></div>
+</p>
+</details>
+<p>FWER: Bonferroni method:<span class="math inline">\(\alpha_\text{adj} = \alpha/m = 0.05 / 1066= 5\times 10^{-5}\)</span></p>
+<table>
+<colgroup>
+<col width="12%" />
+<col width="10%" />
+<col width="9%" />
+<col width="9%" />
+<col width="14%" />
+<col width="9%" />
+<col width="15%" />
+<col width="15%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">logFC</th>
+<th align="right">pval</th>
+<th align="right">adjPval</th>
+<th align="left">adjAlphaForm</th>
+<th align="right">adjAlpha</th>
+<th align="left">pval &lt; adjAlpha</th>
+<th align="left">adjPval &lt; alpha</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">WP_003038940</td>
+<td align="right">-0.2876290</td>
+<td align="right">0.0000146</td>
+<td align="right">0.0084347</td>
+<td align="left">1 x 0.05/1066</td>
+<td align="right">0.0000469</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">WP_003023392</td>
+<td align="right">-1.4278622</td>
+<td align="right">0.0000158</td>
+<td align="right">0.0084347</td>
+<td align="left">2 x 0.05/1066</td>
+<td align="right">0.0000938</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">WP_003039212</td>
+<td align="right">-0.2658247</td>
+<td align="right">0.0000820</td>
+<td align="right">0.0291520</td>
+<td align="left">3 x 0.05/1066</td>
+<td align="right">0.0001407</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">WP_003026016</td>
+<td align="right">-1.0800305</td>
+<td align="right">0.0001395</td>
+<td align="right">0.0346124</td>
+<td align="left">4 x 0.05/1066</td>
+<td align="right">0.0001876</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">WP_003039615</td>
+<td align="right">-0.3992190</td>
+<td align="right">0.0001623</td>
+<td align="right">0.0346124</td>
+<td align="left">5 x 0.05/1066</td>
+<td align="right">0.0002345</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">WP_011733588</td>
+<td align="right">-0.4323262</td>
+<td align="right">0.0002291</td>
+<td align="right">0.0407034</td>
+<td align="left">6 x 0.05/1066</td>
+<td align="right">0.0002814</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">WP_003014552</td>
+<td align="right">-0.9843865</td>
+<td align="right">0.0003224</td>
+<td align="right">0.0440266</td>
+<td align="left">7 x 0.05/1066</td>
+<td align="right">0.0003283</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">WP_003040849</td>
+<td align="right">-1.2780743</td>
+<td align="right">0.0003304</td>
+<td align="right">0.0440266</td>
+<td align="left">8 x 0.05/1066</td>
+<td align="right">0.0003752</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">WP_003038430</td>
+<td align="right">-0.4331987</td>
+<td align="right">0.0004505</td>
+<td align="right">0.0489078</td>
+<td align="left">9 x 0.05/1066</td>
+<td align="right">0.0004221</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">WP_003033975</td>
+<td align="right">-0.2949061</td>
+<td align="right">0.0005047</td>
+<td align="right">0.0489078</td>
+<td align="left">10 x 0.05/1066</td>
+<td align="right">0.0004690</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">WP_011733645</td>
+<td align="right">0.3531405</td>
+<td align="right">0.0005171</td>
+<td align="right">0.0489078</td>
+<td align="left">11 x 0.05/1066</td>
+<td align="right">0.0005159</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">WP_011733723</td>
+<td align="right">-0.3935768</td>
+<td align="right">0.0005506</td>
+<td align="right">0.0489078</td>
+<td align="left">12 x 0.05/1066</td>
+<td align="right">0.0005629</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">WP_003038679</td>
+<td align="right">-0.3909725</td>
+<td align="right">0.0007083</td>
+<td align="right">0.0580821</td>
+<td align="left">13 x 0.05/1066</td>
+<td align="right">0.0006098</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">WP_003033719</td>
+<td align="right">-1.1865453</td>
+<td align="right">0.0008426</td>
+<td align="right">0.0603810</td>
+<td align="left">14 x 0.05/1066</td>
+<td align="right">0.0006567</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">…</td>
+<td align="right">…</td>
+<td align="right">…</td>
+<td align="right">…</td>
+<td align="left">…</td>
+<td align="right">…</td>
+<td align="left">…</td>
+<td align="left">…</td>
+</tr>
+<tr class="even">
+<td align="left">WP_003040562</td>
+<td align="right">0.0039480</td>
+<td align="right">0.9976429</td>
+<td align="right">0.9985797</td>
+<td align="left">1065 x 0.05/1066</td>
+<td align="right">0.0499531</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">WP_003041130</td>
+<td align="right">0.0002941</td>
+<td align="right">0.9992812</td>
+<td align="right">0.9992812</td>
+<td align="left">1066 x 0.05/1066</td>
+<td align="right">0.05</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="results" class="section level4">
+<h4><span class="header-section-number">1.4.1.6</span> Results</h4>
+<details>
+<summary> Click to see code </summary>
+<p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a>volcanoT &lt;-<span class="st"> </span>res <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb27-2"><a href="#cb27-2"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> logFC, <span class="dt">y =</span> <span class="op">-</span><span class="kw">log10</span>(pval), <span class="dt">color =</span> adjPval <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>)) <span class="op">+</span></span>
+<span id="cb27-3"><a href="#cb27-3"></a><span class="st">    </span><span class="kw">geom_point</span>(<span class="dt">cex =</span> <span class="fl">2.5</span>) <span class="op">+</span></span>
+<span id="cb27-4"><a href="#cb27-4"></a><span class="st">    </span><span class="kw">scale_color_manual</span>(<span class="dt">values =</span> <span class="kw">alpha</span>(<span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="op">+</span></span>
+<span id="cb27-5"><a href="#cb27-5"></a><span class="st">    </span><span class="kw">theme_minimal</span>() </span></code></pre></div>
+</p>
+</details>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a>volcanoT</span></code></pre></div>
+<p><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+</div>
+</div>
+</div>
+<div id="moderated-statistics" class="section level2">
+<h2><span class="header-section-number">1.5</span> Moderated Statistics</h2>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/_Q11LXDy0xU" frameborder="0" style="display: block; margin: auto;" allow="autoplay; encrypted-media" allowfullscreen>
+</iframe>
+<p>Problems with ordinary t-test</p>
+<details>
+<summary> Click to see code </summary>
+<p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a>problemPlots &lt;-<span class="st"> </span><span class="kw">list</span>() </span>
+<span id="cb29-2"><a href="#cb29-2"></a>problemPlots[[<span class="dv">1</span>]] &lt;-<span class="st"> </span>res <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb29-3"><a href="#cb29-3"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> logFC, <span class="dt">y =</span> se, <span class="dt">color =</span> adjPval <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>)) <span class="op">+</span></span>
+<span id="cb29-4"><a href="#cb29-4"></a><span class="st">    </span><span class="kw">geom_point</span>(<span class="dt">cex =</span> <span class="fl">2.5</span>) <span class="op">+</span></span>
+<span id="cb29-5"><a href="#cb29-5"></a><span class="st">    </span><span class="kw">scale_color_manual</span>(<span class="dt">values =</span> <span class="kw">alpha</span>(<span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="op">+</span></span>
+<span id="cb29-6"><a href="#cb29-6"></a><span class="st">    </span><span class="kw">theme_minimal</span>() </span>
+<span id="cb29-7"><a href="#cb29-7"></a></span>
+<span id="cb29-8"><a href="#cb29-8"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="op">:</span><span class="dv">3</span>)</span>
+<span id="cb29-9"><a href="#cb29-9"></a>{</span>
+<span id="cb29-10"><a href="#cb29-10"></a>problemPlots[[i]] &lt;-<span class="st"> </span><span class="kw">colData</span>(pe) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb29-11"><a href="#cb29-11"></a><span class="st">    </span>as.data.frame <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb29-12"><a href="#cb29-12"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">intensity =</span> pe[[<span class="st">&quot;protein&quot;</span>]][<span class="kw">rownames</span>(res)[i],] <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb29-13"><a href="#cb29-13"></a><span class="st">             </span>assay <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb29-14"><a href="#cb29-14"></a><span class="st">             </span>c) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb29-15"><a href="#cb29-15"></a><span class="st">    </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x=</span>genotype,<span class="dt">y=</span>intensity)) <span class="op">+</span></span>
+<span id="cb29-16"><a href="#cb29-16"></a><span class="st">    </span><span class="kw">geom_point</span>() <span class="op">+</span><span class="st"> </span></span>
+<span id="cb29-17"><a href="#cb29-17"></a><span class="st">    </span><span class="kw">ylim</span>(<span class="op">-</span><span class="dv">3</span>,<span class="dv">0</span>) <span class="op">+</span></span>
+<span id="cb29-18"><a href="#cb29-18"></a><span class="st">    </span><span class="kw">ggtitle</span>(<span class="kw">rownames</span>(res)[i])</span>
+<span id="cb29-19"><a href="#cb29-19"></a>}</span></code></pre></div>
+</p>
+</details>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a>problemPlots</span></code></pre></div>
+<pre><code>## [[1]]</code></pre>
+<p><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
+<pre><code>## 
+## [[2]]</code></pre>
+<p><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-28-2.png" width="672" /></p>
+<pre><code>## 
+## [[3]]</code></pre>
+<p><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-28-3.png" width="672" /></p>
+<p>A general class of moderated test statistics is given by <span class="math display">\[
+   T_g^{mod} = \frac{\bar{Y}_{g1} - \bar{Y}_{g2}}{C \quad \tilde{S}_g} ,
+ \]</span> where <span class="math inline">\(\tilde{S}_g\)</span> is a moderated standard deviation estimate.</p>
+<ul>
+<li><span class="math inline">\(C\)</span> is a constant depending on the design e.g. <span class="math inline">\(\sqrt{1/{n_1}+1/n_2}\)</span> for a t-test and of another form for linear models.</li>
+<li><span class="math inline">\(\tilde{S}_g=S_g+S_0\)</span>: add small positive constant to denominator of t-statistic.</li>
+<li>This can be adopted in Perseus.</li>
+</ul>
+<details>
+<summary> Click to see code </summary>
+<p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a>simI&lt;-<span class="kw">sapply</span>(res<span class="op">$</span>se<span class="op">/</span><span class="kw">sqrt</span>(<span class="dv">1</span><span class="op">/</span><span class="dv">3</span><span class="op">+</span><span class="dv">1</span><span class="op">/</span><span class="dv">3</span>),<span class="cf">function</span>(n,mean,sd) <span class="kw">rnorm</span>(n,mean,sd),<span class="dt">n=</span><span class="dv">6</span>,<span class="dt">mean=</span><span class="dv">0</span>) <span class="op">%&gt;%</span><span class="st"> </span>t</span>
+<span id="cb34-2"><a href="#cb34-2"></a>resSim &lt;-<span class="st"> </span><span class="kw">apply</span>(</span>
+<span id="cb34-3"><a href="#cb34-3"></a>    simI, </span>
+<span id="cb34-4"><a href="#cb34-4"></a>    <span class="dv">1</span>, </span>
+<span id="cb34-5"><a href="#cb34-5"></a>    ttestMx,</span>
+<span id="cb34-6"><a href="#cb34-6"></a>    <span class="dt">group =</span> <span class="kw">colData</span>(pe)<span class="op">$</span>genotype<span class="op">==</span><span class="st">&quot;D8&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb34-7"><a href="#cb34-7"></a><span class="st">  </span>t </span>
+<span id="cb34-8"><a href="#cb34-8"></a> <span class="kw">colnames</span>(resSim) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;logFC&quot;</span>,<span class="st">&quot;se&quot;</span>,<span class="st">&quot;tstat&quot;</span>,<span class="st">&quot;pval&quot;</span>)</span>
+<span id="cb34-9"><a href="#cb34-9"></a> resSim &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(resSim)</span>
+<span id="cb34-10"><a href="#cb34-10"></a> tstatSimPlot &lt;-<span class="st"> </span>resSim <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb34-11"><a href="#cb34-11"></a><span class="st">   </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x=</span>tstat)) <span class="op">+</span></span>
+<span id="cb34-12"><a href="#cb34-12"></a><span class="st">     </span><span class="kw">geom_histogram</span>(<span class="kw">aes</span>(<span class="dt">y=</span>..density.., <span class="dt">fill=</span>..count..),<span class="dt">bins=</span><span class="dv">30</span>) <span class="op">+</span></span>
+<span id="cb34-13"><a href="#cb34-13"></a><span class="st">     </span><span class="kw">stat_function</span>(<span class="dt">fun=</span>dt,</span>
+<span id="cb34-14"><a href="#cb34-14"></a>    <span class="dt">color=</span><span class="st">&quot;red&quot;</span>,</span>
+<span id="cb34-15"><a href="#cb34-15"></a>    <span class="dt">args=</span><span class="kw">list</span>(<span class="dt">df=</span><span class="dv">4</span>)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb34-16"><a href="#cb34-16"></a><span class="st">   </span><span class="kw">ylim</span>(<span class="dv">0</span>,.<span class="dv">6</span>) <span class="op">+</span></span>
+<span id="cb34-17"><a href="#cb34-17"></a><span class="st">   </span><span class="kw">ggtitle</span>(<span class="st">&quot;t-statistic&quot;</span>)</span>
+<span id="cb34-18"><a href="#cb34-18"></a></span>
+<span id="cb34-19"><a href="#cb34-19"></a> </span>
+<span id="cb34-20"><a href="#cb34-20"></a> resSim<span class="op">$</span>C &lt;-<span class="st"> </span><span class="kw">sqrt</span>(<span class="dv">1</span><span class="op">/</span><span class="dv">3</span><span class="op">+</span><span class="dv">1</span><span class="op">/</span><span class="dv">3</span>) </span>
+<span id="cb34-21"><a href="#cb34-21"></a> resSim<span class="op">$</span>sd &lt;-<span class="st"> </span>resSim<span class="op">$</span>se<span class="op">/</span>resSim<span class="op">$</span>C </span>
+<span id="cb34-22"><a href="#cb34-22"></a> tstatSimPerseus &lt;-<span class="st"> </span>resSim <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb34-23"><a href="#cb34-23"></a><span class="st">   </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x=</span>logFC<span class="op">/</span>((sd<span class="fl">+.1</span>)<span class="op">*</span>C))) <span class="op">+</span></span>
+<span id="cb34-24"><a href="#cb34-24"></a><span class="st">     </span><span class="kw">geom_histogram</span>(<span class="kw">aes</span>(<span class="dt">y=</span>..density.., <span class="dt">fill=</span>..count..),<span class="dt">bins=</span><span class="dv">30</span>) <span class="op">+</span></span>
+<span id="cb34-25"><a href="#cb34-25"></a><span class="st">     </span><span class="kw">stat_function</span>(<span class="dt">fun=</span>dt,</span>
+<span id="cb34-26"><a href="#cb34-26"></a>                   <span class="dt">color=</span><span class="st">&quot;red&quot;</span>,</span>
+<span id="cb34-27"><a href="#cb34-27"></a>                  <span class="dt">args=</span><span class="kw">list</span>(<span class="dt">df=</span><span class="dv">4</span>)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb34-28"><a href="#cb34-28"></a><span class="st">     </span><span class="kw">ylim</span>(<span class="dv">0</span>,.<span class="dv">6</span>) <span class="op">+</span></span>
+<span id="cb34-29"><a href="#cb34-29"></a><span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;Perseus&quot;</span>)</span></code></pre></div>
+</p>
+</details>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a>gridExtra<span class="op">::</span><span class="kw">grid.arrange</span>(tstatSimPlot,tstatSimPerseus,<span class="dt">nrow=</span><span class="dv">1</span>)</span></code></pre></div>
+<p><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
+<ul>
+<li>The choice of <span class="math inline">\(S_0\)</span> in Perseus is ad hoc and the t-statistic is no-longer t-distributed.</li>
+<li>Permutation test, but is difficult for more complex designs.</li>
+<li>Allows for Data Dredging because user can choose <span class="math inline">\(S_0\)</span></li>
+</ul>
+<div id="empirical-bayes" class="section level3">
+<h3><span class="header-section-number">1.5.1</span> Empirical Bayes</h3>
+<p><img src="figures/limmaShrinkage.png" width="50%" /></p>
+<p>Figure courtesy to Rafael Irizarry</p>
+<p><span class="math display">\[
+   T_g^{mod} = \frac{\bar{Y}_{g1} - \bar{Y}_{g2}}{C \quad \tilde{S}_g} ,
+ \]</span></p>
+<ul>
+<li><strong>empirical Bayes</strong> theory provides formal framework for borrowing strength across proteins,</li>
+<li>Implemented in popular bioconductor package <strong>limma</strong> and <strong>msqrob2</strong></li>
+</ul>
+<p><span class="math display">\[
+  \tilde{S}_g=\sqrt{\frac{d_gS_g^2+d_0S_0^2}{d_g+d_0}},
+\]</span></p>
+<ul>
+<li><span class="math inline">\(S_0^2\)</span>: common variance (over all proteins)</li>
+<li>Moderated t-statistic is t-distributed with <span class="math inline">\(d_0+d_g\)</span> degrees of freedom.</li>
+<li>Note that the degrees of freedom increase by borrowing strength across proteins!</li>
+</ul>
+<details>
+<summary> Click to see the code </summary>
+<p>
+<ol style="list-style-type: decimal">
+<li>We model the protein level expression values using the <code>msqrob</code> function. By default <code>msqrob2</code> estimates the model parameters using robust regression.</li>
+</ol>
+<p>We will model the data with a different group mean for every genotype. The group is incoded in the variable <code>genotype</code> of the colData. We can specify this model by using a formula with the factor <code>genotype</code> as its predictor: <code>formula = ~genotype</code>.</p>
+<p>Note, that a formula always starts with a symbol ‘~’.</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a>pe &lt;-<span class="st"> </span><span class="kw">msqrob</span>(<span class="dt">object =</span> pe, <span class="dt">i =</span> <span class="st">&quot;protein&quot;</span>, <span class="dt">formula =</span> <span class="op">~</span>genotype)</span></code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li>Inference</li>
+</ol>
+<p>We first explore the design of the model that we specified using the the package <code>ExploreModelMatrix</code></p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a><span class="kw">library</span>(ExploreModelMatrix)</span>
+<span id="cb37-2"><a href="#cb37-2"></a><span class="kw">VisualizeDesign</span>(<span class="kw">colData</span>(pe),<span class="op">~</span>genotype)<span class="op">$</span>plotlist[[<span class="dv">1</span>]]</span></code></pre></div>
+<p><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
+<p>We have two model parameters, the (Intercept) and genotypeD8. This results in a model with two group means:</p>
+<ol style="list-style-type: decimal">
+<li>For the wild type (WT) the expected value (mean) of the log2 transformed intensity y for a protein will be modelled using</li>
+</ol>
+<p><span class="math display">\[\text{E}[Y\vert \text{genotype}=\text{WT}] = \text{(Intercept)}\]</span></p>
+<ol start="2" style="list-style-type: decimal">
+<li>For the knockout genotype D8 the expected value (mean) of the log2 transformed intensity y for a protein will be modelled using</li>
+</ol>
+<p><span class="math display">\[\text{E}[Y\vert \text{genotype}=\text{D8}] = \text{(Intercept)} + \text{genotypeD8}\]</span></p>
+<p>The average log2FC between D8 and WT is thus <span class="math display">\[\log_2\text{FC}_{D8-WT}= \text{E}[Y\vert \text{genotype}=\text{D8}] - \text{E}[Y\vert \text{genotype}=\text{WT}] = \text{genotypeD8}
+\]</span></p>
+<p>Hence, assessing the null hypothesis that there is no differential abundance between D8 and WT can be reformulated as</p>
+<p><span class="math display">\[H_0:  \text{genotypeD8}=0\]</span> We can implement a hypothesis test for each protein in msqrob2 using the code below:</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a>L &lt;-<span class="st"> </span><span class="kw">makeContrast</span>(<span class="st">&quot;genotypeD8 = 0&quot;</span>, <span class="dt">parameterNames =</span> <span class="kw">c</span>(<span class="st">&quot;genotypeD8&quot;</span>))</span>
+<span id="cb38-2"><a href="#cb38-2"></a>pe &lt;-<span class="st"> </span><span class="kw">hypothesisTest</span>(<span class="dt">object =</span> pe, <span class="dt">i =</span> <span class="st">&quot;protein&quot;</span>, <span class="dt">contrast =</span> L)</span></code></pre></div>
+<p>We can show the list with all significant DE proteins at the 5% FDR using</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a><span class="kw">rowData</span>(pe[[<span class="st">&quot;protein&quot;</span>]])<span class="op">$</span>genotypeD8 <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb39-2"><a href="#cb39-2"></a><span class="st">  </span><span class="kw">arrange</span>(pval) <span class="op">%&gt;%</span></span>
+<span id="cb39-3"><a href="#cb39-3"></a><span class="st">  </span><span class="kw">filter</span>(adjPval<span class="op">&lt;</span><span class="fl">0.05</span>)</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["logFC"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["se"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["df"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["t"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["pval"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["adjPval"],"name":[6],"type":["dbl"],"align":["right"]}],"data":[{"1":"-1.4278622","2":"0.09546104","3":"6.353267","4":"-14.957538","5":"3.435824e-06","6":"0.003456439","_rn_":"WP_003023392"},{"1":"-1.2857733","2":"0.12226820","3":"6.236222","4":"-10.516007","5":"3.372825e-05","6":"0.016965307","_rn_":"WP_003040849"},{"1":"-0.9843865","2":"0.10770682","3":"6.353267","4":"-9.139501","5":"6.920701e-05","6":"0.022593404","_rn_":"WP_003014552"},{"1":"-1.1970073","2":"0.13408775","3":"6.220667","4":"-8.927044","5":"8.983461e-05","6":"0.022593404","_rn_":"WP_003033719"},{"1":"-1.3531336","2":"0.16187947","3":"6.353267","4":"-8.358896","5":"1.174333e-04","6":"0.023627585","_rn_":"WP_003040790"},{"1":"-1.0584448","2":"0.11240892","3":"5.442252","4":"-9.416022","5":"1.429981e-04","6":"0.023976009","_rn_":"WP_003026016"},{"1":"-0.8815374","2":"0.12199689","3":"6.353267","4":"-7.225901","5":"2.740575e-04","6":"0.039385984","_rn_":"WP_003033905"},{"1":"-0.7635044","2":"0.10902744","3":"6.353267","4":"-7.002865","5":"3.279672e-04","6":"0.041241874","_rn_":"WP_003039713"},{"1":"-0.9184399","2":"0.13755363","3":"6.353267","4":"-6.676959","5":"4.299645e-04","6":"0.041477282","_rn_":"WP_003039530"},{"1":"-0.9789058","2":"0.12767782","3":"5.353267","4":"-7.667000","5":"4.409838e-04","6":"0.041477282","_rn_":"WP_003014581"},{"1":"-1.3800203","2":"0.20369907","3":"6.080188","4":"-6.774799","5":"4.777868e-04","6":"0.041477282","_rn_":"WP_003038816"},{"1":"-0.7657848","2":"0.11307420","3":"6.033034","4":"-6.772410","5":"4.947588e-04","6":"0.041477282","_rn_":"WP_003033046"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>We can also visualise the results using a volcanoplot</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1"></a>volcano &lt;-<span class="st"> </span><span class="kw">ggplot</span>(</span>
+<span id="cb40-2"><a href="#cb40-2"></a>    <span class="kw">rowData</span>(pe[[<span class="st">&quot;protein&quot;</span>]])<span class="op">$</span>genotypeD8,</span>
+<span id="cb40-3"><a href="#cb40-3"></a>    <span class="kw">aes</span>(<span class="dt">x =</span> logFC, <span class="dt">y =</span> <span class="op">-</span><span class="kw">log10</span>(pval), <span class="dt">color =</span> adjPval <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>)</span>
+<span id="cb40-4"><a href="#cb40-4"></a>) <span class="op">+</span></span>
+<span id="cb40-5"><a href="#cb40-5"></a><span class="st">    </span><span class="kw">geom_point</span>(<span class="dt">cex =</span> <span class="fl">2.5</span>) <span class="op">+</span></span>
+<span id="cb40-6"><a href="#cb40-6"></a><span class="st">    </span><span class="kw">scale_color_manual</span>(<span class="dt">values =</span> <span class="kw">alpha</span>(<span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="op">+</span></span>
+<span id="cb40-7"><a href="#cb40-7"></a><span class="st">    </span><span class="kw">theme_minimal</span>() <span class="op">+</span></span>
+<span id="cb40-8"><a href="#cb40-8"></a><span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;msqrob2&quot;</span>)</span></code></pre></div>
+</p>
+</details>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a>gridExtra<span class="op">::</span><span class="kw">grid.arrange</span>(</span>
+<span id="cb41-2"><a href="#cb41-2"></a>  volcanoT <span class="op">+</span><span class="st">    </span></span>
+<span id="cb41-3"><a href="#cb41-3"></a><span class="st">    </span><span class="kw">xlim</span>(<span class="op">-</span><span class="dv">3</span>,<span class="dv">3</span>) <span class="op">+</span></span>
+<span id="cb41-4"><a href="#cb41-4"></a><span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">&quot;ordinary t-test&quot;</span>),</span>
+<span id="cb41-5"><a href="#cb41-5"></a>  volcano <span class="op">+</span><span class="st">     </span></span>
+<span id="cb41-6"><a href="#cb41-6"></a><span class="st">    </span><span class="kw">xlim</span>(<span class="op">-</span><span class="dv">3</span>,<span class="dv">3</span>)</span>
+<span id="cb41-7"><a href="#cb41-7"></a>,<span class="dt">nrow=</span><span class="dv">2</span>)</span></code></pre></div>
+<pre><code>## Warning: Removed 109 rows containing missing values (geom_point).</code></pre>
+<p><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-37-1.png" width="672" /></p>
+<ul>
+<li><p>The volcano plot opens up when using the EB variance estimator</p></li>
+<li><p>Borrowing strength to estimate the variance using empirical Bayes solves the issue of returning proteins with a low fold change as significant due to a low variance.</p></li>
+</ul>
+</div>
+<div id="shrinkage-of-the-variance-and-moderated-t-statistics" class="section level3">
+<h3><span class="header-section-number">1.5.2</span> Shrinkage of the variance and moderated t-statistics</h3>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a><span class="kw">qplot</span>(</span>
+<span id="cb43-2"><a href="#cb43-2"></a>  <span class="kw">sapply</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;protein&quot;</span>]])<span class="op">$</span>msqrobModels,getSigma),</span>
+<span id="cb43-3"><a href="#cb43-3"></a>  <span class="kw">sapply</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;protein&quot;</span>]])<span class="op">$</span>msqrobModels,getSigmaPosterior)) <span class="op">+</span></span>
+<span id="cb43-4"><a href="#cb43-4"></a><span class="st">  </span><span class="kw">xlab</span>(<span class="st">&quot;SD&quot;</span>) <span class="op">+</span></span>
+<span id="cb43-5"><a href="#cb43-5"></a><span class="st">  </span><span class="kw">ylab</span>(<span class="st">&quot;moderated SD&quot;</span>) <span class="op">+</span></span>
+<span id="cb43-6"><a href="#cb43-6"></a><span class="st">  </span><span class="kw">geom_abline</span>(<span class="dt">intercept =</span> <span class="dv">0</span>,<span class="dt">slope =</span> <span class="dv">1</span>) <span class="op">+</span></span>
+<span id="cb43-7"><a href="#cb43-7"></a><span class="st">  </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> ) </span></code></pre></div>
+<pre><code>## Warning: Removed 109 rows containing missing values (geom_point).</code></pre>
+<p><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-38-1.png" width="672" /></p>
+<ul>
+<li>Small variances are shrunken towards the common variance resulting in large EB variance estimates</li>
+<li>Large variances are shrunken towards the common variance resulting in smaller EB variance estimates</li>
+<li>Pooled degrees of freedom of the EB variance estimator are larger because information is borrowed across proteins to estimate the variance</li>
+</ul>
+</div>
+</div>
+<div id="plots" class="section level2">
+<h2><span class="header-section-number">1.6</span> Plots</h2>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1"></a>sigNames &lt;-<span class="st"> </span><span class="kw">rowData</span>(pe[[<span class="st">&quot;protein&quot;</span>]])<span class="op">$</span>genotypeD8 <span class="op">%&gt;%</span></span>
+<span id="cb45-2"><a href="#cb45-2"></a><span class="st">    </span><span class="kw">rownames_to_column</span>(<span class="st">&quot;protein&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb45-3"><a href="#cb45-3"></a><span class="st">    </span><span class="kw">filter</span>(adjPval <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>) <span class="op">%&gt;%</span></span>
+<span id="cb45-4"><a href="#cb45-4"></a><span class="st">    </span><span class="kw">pull</span>(protein)</span>
+<span id="cb45-5"><a href="#cb45-5"></a><span class="kw">heatmap</span>(<span class="kw">assay</span>(pe[[<span class="st">&quot;protein&quot;</span>]])[sigNames, ])</span></code></pre></div>
+<p><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-39-1.png" width="672" /></p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1"></a><span class="cf">for</span> (protName <span class="cf">in</span> sigNames)</span>
+<span id="cb46-2"><a href="#cb46-2"></a>    {</span>
+<span id="cb46-3"><a href="#cb46-3"></a>        pePlot &lt;-<span class="st"> </span>pe[protName, , <span class="kw">c</span>(<span class="st">&quot;peptideNorm&quot;</span>, <span class="st">&quot;protein&quot;</span>)]</span>
+<span id="cb46-4"><a href="#cb46-4"></a>        pePlotDf &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">longFormat</span>(pePlot))</span>
+<span id="cb46-5"><a href="#cb46-5"></a>        pePlotDf<span class="op">$</span>assay &lt;-<span class="st"> </span><span class="kw">factor</span>(pePlotDf<span class="op">$</span>assay,</span>
+<span id="cb46-6"><a href="#cb46-6"></a>            <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;peptideNorm&quot;</span>, <span class="st">&quot;protein&quot;</span>)</span>
+<span id="cb46-7"><a href="#cb46-7"></a>        )</span>
+<span id="cb46-8"><a href="#cb46-8"></a>        pePlotDf<span class="op">$</span>genotype &lt;-<span class="st"> </span><span class="kw">as.factor</span>(<span class="kw">colData</span>(pePlot)[pePlotDf<span class="op">$</span>colname, <span class="st">&quot;genotype&quot;</span>])</span>
+<span id="cb46-9"><a href="#cb46-9"></a></span>
+<span id="cb46-10"><a href="#cb46-10"></a>        <span class="co"># plotting</span></span>
+<span id="cb46-11"><a href="#cb46-11"></a>        p1 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(</span>
+<span id="cb46-12"><a href="#cb46-12"></a>            <span class="dt">data =</span> pePlotDf,</span>
+<span id="cb46-13"><a href="#cb46-13"></a>            <span class="kw">aes</span>(<span class="dt">x =</span> colname, <span class="dt">y =</span> value, <span class="dt">group =</span> rowname)</span>
+<span id="cb46-14"><a href="#cb46-14"></a>        ) <span class="op">+</span></span>
+<span id="cb46-15"><a href="#cb46-15"></a><span class="st">            </span><span class="kw">geom_line</span>() <span class="op">+</span></span>
+<span id="cb46-16"><a href="#cb46-16"></a><span class="st">            </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
+<span id="cb46-17"><a href="#cb46-17"></a><span class="st">            </span><span class="kw">facet_grid</span>(<span class="op">~</span>assay) <span class="op">+</span></span>
+<span id="cb46-18"><a href="#cb46-18"></a><span class="st">            </span><span class="kw">theme</span>(<span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">70</span>, <span class="dt">hjust =</span> <span class="dv">1</span>, <span class="dt">vjust =</span> <span class="fl">0.5</span>)) <span class="op">+</span></span>
+<span id="cb46-19"><a href="#cb46-19"></a><span class="st">            </span><span class="kw">ggtitle</span>(protName)</span>
+<span id="cb46-20"><a href="#cb46-20"></a>        <span class="kw">print</span>(p1)</span>
+<span id="cb46-21"><a href="#cb46-21"></a></span>
+<span id="cb46-22"><a href="#cb46-22"></a>        <span class="co"># plotting 2</span></span>
+<span id="cb46-23"><a href="#cb46-23"></a>        p2 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(pePlotDf, <span class="kw">aes</span>(<span class="dt">x =</span> colname, <span class="dt">y =</span> value, <span class="dt">fill =</span> genotype)) <span class="op">+</span></span>
+<span id="cb46-24"><a href="#cb46-24"></a><span class="st">            </span><span class="kw">geom_boxplot</span>(<span class="dt">outlier.shape =</span> <span class="ot">NA</span>) <span class="op">+</span></span>
+<span id="cb46-25"><a href="#cb46-25"></a><span class="st">            </span><span class="kw">geom_point</span>(</span>
+<span id="cb46-26"><a href="#cb46-26"></a>                <span class="dt">position =</span> <span class="kw">position_jitter</span>(<span class="dt">width =</span> <span class="fl">.1</span>),</span>
+<span id="cb46-27"><a href="#cb46-27"></a>                <span class="kw">aes</span>(<span class="dt">shape =</span> rowname)</span>
+<span id="cb46-28"><a href="#cb46-28"></a>            ) <span class="op">+</span></span>
+<span id="cb46-29"><a href="#cb46-29"></a><span class="st">            </span><span class="kw">scale_shape_manual</span>(<span class="dt">values =</span> <span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(pePlotDf)) <span class="op">+</span></span>
+<span id="cb46-30"><a href="#cb46-30"></a><span class="st">            </span><span class="kw">labs</span>(<span class="dt">title =</span> protName, <span class="dt">x =</span> <span class="st">&quot;sample&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;peptide intensity (log2)&quot;</span>) <span class="op">+</span></span>
+<span id="cb46-31"><a href="#cb46-31"></a><span class="st">            </span><span class="kw">theme</span>(<span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">70</span>, <span class="dt">hjust =</span> <span class="dv">1</span>, <span class="dt">vjust =</span> <span class="fl">0.5</span>)) <span class="op">+</span></span>
+<span id="cb46-32"><a href="#cb46-32"></a><span class="st">            </span><span class="kw">facet_grid</span>(<span class="op">~</span>assay)</span>
+<span id="cb46-33"><a href="#cb46-33"></a>        <span class="kw">print</span>(p2)</span>
+<span id="cb46-34"><a href="#cb46-34"></a>}</span></code></pre></div>
+<p><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-40-1.png" width="672" /><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-40-2.png" width="672" /><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-40-3.png" width="672" /><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-40-4.png" width="672" /><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-40-5.png" width="672" /><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-40-6.png" width="672" /><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-40-7.png" width="672" /><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-40-8.png" width="672" /><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-40-9.png" width="672" /><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-40-10.png" width="672" /><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-40-11.png" width="672" /><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-40-12.png" width="672" /><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-40-13.png" width="672" /><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-40-14.png" width="672" /><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-40-15.png" width="672" /><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-40-16.png" width="672" /><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-40-17.png" width="672" /><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-40-18.png" width="672" /><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-40-19.png" width="672" /><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-40-20.png" width="672" /><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-40-21.png" width="672" /><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-40-22.png" width="672" /><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-40-23.png" width="672" /><img src="pda_quantification_inference_files/figure-html/unnamed-chunk-40-24.png" width="672" /></p>
+</div>
+</div>
+<div id="experimental-design" class="section level1">
+<h1><span class="header-section-number">2</span> Experimental Design</h1>
+<div id="sample-size" class="section level2">
+<h2><span class="header-section-number">2.1</span> Sample size</h2>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/uELgkzDjVRY" frameborder="0" style="display: block; margin: auto;" allow="autoplay; encrypted-media" allowfullscreen>
+</iframe>
+<p><span class="math display">\[
+ \log_2 \text{FC} = \bar{y}_{p1}-\bar{y}_{p2}
+\]</span></p>
+<p><span class="math display">\[
+T_g=\frac{\log_2 \text{FC}}{\text{se}_{\log_2 \text{FC}}}
+\]</span></p>
+<p><span class="math display">\[
+T_g=\frac{\widehat{\text{signal}}}{\widehat{\text{Noise}}}
+\]</span></p>
+<p>If we can assume equal variance in both treatment groups:</p>
+<p><span class="math display">\[
+\text{se}_{\log_2 \text{FC}}=\text{SD}\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}
+\]</span></p>
+<p><span class="math inline">\(\rightarrow\)</span> if number of bio-repeats increases we have a higher power!</p>
+<ul>
+<li>cfr. Study of tamoxifen treated Estrogen Recepter (ER) positive breast cancer patients</li>
+</ul>
+</div>
+<div id="blocking" class="section level2">
+<h2><span class="header-section-number">2.2</span> Blocking</h2>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/DsRuicONr-Q" frameborder="0" style="display: block; margin: auto;" allow="autoplay; encrypted-media" allowfullscreen>
+</iframe>
+<p><span class="math display">\[\sigma^2= \sigma^2_{bio}+\sigma^2_\text{lab} +\sigma^2_\text{extraction} + \sigma^2_\text{run} + \ldots\]</span></p>
+<ul>
+<li>Biological: fluctuations in protein level between mice, fluctations in protein level between cells, …</li>
+<li>Technical: cage effect, lab effect, week effect, plasma extraction, MS-run, …</li>
+</ul>
+</div>
+<div id="nature-methods-points-of-significance---blocking" class="section level2">
+<h2><span class="header-section-number">2.3</span> Nature methods: Points of significance - Blocking</h2>
+<p><a href="https://www.nature.com/articles/nmeth.3005.pdf">https://www.nature.com/articles/nmeth.3005.pdf</a></p>
+</div>
+<div id="mouse-example" class="section level2">
+<h2><span class="header-section-number">2.4</span> Mouse example</h2>
+<p><img src="figures/mouseTcell_RCB_design.png" width="50%" /> Duguet et al. (2017) MCP 16(8):1416-1432. doi: 10.1074/mcp.m116.062745</p>
+<ul>
+<li>All treatments of interest are present within block!</li>
+<li>We can estimate the effect of the treatment within block!</li>
+<li>We can isolate the between block variability from the analysis using linear model: <span class="math display">\[ 
+y \sim \text{type} + \text{mouse}
+\]</span></li>
+<li>Not possible with Perseus!</li>
+</ul>
+<div id="assess-the-impact-of-blocking-in-the-tutorial-session" class="section level3">
+<h3><span class="header-section-number">2.4.1</span> Assess the impact of blocking in the tutorial session!</h3>
+<ul>
+<li>Completely randomized design with only one cell type per mouse (Treg and Tconv)</li>
+</ul>
+<p><span class="math display">\[\updownarrow\]</span></p>
+<ul>
+<li>Randomized complete block design assessing Treg and Tconv on each mouse</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="software-code" class="section level1">
+<h1><span class="header-section-number">3</span> Software &amp; code</h1>
+<ul>
+<li><p>Our R/Bioconductor package <a href="https://www.bioconductor.org/packages/release/bioc/html/msqrob2.html">msqrob2</a> can be used in R markdown scripts or with a GUI/shinyApp in the <a href="https://github.com/statOmics/msqrob2gui">msqrob2gui</a> package.</p></li>
+<li><p>The GUI is intended as a introduction to the key concepts of proteomics data analysis for users who have no experience in R.</p></li>
+<li><p>However, learning how to code data analyses in R markdown scripts is key for open en reproducible science and for reporting your proteomics data analyses and interpretation in a reproducible way.</p></li>
+<li><p>More information on our tools can be found in our papers <span class="citation">(Goeminne, Gevaert, and Clement 2016)</span>, <span class="citation">(Goeminne et al. 2020)</span> and <span class="citation">(Sticker et al. 2020)</span>. Please refer to our work when using our tools.</p></li>
+<li><p>Clips on the code on importing the data and preprocessing can be found in <a href="./pda_quantification_preprocessing.html">Part I Preprocessing</a></p></li>
+<li><p>A clip on the code for modelling and statistical inference with msqrob2 is included below</p></li>
+</ul>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/eXxIdzGOPgY" frameborder="0" style="display: block; margin: auto;" allow="autoplay; encrypted-media" allowfullscreen>
+</iframe>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references">
+<div id="ref-goeminne2020">
+<p>Goeminne, L. J. E., A. Sticker, L. Martens, K. Gevaert, and L. Clement. 2020. “MSqRob Takes the Missing Hurdle: Uniting Intensity- and Count-Based Proteomics.” <em>Anal Chem</em> 92 (9): 6278–87.</p>
+</div>
+<div id="ref-goeminne2016">
+<p>Goeminne, L. J., K. Gevaert, and L. Clement. 2016. “Peptide-level Robust Ridge Regression Improves Estimation, Sensitivity, and Specificity in Data-dependent Quantitative Label-free Shotgun Proteomics.” <em>Mol Cell Proteomics</em> 15 (2): 657–68.</p>
+</div>
+<div id="ref-sticker2020">
+<p>Sticker, A., L. Goeminne, L. Martens, and L. Clement. 2020. “Robust Summarization and Inference in Proteome-wide Label-free Quantification.” <em>Mol Cell Proteomics</em> 19 (7): 1209–19.</p>
+</div>
+</div>
+</div>
+
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiU3RhdGlzdGljYWwgTWV0aG9kcyBmb3IgUXVhbnRpdGF0aXZlIE1TLWJhc2VkIFByb3Rlb21pY3M6IFBhcnQgSUkuIERpZmZlcmVudGlhbCBBYnVuZGFuY2UgQW5hbHlzaXMiCmF1dGhvcjogIkxpZXZlbiBDbGVtZW50IgpkYXRlOiAiW3N0YXRPbWljc10oaHR0cHM6Ly9zdGF0b21pY3MuZ2l0aHViLmlvKSwgR2hlbnQgVW5pdmVyc2l0eSIKb3V0cHV0OgogICAgaHRtbF9kb2N1bWVudDoKICAgICAgY29kZV9kb3dubG9hZDogdHJ1ZQogICAgICB0aGVtZTogY29zbW8KICAgICAgdG9jOiB0cnVlCiAgICAgIHRvY19mbG9hdDogdHJ1ZQogICAgICBoaWdobGlnaHQ6IHRhbmdvCiAgICAgIG51bWJlcl9zZWN0aW9uczogdHJ1ZQogICAgcGRmX2RvY3VtZW50OgogICAgICB0b2M6IHRydWUKICAgICAgbnVtYmVyX3NlY3Rpb25zOiB0cnVlCmxpbmtjb2xvcjogYmx1ZQp1cmxjb2xvcjogYmx1ZQpjaXRlY29sb3I6IGJsdWUKCmJpYmxpb2dyYXBoeTogbXNxcm9iMi5iaWIKCi0tLQoKPGEgcmVsPSJsaWNlbnNlIiBocmVmPSJodHRwczovL2NyZWF0aXZlY29tbW9ucy5vcmcvbGljZW5zZXMvYnktbmMtc2EvNC4wIj48aW1nIGFsdD0iQ3JlYXRpdmUgQ29tbW9ucyBMaWNlbnNlIiBzdHlsZT0iYm9yZGVyLXdpZHRoOjAiIHNyYz0iaHR0cHM6Ly9pLmNyZWF0aXZlY29tbW9ucy5vcmcvbC9ieS1uYy1zYS80LjAvODh4MzEucG5nIiAvPjwvYT4KClRoaXMgaXMgcGFydCBvZiB0aGUgb25saW5lIGNvdXJzZSBbUHJvdGVvbWljcyBEYXRhIEFuYWx5c2lzIDIwMjEgKFBEQTIxKV0oaHR0cHM6Ly9zdGF0b21pY3MuZ2l0aHViLmlvL1BEQTIxLykKCjxpZnJhbWUgd2lkdGg9IjU2MCIgaGVpZ2h0PSIzMTUiCnNyYz0iaHR0cHM6Ly93d3cueW91dHViZS5jb20vZW1iZWQvMW1oZzNCQ3VFbTgiCmZyYW1lYm9yZGVyPSIwIgpzdHlsZT0iZGlzcGxheTogYmxvY2s7IG1hcmdpbjogYXV0bzsiCmFsbG93PSJhdXRvcGxheTsgZW5jcnlwdGVkLW1lZGlhIiBhbGxvd2Z1bGxzY3JlZW4+PC9pZnJhbWU+CgotIFtQbGF5bGlzdCBQREEgUHJlcHJvY2Vzc2luZ10oaHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj0xbWhnM0JDdUVtOCZsaXN0PVBMWkgxaFA4X0xiSktxblBTUzRoeFRrbi10UW9sU0NHalApCgojIE91dGxpbmUgey19CgotIEZyYW5jaXNlbGxhIHR1bGFyZW5zaXMgRXhhbXBsZQotIEh5cG90aGVzaXMgdGVzdGluZwotIE11bHRpcGxlIHRlc3RpbmcKLSBNb2RlcmF0ZWQgc3RhdGlzdGljcwotIEV4cGVyaW1lbnRhbCBkZXNpZ24KCgpOb3RlLCB0aGF0IHRoZSBSLWNvZGUgaXMgaW5jbHVkZWQgZm9yIGxlYXJuZXJzIHdobyBhcmUgYWltaW5nIHRvIGRldmVsb3AgUi9tYXJrZG93biBzY3JpcHRzIHRvIGF1dG9tYXRlIHRoZWlyIHF1YW50aXRhdGl2ZSBwcm90ZW9taWNzIGRhdGEgYW5hbHlzZXMuCkFjY29yZGluZyB0byB0aGUgdGFyZ2V0IGF1ZGllbmNlIG9mIHRoZSBjb3Vyc2Ugd2UgZWl0aGVyIHdvcmsgd2l0aCBhIGdyYXBoaWNhbCB1c2VyIGludGVyZmFjZSAoR1VJKSBpbiBhIFIvc2hpbnkgQXBwIG1zcXJvYjJndWkgKGUuZy4gUHJvdGVvbWljcyBCaW9pbmZvcm1hdGljcyBjb3Vyc2Ugb2YgdGhlIEVCSSBhbmQgdGhlIFByb3Rlb21pY3MgRGF0YSBBbmFseXNpcyBjb3Vyc2UgYXQgdGhlIEd1bGJlbmtpYW4gaW5zdGl0dXRlKSBvciB3aXRoIFIvbWFya2Rvd25zIHNjcmlwdHMgKGUuZy4gQmlvaW5mb3JtYXRpY3MgU3VtbWVyIFNjaG9vbCBhdCBVQ0xvdXZhaW4gb3IgdGhlIFN0YXRpc3RpY2FsIEdlbm9taWNzIENvdXJzZSBhdCBHaGVudCBVbml2ZXJzaXR5KS4gCgotLS0KCiMgRnJhbmNpc2VsbGEgdHVsYXJlbnNpcyBleHBlcmltZW50Cgo8aWZyYW1lIHdpZHRoPSI1NjAiIGhlaWdodD0iMzE1IgpzcmM9Imh0dHBzOi8vd3d3LnlvdXR1YmUuY29tL2VtYmVkL1RXNXJrMXk3YU9jIgpmcmFtZWJvcmRlcj0iMCIKc3R5bGU9ImRpc3BsYXk6IGJsb2NrOyBtYXJnaW46IGF1dG87IgphbGxvdz0iYXV0b3BsYXk7IGVuY3J5cHRlZC1tZWRpYSIgYWxsb3dmdWxsc2NyZWVuPjwvaWZyYW1lPgoKYGBge3IgZWNobz1GQUxTRSxvdXQud2lkdGg9IjUwJSJ9CmtuaXRyOjppbmNsdWRlX2dyYXBoaWNzKCIuL2ZpZ3VyZXMvZnJhbmNpc2VsbGEuanBnIikKYGBgCgpgYGB7ciBlY2hvPUZBTFNFfQprbml0cjo6aW5jbHVkZV9ncmFwaGljcygiLi9maWd1cmVzL3R1bGFyZW1pYV9sZXNpb24uanBnIikKYGBgCgotIFBhdGhvZ2VuOiBjYXVzZXMgdHVsYXJlbWlhCi0gTWV0YWJvbGljIGFkYXB0YXRpb24ga2V5IGZvciBpbnRyYWNlbGx1bGFyIGxpZmUgY3ljbGUgb2YgcGF0aG9nZW5pYyBtaWNyb29yZ2FuaXNtcy4gCi0gVXBvbiBlbnRyeSBpbnRvIGhvc3QgY2VsbHMgcXVpY2sgcGhhc29tYWwgZXNjYXBlIGFuZCBhY3RpdmUgbXVsdGlwbGljYXRpb24gaW4gY3l0b3NvbGljIGNvbXBhcnRtZW50LgotIEZyYW5jaXNjZWxsYSBpcyBhdXhvdHJvcGggZm9yIHNldmVyYWwgYW1pbm8gYWNpZHMsIGluY2x1ZGluZyBhcmdpbmluZS4gCi0gSW5hY3RpdmF0aW9uIG9mIGFyZ2luaW5lIHRyYW5zcG9ydGVyIGRlbGF5ZWQgYmFjdGVyaWFsIHBoYWdvc29tYWwgZXNjYXBlIGFuZCBpbnRyYWNlbGx1bGFyIG11bHRpcGxpY2F0aW9uLiAKLSBFeHBlcmltZW50IHRvIGFzc2VzcyBkaWZmZXJlbmNlIGluIHByb3Rlb21lIHVzaW5nIDMgV1QgdnMgMyBBcmdQIEtPIG11dGFudHMKCgojIyBJbXBvcnQgdGhlIGRhdGEgaW4gUiAKCjxpZnJhbWUgd2lkdGg9IjU2MCIgaGVpZ2h0PSIzMTUiCnNyYz0iaHR0cHM6Ly93d3cueW91dHViZS5jb20vZW1iZWQvMkxqZDk1SUVfQVkiCmZyYW1lYm9yZGVyPSIwIgpzdHlsZT0iZGlzcGxheTogYmxvY2s7IG1hcmdpbjogYXV0bzsiCmFsbG93PSJhdXRvcGxheTsgZW5jcnlwdGVkLW1lZGlhIiBhbGxvd2Z1bGxzY3JlZW4+PC9pZnJhbWU+CgoKPGRldGFpbHM+PHN1bW1hcnk+IENsaWNrIHRvIHNlZSBjb2RlIDwvc3VtbWFyeT48cD4KMS4gTG9hZCBsaWJyYXJpZXMgCgpgYGB7ciwgd2FybmluZz1GQUxTRSwgbWVzc2FnZT1GQUxTRX0KbGlicmFyeSh0aWR5dmVyc2UpCmxpYnJhcnkobGltbWEpCmxpYnJhcnkoUUZlYXR1cmVzKQpsaWJyYXJ5KG1zcXJvYjIpCmxpYnJhcnkocGxvdGx5KQpsaWJyYXJ5KGdncGxvdDIpCmBgYAoKMi4gV2UgdXNlIGEgcGVwdGlkZXMudHh0IGZpbGUgZnJvbSBNUy1kYXRhIHF1YW50aWZpZWQgd2l0aCBtYXhxdWFudCB0aGF0IApjb250YWlucyBNUzEgaW50ZW5zaXRpZXMgc3VtbWFyaXplZCBhdCB0aGUgcGVwdGlkZSBsZXZlbC4gCmBgYHtyfQpwZXB0aWRlc0ZpbGUgPC0gImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9zdGF0T21pY3MvUERBMjEvZGF0YS9xdWFudGlmaWNhdGlvbi9mcmFuY2lzZWxsYS9wZXB0aWRlcy50eHQiCmBgYAoKMy4gTWF4cXVhbnQgc3RvcmVzIHRoZSBpbnRlbnNpdHkgZGF0YSBmb3IgdGhlIGRpZmZlcmVudCBzYW1wbGVzIGluIGNvbHVtbm5zIHRoYXQgc3RhcnQgd2l0aCBJbnRlbnNpdHkuIFdlIGNhbiByZXRyZWl2ZSB0aGUgY29sdW1uIG5hbWVzIHdpdGggdGhlIGludGVuc2l0eSBkYXRhIHdpdGggdGhlIGNvZGUgYmVsb3c6IAoKYGBge3J9CmVjb2xzIDwtIGdyZXAoIkludGVuc2l0eVxcLiIsIG5hbWVzKHJlYWQuZGVsaW0ocGVwdGlkZXNGaWxlKSkpCmBgYAoKNC4gUmVhZCB0aGUgZGF0YSBhbmQgc3RvcmUgaXQgaW4gIFFGZWF0dXJlcyBvYmplY3QgCgpgYGB7cn0KcGUgPC0gcmVhZFFGZWF0dXJlcygKICB0YWJsZSA9IHBlcHRpZGVzRmlsZSwKICBmbmFtZXMgPSAxLAogIGVjb2wgPSBlY29scywKICBuYW1lID0gInBlcHRpZGVSYXciLCBzZXA9Ilx0IikKYGBgCgo1LiBVcGRhdGUgZGF0YSB3aXRoIGluZm9ybWF0aW9uIG9uIGRlc2lnbgoKYGBge3J9CmNvbERhdGEocGUpJGdlbm90eXBlIDwtIHBlW1sxXV0gJT4lIAogIGNvbG5hbWVzICU+JSAKICBzdWJzdHIoMTIsMTMpICU+JQogIGFzLmZhY3RvciAlPiUgCiAgcmVsZXZlbCgiV1QiKQpwZSAlPiUgY29sRGF0YQpgYGAKCjwvcD48L2RldGFpbHM+CgojIyBQcmVwcm9jZXNzaW5nCgo8ZGV0YWlscz48c3VtbWFyeT4gQ2xpY2sgdG8gc2VlIGNvZGUgdG8gbG9nLXRyYW5zZnJvbSB0aGUgZGF0YSA8L3N1bW1hcnk+PHA+CgoxLiBMb2cgdHJhbnNmb3JtCgogIC0gQ2FsY3VsYXRlIG51bWJlciBvZiBub24gemVybyBpbnRlbnNpdGllcyBmb3IgZWFjaCBwZXB0aWRlCmBgYHtyfQpyb3dEYXRhKHBlW1sicGVwdGlkZVJhdyJdXSkkbk5vblplcm8gPC0gcm93U3Vtcyhhc3NheShwZVtbInBlcHRpZGVSYXciXV0pID4gMCkKYGBgCgogIC0gUGVwdGlkZXMgd2l0aCB6ZXJvIGludGVuc2l0aWVzIGFyZSBtaXNzaW5nIHBlcHRpZGVzIGFuZCBzaG91bGQgYmUgcmVwcmVzZW50CndpdGggYSBgTkFgIHZhbHVlIHJhdGhlciB0aGFuIGAwYC4KCmBgYHtyfQpwZSA8LSB6ZXJvSXNOQShwZSwgInBlcHRpZGVSYXciKSAjIGNvbnZlcnQgMCB0byBOQQpgYGAKCiAgLSBMb2d0cmFuc2Zvcm0gZGF0YSB3aXRoIGJhc2UgMgoKYGBge3J9CnBlIDwtIGxvZ1RyYW5zZm9ybShwZSwgYmFzZSA9IDIsIGkgPSAicGVwdGlkZVJhdyIsIG5hbWUgPSAicGVwdGlkZUxvZyIpCmBgYAoKMi4gRmlsdGVyaW5nCgogIC0gSGFuZGxpbmcgb3ZlcmxhcHBpbmcgcHJvdGVpbiBncm91cHMKCmBgYHtyfQpwZSA8LSBmaWx0ZXJGZWF0dXJlcyhwZSwgfiBQcm90ZWlucyAlaW4lIHNtYWxsZXN0VW5pcXVlR3JvdXBzKHJvd0RhdGEocGVbWyJwZXB0aWRlTG9nIl1dKSRQcm90ZWlucykpCmBgYAoKICAtIFJlbW92ZSByZXZlcnNlIHNlcXVlbmNlcyAoZGVjb3lzKSBhbmQgY29udGFtaW5hbnRzLiBOb3RlIHRoYXQgdGhpcyBpcyBpbmRpY2F0ZWQgYnkgdGhlIGNvbHVtbiBuYW1lcyBSZXZlcnNlIGFuZCBkZXBlbmRpbmcgb24gdGhlIHZlcnNpb24gb2YgbWF4UXVhbnQgd2l0aCBQb3RlbnRpYWwuY29udGFtaW5hbnRzIG9yIENvbnRhbWluYW50cy4KCgpgYGB7cn0KcGUgPC0gZmlsdGVyRmVhdHVyZXMocGUsflJldmVyc2UgIT0gIisiKQpwZSA8LSBmaWx0ZXJGZWF0dXJlcyhwZSx+IENvbnRhbWluYW50ICE9ICIrIikKYGBgCgogIC0gRHJvcCBwZXB0aWRlcyB0aGF0IHdlcmUgb25seSBpZGVudGlmaWVkIGluIG9uZSBzYW1wbGUKCmBgYHtyfQpwZSA8LSBmaWx0ZXJGZWF0dXJlcyhwZSx+IG5Ob25aZXJvID49MikKbnJvdyhwZVtbInBlcHRpZGVMb2ciXV0pCmBgYAoKV2Uga2VlcCBgciBucm93KHBlW1sicGVwdGlkZUxvZyJdXSlgIHBlcHRpZGVzIHVwb24gZmlsdGVyaW5nLgoKMy4gTm9ybWFsaXphdGlvbiBieSBtZWRpYW4gY2VudGVyaW5nCgpgYGB7cn0KcGUgPC0gbm9ybWFsaXplKHBlLCAKICAgICAgICAgICAgICAgIGkgPSAicGVwdGlkZUxvZyIsIAogICAgICAgICAgICAgICAgbmFtZSA9ICJwZXB0aWRlTm9ybSIsIAogICAgICAgICAgICAgICAgbWV0aG9kID0gImNlbnRlci5tZWRpYW4iKQpgYGAKCgo0LiBTdW1tYXJpemF0aW9uLiBXZSB1c2UgdGhlIHN0YW5kYXJkIHN1bWFyaXNhdGlvbiBpbiBhZ2dyZWdhdGVGZWF0dXJlcywgd2hpY2ggaXMgYQpyb2J1c3Qgc3VtbWFyaXNhdGlvbiBtZXRob2QuCgpgYGB7cix3YXJuaW5nPUZBTFNFfQpwZSA8LSBhZ2dyZWdhdGVGZWF0dXJlcyhwZSwKICAgIGkgPSAicGVwdGlkZU5vcm0iLCAKICAgIGZjb2wgPSAiUHJvdGVpbnMiLCAKICAgIG5hLnJtID0gVFJVRSwKICAgIG5hbWUgPSAicHJvdGVpbiIpCmBgYAoKClBsb3Qgb2YgcHJlcHJvY2Vzc2VkIGRhdGEgCgpgYGB7cn0KcGVbWyJwZXB0aWRlTm9ybSJdXSAlPiUgCiAgYXNzYXkgJT4lCiAgYXMuZGF0YS5mcmFtZSgpICU+JQogIGdhdGhlcihzYW1wbGUsIGludGVuc2l0eSkgJT4lIAogIG11dGF0ZShnZW5vdHlwZSA9IGNvbERhdGEocGUpW3NhbXBsZSwiZ2Vub3R5cGUiXSkgJT4lCiAgZ2dwbG90KGFlcyh4ID0gaW50ZW5zaXR5LGdyb3VwID0gc2FtcGxlLGNvbG9yID0gZ2Vub3R5cGUpKSArIAogICAgZ2VvbV9kZW5zaXR5KCkgKwogICAgZ2d0aXRsZSgiUGVwdGlkZS1sZXZlbCIpCgpwZVtbInByb3RlaW4iXV0gJT4lIAogIGFzc2F5ICU+JQogIGFzLmRhdGEuZnJhbWUoKSAlPiUKICBnYXRoZXIoc2FtcGxlLCBpbnRlbnNpdHkpICU+JSAKICBtdXRhdGUoZ2Vub3R5cGUgPSBjb2xEYXRhKHBlKVtzYW1wbGUsImdlbm90eXBlIl0pICU+JQogIGdncGxvdChhZXMoeCA9IGludGVuc2l0eSxncm91cCA9IHNhbXBsZSxjb2xvciA9IGdlbm90eXBlKSkgKyAKICAgIGdlb21fZGVuc2l0eSgpICsKICAgIGdndGl0bGUoIlByb3RlaW4tbGV2ZWwiKQpgYGAKPC9wPjwvZGV0YWlscz4KCiMjIFN1bW1hcml6ZWQgZGF0YSBzdHJ1Y3R1cmUKCiMjIyBEZXNpZ24KCmBgYHtyfQpwZSAlPiUgCiAgY29sRGF0YSAlPiUgCiAga25pdHI6OmthYmxlKCkKYGBgCgotIFdUIHZzIEtPIAotIDMgdnMgMyByZXBlYXRzIAoKIyMjIFN1bW1hcml6ZWQgaW50ZW5zaXR5IG1hdHJpeAoKYGBge3J9CnBlW1sicHJvdGVpbiJdXSAlPiUgYXNzYXkoKSAlPiUgaGVhZCgpICU+JSBrbml0cjo6a2FibGUoKQpgYGAKCi0gYHIgbnJvdyhwZVtbInByb3RlaW4iXV0pYCBwcm90ZWlucyAKCiMjIyBIeXBvdGhlc2lzIHRlc3Rpbmc6IGEgc2luZ2xlIHByb3RlaW4gCgo8aWZyYW1lIHdpZHRoPSI1NjAiIGhlaWdodD0iMzE1IgpzcmM9Imh0dHBzOi8vd3d3LnlvdXR1YmUuY29tL2VtYmVkL215UDZTVWxTd3NNIgpmcmFtZWJvcmRlcj0iMCIKc3R5bGU9ImRpc3BsYXk6IGJsb2NrOyBtYXJnaW46IGF1dG87IgphbGxvdz0iYXV0b3BsYXk7IGVuY3J5cHRlZC1tZWRpYSIgYWxsb3dmdWxsc2NyZWVuPjwvaWZyYW1lPgoKYGBge3IgZWNobz1GQUxTRX0KaWYgKCJwaSIlaW4lbHMoKSkgcm0oInBpIikKa29wdm9ldGVyPC1mdW5jdGlvbih4LHksYW5nbGU9MCxsPS4yLGNleC5kb3Q9LjUscGNoPTE5LGNvbD0iYmxhY2siKQp7CmFuZ2xlPWFuZ2xlLzE4MCpwaQpwb2ludHMoeCx5LGNleD1jZXguZG90LHBjaD1wY2gsY29sPWNvbCkKbGluZXMoYyh4LHgrbCpjb3MoLXBpLzIrYW5nbGUpKSxjKHkseStsKnNpbigtcGkvMithbmdsZSkpLGNvbD1jb2wpCmxpbmVzKGMoeCtsLzIqY29zKC1waS8yK2FuZ2xlKSx4K2wvMipjb3MoLXBpLzIrYW5nbGUpK2wvNCpjb3MoYW5nbGUpKSxjKHkrbC8yKnNpbigtcGkvMithbmdsZSkseStsLzIqc2luKC1waS8yK2FuZ2xlKStsLzQqc2luKGFuZ2xlKSksY29sPWNvbCkKbGluZXMoYyh4K2wvMipjb3MoLXBpLzIrYW5nbGUpLHgrbC8yKmNvcygtcGkvMithbmdsZSkrbC80KmNvcyhwaSthbmdsZSkpLGMoeStsLzIqc2luKC1waS8yK2FuZ2xlKSx5K2wvMipzaW4oLXBpLzIrYW5nbGUpK2wvNCpzaW4ocGkrYW5nbGUpKSxjb2w9Y29sKQpsaW5lcyhjKHgrbCpjb3MoLXBpLzIrYW5nbGUpLHgrbCpjb3MoLXBpLzIrYW5nbGUpK2wvMipjb3MoLXBpLzIrcGkvNCthbmdsZSkpLGMoeStsKnNpbigtcGkvMithbmdsZSkseStsKnNpbigtcGkvMithbmdsZSkrbC8yKnNpbigtcGkvMitwaS80K2FuZ2xlKSksY29sPWNvbCkKbGluZXMoYyh4K2wqY29zKC1waS8yK2FuZ2xlKSx4K2wqY29zKC1waS8yK2FuZ2xlKStsLzIqY29zKC1waS8yLXBpLzQrYW5nbGUpKSxjKHkrbCpzaW4oLXBpLzIrYW5nbGUpLHkrbCpzaW4oLXBpLzIrYW5nbGUpK2wvMipzaW4oLXBpLzItcGkvNCthbmdsZSkpLGNvbD1jb2wpCn0KCnBhcihtYXI9YygwLDAsMCwwKSxtYWk9YygwLDAsMCwwKSkKcGxvdCgwLDAseGxhYj0iIix5bGFiPSIiLHhsaW09YygwLDEwKSx5bGltPWMoMCwxMCksY29sPTAseGF4dD0ibm9uZSIseWF4dD0ibm9uZSIsYXhlcz1GQUxTRSkKcmVjdCgwLDYsMTAsMTAsYm9yZGVyPSJyZWQiLGx3ZD0yKQp0ZXh0KC41LDgsInBvcHVsYXRpb24iLHNydD05MCxjb2w9InJlZCIsY2V4PTIpCnN5bWJvbHMgKDMsIDgsIGNpcmNsZXM9MS4yLCBjb2w9InJlZCIsYWRkPVRSVUUsZmc9InJlZCIsaW5jaGVzPUZBTFNFLGx3ZD0yKQpzZXQuc2VlZCgzMzApCmdyaWQ9c2VxKDAsMSwuMDEpCgpmb3IgKGkgaW4gMTo1MCkKewoJYW5nbGUxPXJ1bmlmKG49MSxtaW49MCxtYXg9MzYwKQoJYW5nbGUyPXJ1bmlmKG49MSxtaW49MCxtYXg9MzYwKQoJcmFkaXVzPXNhbXBsZShncmlkLHByb2I9Z3JpZF4yKnBpL3N1bShncmlkXjIqcGkpLHNpemU9MSkKCWtvcHZvZXRlcigzK3JhZGl1cypjb3MoYW5nbGUxLzE4MCpwaSksOCtyYWRpdXMqc2luKGFuZ2xlMS8xODAqcGkpLGFuZ2xlPWFuZ2xlMikKfQp0ZXh0KDcuNSw4LCJFZmZlY3Qgb2YgYXJnaW5pbmUgZGVmLiBpbiBwb3B1bGF0aW9uIixjb2w9InJlZCIsY2V4PTEuMikKCnJlY3QoMCwwLDEwLDQsYm9yZGVyPSJibHVlIixsd2Q9MikKdGV4dCguNSwyLCJzYW1wbGUiLHNydD05MCxjb2w9ImJsdWUiLGNleD0yKQpzeW1ib2xzICgzLCAyLCBjaXJjbGVzPTEuMiwgY29sPSJyZWQiLGFkZD1UUlVFLGZnPSJibHVlIixpbmNoZXM9RkFMU0UsbHdkPTIpCmZvciAoaSBpbiAwOjEpCglmb3IgKGogaW4gMDoyKQp7CgoJa29wdm9ldGVyKDIuNStqKigzLjktMi4xKS80LDEuNStpKQp9CnRleHQoNy41LDIsIkVmZmVjdCBvZiBhcmdpbmluZSBkZWYuIGluIHNhbXBsZSIsY29sPSJibHVlIixjZXg9MS4yKQoKYXJyb3dzKDMsNS45LDMsNC4xLGNvbD0iYmxhY2siLGx3ZD0zKQphcnJvd3MoNyw0LjEsNyw1LjksY29sPSJibGFjayIsbHdkPTMpCnRleHQoMS41LDUsIkV4cC4gRGVzaWduIixjb2w9ImJsYWNrIixjZXg9MS4yKQp0ZXh0KDguNSw1LCJFc3RpbWF0aW9uIFxuIEluZmVyZW5jZSAiLGNvbD0iYmxhY2siLGNleD0xLjIpCnRleHQoNy41LC41LCJEYXRhIGV4cGxvcmF0aW9uIixjb2w9ImJsYWNrIixjZXg9MS4yKQpgYGAKCiMjIyMgVC10ZXN0Cgo8aWZyYW1lIHdpZHRoPSI1NjAiIGhlaWdodD0iMzE1IgpzcmM9Imh0dHBzOi8vd3d3LnlvdXR1YmUuY29tL2VtYmVkL2NWdzVrZFNSWkNFIgpmcmFtZWJvcmRlcj0iMCIKc3R5bGU9ImRpc3BsYXk6IGJsb2NrOyBtYXJnaW46IGF1dG87IgphbGxvdz0iYXV0b3BsYXk7IGVuY3J5cHRlZC1tZWRpYSIgYWxsb3dmdWxsc2NyZWVuPjwvaWZyYW1lPgoKCiQkCiBcbG9nXzIgXHRleHR7RkN9ID0gXGJhcnt5fV97cDF9LVxiYXJ7eX1fe3AyfQokJAoKJCQKVF9nPVxmcmFje1xsb2dfMiBcdGV4dHtGQ319e1x0ZXh0e3NlfV97XGxvZ18yIFx0ZXh0e0ZDfX19CiQkCgokJApUX2c9XGZyYWN7XHdpZGVoYXR7XHRleHR7c2lnbmFsfX19e1x3aWRlaGF0e1x0ZXh0e05vaXNlfX19CiQkCgpJZiB3ZSBjYW4gYXNzdW1lIGVxdWFsIHZhcmlhbmNlIGluIGJvdGggdHJlYXRtZW50IGdyb3VwczoKCiQkClx0ZXh0e3NlfV97XGxvZ18yIFx0ZXh0e0ZDfX09XHRleHR7U0R9XHNxcnR7XGZyYWN7MX17bl8xfStcZnJhY3sxfXtuXzJ9fQokJAoKYGBge3J9CldQXzAwMzAyMzM5MiA8LSBkYXRhLmZyYW1lKAogICAgaW50ZW5zaXR5ID0gYXNzYXkocGVbWyJwcm90ZWluIl1dWyJXUF8wMDMwMjMzOTIiLF0pICU+JSBjKCksIAogICAgZ2Vub3R5cGUgPSBjb2xEYXRhKHBlKVssMV0pIAoKV1BfMDAzMDIzMzkyICU+JSAKICBnZ3Bsb3QoYWVzKHg9Z2Vub3R5cGUseT1pbnRlbnNpdHkpKSArIAogIGdlb21fcG9pbnQoKSArCiAgZ2d0aXRsZSgiUHJvdGVpbiBXUF8wMDMwMjMzOTIiKQpgYGAKCmBgYHtyIGVjaG89RkFMU0V9CmxtSGxwIDwtIGxtKGludGVuc2l0eSB+IGdlbm90eXBlLCBkYXRhID0gV1BfMDAzMDIzMzkyKQpgYGAKCiQkCnQ9XGZyYWN7XGxvZ18yXHdpZGVoYXR7XHRleHR7RkN9fX17XHRleHR7c2V9X3tcbG9nXzJcd2lkZWhhdHtcdGV4dHtGQ319fX09XGZyYWN7YHIgZm9ybWF0KHN1bW1hcnkobG1IbHApJGNvZWZbMiwxXSwgZGlnaXQgPSAzKWB9e2ByIGZvcm1hdChzdW1tYXJ5KGxtSGxwKSRjb2VmWzIsMl0sIGRpZ2l0ID0gMylgfT1gciBmb3JtYXQoc3VtbWFyeShsbUhscCkkY29lZlsyLDNdLCBkaWdpdCA9IDMpYAokJAoKLSBJcyB0ID0gYHIgZm9ybWF0KHN1bW1hcnkobG1IbHApJGNvZWZbMiwzXSwgZGlnaXQgPSAzKWAgaW5kaWNhdGluZyB0aGF0CnRoZXJlIGlzIGFuIGVmZmVjdD8KCi0gSG93IGxpa2VseSBpcyBpdCB0byBvYnNlcnZlCnQgPSBgciBmb3JtYXQoc3VtbWFyeShsbUhscCkkY29lZlsyLDNdLCBkaWdpdCA9IDMpYCB3aGVuIHRoZXJlIGlzIG5vIGVmZmVjdCBvZiB0aGUgYXJnUCBLTyBvbiB0aGUgcHJvdGVpbiBleHByZXNzaW9uPwoKIyMjIyBOdWxsIGh5cG90aGVzaXMgKCRIXzAkKSBhbmQgYWx0ZXJuYXRpdmUgaHlwb3RoZXNpcyAoJEhfMSQpCgotIFdpdGggZGF0YSB3ZSBjYW4gbmV2ZXIgcHJvdmUgYSBoeXBvdGhlc2lzIChmYWxzaWZpY2F0aW9uIHByaW5jaXBsZSBvZiBQb3BwZXIpCi0gV2l0aCBkYXRhIHdlIGNhbiBvbmx5IHJlamVjdCBhIGh5cG90aGVzaXMgCgotIEluIGdlbmVyYWwgd2Ugc3RhcnQgZnJvbSAqYWx0ZXJuYXRpdmUgaHlwb3RoZXNlKiAkSF8xJDogd2Ugd2FudCB0byBzaG93IGFuIGVmZmVjdCBvZiB0aGUgS08gb24gYSBwcm90ZWluCgo8Y2VudGVyPgokSF8xJDogT24gYXZlcmFnZSB0aGUgcHJvdGVpbiBhYnVuZGFuY2UgaW4gV1QgaXMgZGlmZmVyZW50IGZyb20gdGhhdCBpbiBLTwo8L2NlbnRlcj4KCi0gQnV0LCB3ZSB3aWxsIGFzc2VzcyB0aGlzIGJ5IGZhbHNpZnlpbmcgdGhlIG9wcG9zaXRlOiAKPGNlbnRlcj4KJEhfMCQ6IE9uIGF2ZXJhZ2UgdGhlIHByb3RlaW4gYWJ1bmRhbmNlIGluIFdUIGlzIGVxdWFsIHRvIHRoYXQgaW4gS088LQo8L2NlbnRlcj4KCgpgYGB7cn0KdC50ZXN0KGludGVuc2l0eSB+IGdlbm90eXBlLCBkYXRhID0gV1BfMDAzMDIzMzkyLCB2YXIuZXF1YWw9VFJVRSkKYGBgCgotIEhvdyBsaWtlbHkgaXMgaXQgdG8gb2JzZXJ2ZSBhbiBlcXVhbCBvciBtb3JlIGV4dHJlbWUgZWZmZWN0IHRoYW4gdGhlIG9uZSBvYnNlcnZlZCBpbiB0aGUgc2FtcGxlIHdoZW4gdGhlIG51bGwgaHlwb3RoZXNpcyBpcyB0cnVlPwotIFdoZW4gd2UgbWFrZSBhc3N1bXB0aW9ucyBhYm91dCB0aGUgZGlzdHJpYnV0aW9uIG9mIG91ciB0ZXN0IHN0YXRpc3RpYyB3ZSBjYW4gcXVhbnRpZnkgdGhpcyBwcm9iYWJpbGl0eTogKnAtdmFsdWUqLiAKVGhlIHAtdmFsdWUgd2lsbCBvbmx5IGJlIGNhbGN1bGF0ZWQgY29ycmVjdGx5IGlmIHRoZSB1bmRlcmx5aW5nIGFzc3VtcHRpb25zIGhvbGQhCi0gV2hlbiB3ZSByZXBlYXQgdGhlIGV4cGVyaW1lbnQsIHRoZSBwcm9iYWJpbGl0eSB0byBvYnNlcnZlIGEgZm9sZCBjaGFuZ2UgZm9yIHRoaXMgZ2VuZSB0aGF0IGlzIG1vcmUgZXh0cmVtZSB0aGFuIGEgYHIgZm9ybWF0KDJeYWJzKGxtSGxwJGNvZWZbMl0pLGRpZ2l0cz0zKWAgZm9sZCAoJFxsb2dfMiBGQz1gciBmb3JtYXQobG1IbHAkY29lZlsyXSxkaWdpdHM9MylgJCkgZG93biBvciB1cCByZWd1bGF0aW9uIGJ5IHJhbmRvbSBjaGFuZ2UgKGlmICRIXzAkIGlzIHRydWUpIGlzIGByIHJvdW5kKHN1bW1hcnkobG1IbHApJGNvZWZbMiw0XSoxZTYsMClgIG91dCBvZiAxIDAwMCAwMDAuICAKLSBJZiB0aGUgcC12YWx1ZSBpcyBiZWxvdyBhIHNpZ25pZmljYW5jZSB0aHJlc2hvbGQgJFxhbHBoYSQgd2UgcmVqZWN0IHRoZSBudWxsIGh5cG90aGVzaXMuICpXZSBjb250cm9sIHRoZSBwcm9iYWJpbGl0eSBvbiBhIGZhbHNlIHBvc2l0aXZlIHJlc3VsdCBhdCB0aGUgJFxhbHBoYSQtbGV2ZWwgKHR5cGUgSSBlcnJvcikqCgotIE5vdGUsIHRoYXQgdGhlIHAtdmFsdWVzIGFyZSB1bmlmb3JtIHVuZGVyIHRoZSBudWxsIGh5cG90aGVzaXMsIGkuZS4gd2hlbiAkSF8wJCBpcyB0cnVlIGFsbCBwLXZhbHVlcyBhcmUgZXF1YWxseSBsaWtlbHkuIAoKIyMgTXVsdGlwbGUgaHlwb3RoZXNpcyB0ZXN0aW5nCgo8aWZyYW1lIHdpZHRoPSI1NjAiIGhlaWdodD0iMzE1IgpzcmM9Imh0dHBzOi8vd3d3LnlvdXR1YmUuY29tL2VtYmVkL2NMbi1DRnlBNnBzIgpmcmFtZWJvcmRlcj0iMCIKc3R5bGU9ImRpc3BsYXk6IGJsb2NrOyBtYXJnaW46IGF1dG87IgphbGxvdz0iYXV0b3BsYXk7IGVuY3J5cHRlZC1tZWRpYSIgYWxsb3dmdWxsc2NyZWVuPjwvaWZyYW1lPgoKLSBDb25zaWRlciB0ZXN0aW5nIERBIGZvciBhbGwgJG09MTA2NiQgcHJvdGVpbnMgc2ltdWx0YW5lb3VzbHkKLSBXaGF0IGlmIHdlIGFzc2VzcyBlYWNoIGluZGl2aWR1YWwgdGVzdCBhdCBsZXZlbCAkXGFscGhhJD8KJFxyaWdodGFycm93JCBQcm9iYWJpbGl0eSB0byBoYXZlIGEgZmFsc2UgcG9zaXRpdmUgKEZQKSBhbW9uZyBhbGwgbSBzaW11bHRhdGVub3VzCnRlc3QgJD4+PiAgXGFscGhhPSAwLjA1JAoKLSBJbmRlZWQgZm9yIGVhY2ggbm9uIERBIHByb3RlaW4gd2UgaGF2ZSBhIHByb2JhYmlsaXR5IG9mIDUlIHRvIHJldHVybiBhIEZQLgotIEluIGEgdHlwaWNhbCBleHBlcmltZW50IHRoZSBtYWpvcml0eSBvZiB0aGUgcHJvdGVpbnMgYXJlIG5vbiBEQS4gCi0gU28gYW4gdXBwZXJib3VuZCBvZiB0aGUgZXhwZWN0ZWQgRlAgaXMgJG0gXHRpbWVzIFxhbHBoYSQgb3IgJDEwNjYgXHRpbWVzIDAuMDU9YHIgcm91bmQoMTA2NiowLjA1LDApYCQuIAoKJFxyaWdodGFycm93JCBIZW5jZSwgd2UgYXJlIGJvdW5kIHRvIGNhbGwgbWFueSBmYWxzZSBwb3NpdGl2ZSBwcm90ZWlucyBlYWNoIHRpbWUgd2UgcnVuIHRoZSBleHBlcmltZW50LgoKIyMjIE11bHRpcGxlIHRlc3RpbmcKCiMjIyMgRmFtaWx5LXdpc2UgZXJyb3IgcmF0ZQoKPGlmcmFtZSB3aWR0aD0iNTYwIiBoZWlnaHQ9IjMxNSIKc3JjPSJodHRwczovL3d3dy55b3V0dWJlLmNvbS9lbWJlZC9JTF9lVVN5UkRSQSIKZnJhbWVib3JkZXI9IjAiCnN0eWxlPSJkaXNwbGF5OiBibG9jazsgbWFyZ2luOiBhdXRvOyIKYWxsb3c9ImF1dG9wbGF5OyBlbmNyeXB0ZWQtbWVkaWEiIGFsbG93ZnVsbHNjcmVlbj48L2lmcmFtZT4KClRoZSBmYW1pbHktd2lzZSBlcnJvciByYXRlIChGV0VSKSBhZGRyZXNzZXMgdGhlIG11bHRpcGxlIHRlc3RpbmcgaXNzdWUgYnkgbm8gbG9uZ2VyIGNvbnRyb2xsaW5nIHRoZSBpbmRpdmlkdWFsIHR5cGUgSSBlcnJvciBmb3IgZWFjaCBwcm90ZWluLCBpbnN0ZWFkIGl0IGNvbnRyb2xzOiAgCgpcWwogICBcdGV4dHtGV0VSfSA9IAogICBcdGV4dHtQfVxsZWZ0W0ZQIFxnZXEgMSBccmlnaHRdLgpcXQoKVGhlIEJvbmZlcnJvbmkgbWV0aG9kIGlzIHdpZGVseSB1c2VkIHRvIGNvbnRyb2wgdGhlIHR5cGUgSSBlcnJvcjogCgotIGFzc2VzcyBlYWNoIHRlc3QgYXQgClxbXGFscGhhX1x0ZXh0e2Fkan09XGZyYWN7XGFscGhhfXttfVxdCi0gb3IgdXNlIGFkanVzdGVkIHAtdmFsdWVzIGFuZCBjb21wYXJlIHRoZW0gdG8gJFxhbHBoYSQ6IApcW3BfXHRleHR7YWRqfT1cdGV4dHttaW59XGxlZnQocCBcdGltZXMgbSwxXHJpZ2h0KVxdCgpQcm9ibGVtLCB0aGUgbWV0aG9kIGlzIHZlcnkgY29uc2VydmF0aXZlISAKCiMjIyMgRmFsc2UgZGlzY292ZXJ5IHJhdGUKCjxpZnJhbWUgd2lkdGg9IjU2MCIgaGVpZ2h0PSIzMTUiCnNyYz0iaHR0cHM6Ly93d3cueW91dHViZS5jb20vZW1iZWQvZW52RHF2RXdSY2MiCmZyYW1lYm9yZGVyPSIwIgpzdHlsZT0iZGlzcGxheTogYmxvY2s7IG1hcmdpbjogYXV0bzsiCmFsbG93PSJhdXRvcGxheTsgZW5jcnlwdGVkLW1lZGlhIiBhbGxvd2Z1bGxzY3JlZW4+PC9pZnJhbWU+CgotIEZEUjogRXhwZWN0ZWQgcHJvcG9ydGlvbiBvZiBmYWxzZSBwb3NpdGl2ZXMgb24gdGhlIHRvdGFsIG51bWJlciBvZiBwb3NpdGl2ZXMgeW91IHJldHVybi4KLSBBbiBGRFIgb2YgMSUgbWVhbnMgdGhhdCBvbiBhdmVyYWdlIHdlIGV4cGVjdCAxJSBmYWxzZSBwb3NpdGl2ZSBwcm90ZWlucyBpbiB0aGUgbGlzdCBvZiBwcm90ZWlucyB0aGF0IGFyZSBjYWxsZWQgc2lnbmlmaWNhbnQuCi0gRGVmaW5lZCBieSBCZW5qYW1pbmkgYW5kIEhvY2hiZXJnIGluIHRoZWlyIHNlbWluYWwgcGFwZXIgQmVuamFtaW5pLCBZLiBhbmQgSG9jaGJlcmcsIFkuICgxOTk1KS4gIkNvbnRyb2xsaW5nIHRoZSBmYWxzZSBkaXNjb3ZlcnkgcmF0ZTogYSBwcmFjdGljYWwgYW5kIHBvd2VyZnVsIGFwcHJvYWNoIHRvIG11bHRpcGxlIHRlc3RpbmciLiBKb3VybmFsIG9mIHRoZSBSb3lhbCBTdGF0aXN0aWNhbCBTb2NpZXR5IFNlcmllcyBCLCA1NyAoMSk6IDI4OeKAkzMwMC4gCgpUaGUgKipGYWxzZSBEaXNjb3ZlcnkgUHJvcG9ydGlvbiAoRkRQKSoqIGlzIHRoZSBmcmFjdGlvbiBvZiBmYWxzZSBwb3NpdGl2ZXMgdGhhdCBhcmUgcmV0dXJuZWQsIGkuZS4gCgpcWwpGRFAgPSBcZnJhY3tGUH17Un0KXF0KCi0gSG93ZXZlciwgdGhpcyBxdWFudGl0eSBjYW5ub3QgYmUgb2JzZXJ2ZWQgYmVjYXVzZSBpbiBwcmFjdGljZSB3ZSBvbmx5IGtub3cgdGhlIG51bWJlciBvZiBwcm90ZWlucyBmb3Igd2hpY2ggd2UgcmVqZWN0ZWQgJEhfMCQsICRSJC4gCi0gQnV0LCB3ZSBkbyBub3Qga25vdyB0aGUgbnVtYmVyIG9mIGZhbHNlIHBvc2l0aXZlcywgJEZQJC4KClRoZXJlZm9yZSwgQmVuamFtaW5pIGFuZCBIb2NoYmVyZywgMTk5NSwgZGVmaW5lZCBUaGUgKipGYWxzZSBEaXNjb3ZlcnkgUmF0ZSAoRkRSKSoqIGFzClxbCiAgIFx0ZXh0e0ZEUn0gPSBcdGV4dHtFfVxsZWZ0W1xmcmFje0ZQfXtSfVxyaWdodF0gPVx0ZXh0e0V9XGxlZnRbXHRleHR7RkRQfVxyaWdodF0KXF0KdGhlIGV4cGVjdGVkIEZEUC4gCgotIENvbnRyb2xsaW5nIHRoZSBGRFIgYWxsb3dzIGZvciBtb3JlIGRpc2NvdmVyaWVzIChpLmUuIGxvbmdlciBsaXN0cyB3aXRoIHNpZ25pZmljYW50IHJlc3VsdHMpLCB3aGlsZSB0aGUgZnJhY3Rpb24gb2YgZmFsc2UgZGlzY292ZXJpZXMgYW1vbmcgdGhlIHNpZ25pZmljYW50IHJlc3VsdHMgaW4gd2VsbCBjb250cm9sbGVkIG9uIGF2ZXJhZ2UuIEFzIGEgY29uc2VxdWVuY2UsIG1vcmUgb2YgdGhlIHRydWUgcG9zaXRpdmUgaHlwb3RoZXNlcyB3aWxsIGJlIGRldGVjdGVkLgoKCiMjIyMgSW50dWl0aW9uIG9mIEJILUZEUiBwcm9jZWR1cmUKCkNvbnNpZGVyICRtID0gMTAwMCQgdGVzdHMKCi0gU3VwcG9zZSB0aGF0IGEgcmVzZWFyY2hlciByZWplY3RzIGFsbCBudWxsIGh5cG90aGVzZXMgZm9yIHdoaWNoICRwIDwgMC4wMSQuIAoKLSBJZiB3ZSB1c2UgJHAgPCAwLjAxJCwgd2UgZXhwZWN0ICQwLjAxIFx0aW1lcyBtXzAkIHRlc3RzIHRvIHJldHVybiBmYWxzZSBwb3NpdGl2ZXMuIAotIEEgY29uc2VydmF0aXZlIGVzdGltYXRlIG9mIHRoZSBudW1iZXIgb2YgZmFsc2UgcG9zaXRpdmVzIHRoYXQgd2UgY2FuIGV4cGVjdCBjYW4gYmUgb2J0YWluZWQgYnkgY29uc2lkZXJpbmcgdGhhdCB0aGUgbnVsbCBoeXBvdGhlc2VzIGFyZSB0cnVlIGZvciBhbGwgZmVhdHVyZXMsICRtXzAgPSBtID0gIDEwMDAkLiAKLSBXZSB0aGVuIHdvdWxkIGV4cGVjdCAkMC4wMSBcdGltZXMgMTAwMCA9IDEwJCBmYWxzZSBwb3NpdGl2ZXMgKCRGUD0xMCQpLgoKLSBTdXBwb3NlIHRoYXQgdGhlIHJlc2VhcmNoZXIgZm91bmQgMjAwIGdlbmVzIHdpdGggJHA8MC4wMSQgKCRSPTIwMCQpLgoKLSBUaGUgcHJvcG9ydGlvbiBvZiBmYWxzZSBwb3NpdGl2ZSByZXN1bHRzIChGRFAgPSBmYWxzZSBwb3NpdGl2ZSBwcm9wb3J0aW9uKSBhbW9uZyB0aGUgbGlzdCBvZiAkUj0yMDAkIGdlbmVzIGNhbiB0aGVuIGJlIGVzdGltYXRlZCBhcwogXFsKICAgXHdpZGVoYXR7XHRleHR7RkRQfX09XGZyYWN7RlB9e1J9PVxmcmFjezEwfXsyMDB9PVxmcmFjezAuMDEgXHRpbWVzIDEwMDB9ezIwMH0gPSAwLjA1LgogXF0KCgojIyMjIEJlbmphbWluaSBhbmQgSG9jaGJlcmcgKDE5OTUpIHByb2NlZHVyZSBmb3IgY29udHJvbGxpbmcgdGhlIEZEUiBhdCAkXGFscGhhJAoKMS4gTGV0ICRwX3soMSl9XGxlcSBcbGRvdHMgXGxlcSBwX3sobSl9JCBkZW5vdGUgdGhlIG9yZGVyZWQgJHAkLXZhbHVlcy4KCjIuIEZpbmQgdGhlIGxhcmdlc3QgaW50ZWdlciAkayQgc28gdGhhdCAKJCQKXGZyYWN7cF97KGspfSBcdGltZXMgbX17a30gXGxlcSBcYWxwaGEKJCQKJCRcdGV4dHtvcn0kJAokJApwX3soayl9IFxsZXEgayBcdGltZXMgXGFscGhhL20KJCQKCjMuIElmIHN1Y2ggYSAkayQgZXhpc3RzLCByZWplY3QgdGhlICRrJCBudWxsIGh5cG90aGVzZXMgYXNzb2NpYXRlZCB3aXRoICRwX3soMSl9LCBcbGRvdHMsIHBfeyhrKX0kLgpPdGhlcndpc2Ugbm9uZSBvZiB0aGUgbnVsbCBoeXBvdGhlc2VzIGlzIHJlamVjdGVkLgoKVGhlIGFkanVzdGVkICRwJC12YWx1ZSAoYWxzbyBrbm93biBhcyB0aGUgJHEkLXZhbHVlIGluIEZEUiBsaXRlcmF0dXJlKToKICQkCiAgIHFfeyhpKX09XHRpbGRle3B9X3soaSl9ID0gXG1pblxsZWZ0W1xtaW5fe2o9aSxcbGRvdHMsIG19XGxlZnQobSBwX3soail9L2pccmlnaHQpLCAxIFxyaWdodF0uCiAkJAogSW4gdGhlIGh5cG90aGV0aWNhbCBleGFtcGxlIGFib3ZlOiAkaz0yMDAkLCAkcF97KGspfT0wLjAxJCwgJG09MTAwMCQgYW5kICRcYWxwaGE9MC4wNSQuCgojIyMjIEZyYW5jaXNlbGxhIEV4YW1wbGUKCjxpZnJhbWUgd2lkdGg9IjU2MCIgaGVpZ2h0PSIzMTUiCnNyYz0iaHR0cHM6Ly93d3cueW91dHViZS5jb20vZW1iZWQvQjNCbW5PTGtZZzQiCmZyYW1lYm9yZGVyPSIwIgpzdHlsZT0iZGlzcGxheTogYmxvY2s7IG1hcmdpbjogYXV0bzsiCmFsbG93PSJhdXRvcGxheTsgZW5jcnlwdGVkLW1lZGlhIiBhbGxvd2Z1bGxzY3JlZW4+PC9pZnJhbWU+Cgo8ZGV0YWlscz48c3VtbWFyeT4gQ2xpY2sgdG8gc2VlIGNvZGUgPC9zdW1tYXJ5PjxwPgpgYGB7cn0KdHRlc3RNeCA8LSBmdW5jdGlvbih5LGdyb3VwKSB7CiAgICB0ZXN0IDwtIHRyeSh0LnRlc3QoeVtncm91cF0seVshZ3JvdXBdLHZhci5lcXVhbD1UUlVFKSxzaWxlbnQ9VFJVRSkKICAgIGlmKGlzKHRlc3QsInRyeS1lcnJvciIpKSB7CiAgICAgIHJldHVybihjKGxvZzJGQz1OQSxzZT1OQSx0c3RhdD1OQSxwPU5BKSkKICAgICAgfSBlbHNlIHsKICAgICAgcmV0dXJuKGMobG9nMkZDPSAodGVzdCRlc3RpbWF0ZSUqJWMoMSwtMSkpLHNlPXRlc3Qkc3RkZXJyLHRzdGF0PXRlc3Qkc3RhdGlzdGljLHB2YWw9dGVzdCRwLnZhbHVlKSkKICAgICAgfQogfQogCiByZXMgPC0gYXBwbHkoCiAgICBhc3NheShwZVtbInByb3RlaW4iXV0pLCAKICAgIDEsIAogICAgdHRlc3RNeCwKICAgIGdyb3VwID0gY29sRGF0YShwZSkkZ2Vub3R5cGU9PSJEOCIpICU+JSAKICB0IAogY29sbmFtZXMocmVzKSA8LSBjKCJsb2dGQyIsInNlIiwidHN0YXQiLCJwdmFsIikKIHJlcyA8LSByZXMgJT4lIGFzLmRhdGEuZnJhbWUgJT4lIG5hLmV4Y2x1ZGUgJT4lIGFycmFuZ2UocHZhbCkKIHJlcyRhZGpQdmFsIDwtIHAuYWRqdXN0KHJlcyRwdmFsLCAiZmRyIikKIGFscGhhIDwtIDAuMDUKcmVzJGFkakFscGhhRm9ybSA8LSBwYXN0ZTAoMTpucm93KHJlcyksIiB4ICIsYWxwaGEsIi8iLG5yb3cocmVzKSkKcmVzJGFkakFscGhhIDwtIGFscGhhICogKDE6bnJvdyhyZXMpKS9ucm93KHJlcykgCnJlcyQicHZhbCA8IGFkakFscGhhIiA8LSByZXMkcHZhbCA8IHJlcyRhZGpBbHBoYSAKcmVzJCJhZGpQdmFsIDwgYWxwaGEiIDwtIHJlcyRhZGpQdmFsIDwgYWxwaGEgCmBgYAo8L3A+PC9kZXRhaWxzPgoKRldFUjogQm9uZmVycm9uaSBtZXRob2Q6JFxhbHBoYV9cdGV4dHthZGp9ID0gXGFscGhhL20gPSAwLjA1IC8gYHIgbnJvdyhyZXMpYD0gYHIgcm91bmQoYWxwaGEvbnJvdyhyZXMpLDUpYCQKCmBgYHtyIGVjaG89RkFMU0V9IApoZWFkKHJlc1ssLWMoMjozKV0sc3VtKHJlcyRhZGpQdmFsIDwgYWxwaGEpKzIpICU+JSBrbml0cjo6a2FibGUoKQpgYGAKfCAuLi4gfCAuLi4gfCAuLi4gfCAuLi4gfCAuLi4gfCAuLi4gfCAuLi4gfCAuLi4gfAp8V1BfMDAzMDQwNTYyIHwgMC4wMDM5NDgwfCAwLjk5NzY0Mjl8IDAuOTk4NTc5N3wxMDY1IHggMC4wNS8xMDY2IHwgMC4wNDk5NTMxfEZBTFNFICAgICAgICAgICB8RkFMU0UgICAgCnxXUF8wMDMwNDExMzAgfCAwLjAwMDI5NDF8IDAuOTk5MjgxMnwgMC45OTkyODEyfDEwNjYgeCAwLjA1LzEwNjYgfCAgICAgMC4wNXxGQUxTRSAgICAgICAgICAgfEZBTFNFICAgICAgICAgICB8CgoKCgojIyMjIFJlc3VsdHMKPGRldGFpbHM+PHN1bW1hcnk+IENsaWNrIHRvIHNlZSBjb2RlIDwvc3VtbWFyeT48cD4KYGBge3J9CnZvbGNhbm9UIDwtIHJlcyAlPiUgCiAgZ2dwbG90KGFlcyh4ID0gbG9nRkMsIHkgPSAtbG9nMTAocHZhbCksIGNvbG9yID0gYWRqUHZhbCA8IDAuMDUpKSArCiAgICBnZW9tX3BvaW50KGNleCA9IDIuNSkgKwogICAgc2NhbGVfY29sb3JfbWFudWFsKHZhbHVlcyA9IGFscGhhKGMoImJsYWNrIiwgInJlZCIpLCAwLjUpKSArCiAgICB0aGVtZV9taW5pbWFsKCkgCmBgYAo8L3A+PC9kZXRhaWxzPgoKCmBgYHtyfQp2b2xjYW5vVApgYGAKCiMjIE1vZGVyYXRlZCBTdGF0aXN0aWNzCgo8aWZyYW1lIHdpZHRoPSI1NjAiIGhlaWdodD0iMzE1IgpzcmM9Imh0dHBzOi8vd3d3LnlvdXR1YmUuY29tL2VtYmVkL19RMTFMWER5MHhVIgpmcmFtZWJvcmRlcj0iMCIKc3R5bGU9ImRpc3BsYXk6IGJsb2NrOyBtYXJnaW46IGF1dG87IgphbGxvdz0iYXV0b3BsYXk7IGVuY3J5cHRlZC1tZWRpYSIgYWxsb3dmdWxsc2NyZWVuPjwvaWZyYW1lPgoKUHJvYmxlbXMgd2l0aCBvcmRpbmFyeSB0LXRlc3QKCjxkZXRhaWxzPjxzdW1tYXJ5PiBDbGljayB0byBzZWUgY29kZSA8L3N1bW1hcnk+PHA+CmBgYHtyfQpwcm9ibGVtUGxvdHMgPC0gbGlzdCgpIApwcm9ibGVtUGxvdHNbWzFdXSA8LSByZXMgJT4lIAogIGdncGxvdChhZXMoeCA9IGxvZ0ZDLCB5ID0gc2UsIGNvbG9yID0gYWRqUHZhbCA8IDAuMDUpKSArCiAgICBnZW9tX3BvaW50KGNleCA9IDIuNSkgKwogICAgc2NhbGVfY29sb3JfbWFudWFsKHZhbHVlcyA9IGFscGhhKGMoImJsYWNrIiwgInJlZCIpLCAwLjUpKSArCiAgICB0aGVtZV9taW5pbWFsKCkgCgpmb3IgKGkgaW4gMjozKQp7CnByb2JsZW1QbG90c1tbaV1dIDwtIGNvbERhdGEocGUpICU+JSAKICAgIGFzLmRhdGEuZnJhbWUgJT4lIAogICAgbXV0YXRlKGludGVuc2l0eSA9IHBlW1sicHJvdGVpbiJdXVtyb3duYW1lcyhyZXMpW2ldLF0gJT4lIAogICAgICAgICAgICAgYXNzYXkgJT4lIAogICAgICAgICAgICAgYykgJT4lIAogICAgZ2dwbG90KGFlcyh4PWdlbm90eXBlLHk9aW50ZW5zaXR5KSkgKwogICAgZ2VvbV9wb2ludCgpICsgCiAgICB5bGltKC0zLDApICsKICAgIGdndGl0bGUocm93bmFtZXMocmVzKVtpXSkKfQpgYGAKPC9wPjwvZGV0YWlscz4KCmBgYHtyfQpwcm9ibGVtUGxvdHMKYGBgCgpBIGdlbmVyYWwgY2xhc3Mgb2YgbW9kZXJhdGVkIHRlc3Qgc3RhdGlzdGljcyBpcyBnaXZlbiBieQogXFsKICAgVF9nXnttb2R9ID0gXGZyYWN7XGJhcntZfV97ZzF9IC0gXGJhcntZfV97ZzJ9fXtDIFxxdWFkIFx0aWxkZXtTfV9nfSAsCiBcXQogd2hlcmUgJFx0aWxkZXtTfV9nJCBpcyBhIG1vZGVyYXRlZCBzdGFuZGFyZCBkZXZpYXRpb24gZXN0aW1hdGUuIAoKLSAkQyQgaXMgYSBjb25zdGFudCBkZXBlbmRpbmcgb24gdGhlIGRlc2lnbiBlLmcuICRcc3FydHsxL3tuXzF9KzEvbl8yfSQgZm9yIGEgdC10ZXN0IGFuZCBvZiBhbm90aGVyIGZvcm0gZm9yIGxpbmVhciBtb2RlbHMuCi0gJFx0aWxkZXtTfV9nPVNfZytTXzAkOiBhZGQgc21hbGwgcG9zaXRpdmUgY29uc3RhbnQgdG8gZGVub21pbmF0b3Igb2YgdC1zdGF0aXN0aWMuIAotIFRoaXMgY2FuIGJlIGFkb3B0ZWQgaW4gUGVyc2V1cy4gCgo8ZGV0YWlscz48c3VtbWFyeT4gQ2xpY2sgdG8gc2VlIGNvZGUgPC9zdW1tYXJ5PjxwPgpgYGB7cn0Kc2ltSTwtc2FwcGx5KHJlcyRzZS9zcXJ0KDEvMysxLzMpLGZ1bmN0aW9uKG4sbWVhbixzZCkgcm5vcm0obixtZWFuLHNkKSxuPTYsbWVhbj0wKSAlPiUgdApyZXNTaW0gPC0gYXBwbHkoCiAgICBzaW1JLCAKICAgIDEsIAogICAgdHRlc3RNeCwKICAgIGdyb3VwID0gY29sRGF0YShwZSkkZ2Vub3R5cGU9PSJEOCIpICU+JSAKICB0IAogY29sbmFtZXMocmVzU2ltKSA8LSBjKCJsb2dGQyIsInNlIiwidHN0YXQiLCJwdmFsIikKIHJlc1NpbSA8LSBhcy5kYXRhLmZyYW1lKHJlc1NpbSkKIHRzdGF0U2ltUGxvdCA8LSByZXNTaW0gJT4lIAogICBnZ3Bsb3QoYWVzKHg9dHN0YXQpKSArCiAgICAgZ2VvbV9oaXN0b2dyYW0oYWVzKHk9Li5kZW5zaXR5Li4sIGZpbGw9Li5jb3VudC4uKSxiaW5zPTMwKSArCiAgICAgc3RhdF9mdW5jdGlvbihmdW49ZHQsCiAgICBjb2xvcj0icmVkIiwKICAgIGFyZ3M9bGlzdChkZj00KSkgKyAKICAgeWxpbSgwLC42KSArCiAgIGdndGl0bGUoInQtc3RhdGlzdGljIikKCiAKIHJlc1NpbSRDIDwtIHNxcnQoMS8zKzEvMykgCiByZXNTaW0kc2QgPC0gcmVzU2ltJHNlL3Jlc1NpbSRDIAogdHN0YXRTaW1QZXJzZXVzIDwtIHJlc1NpbSAlPiUgCiAgIGdncGxvdChhZXMoeD1sb2dGQy8oKHNkKy4xKSpDKSkpICsKICAgICBnZW9tX2hpc3RvZ3JhbShhZXMoeT0uLmRlbnNpdHkuLiwgZmlsbD0uLmNvdW50Li4pLGJpbnM9MzApICsKICAgICBzdGF0X2Z1bmN0aW9uKGZ1bj1kdCwKICAgICAgICAgICAgICAgICAgIGNvbG9yPSJyZWQiLAogICAgICAgICAgICAgICAgICBhcmdzPWxpc3QoZGY9NCkpICsgCiAgICAgeWxpbSgwLC42KSArCiAgICBnZ3RpdGxlKCJQZXJzZXVzIikKYGBgCgo8L3A+PC9kZXRhaWxzPgoKYGBge3J9CmdyaWRFeHRyYTo6Z3JpZC5hcnJhbmdlKHRzdGF0U2ltUGxvdCx0c3RhdFNpbVBlcnNldXMsbnJvdz0xKQpgYGAKCi0gVGhlIGNob2ljZSBvZiAkU18wJCBpbiBQZXJzZXVzIGlzIGFkIGhvYyBhbmQgdGhlIHQtc3RhdGlzdGljIGlzIG5vLWxvbmdlciB0LWRpc3RyaWJ1dGVkLiAKLSBQZXJtdXRhdGlvbiB0ZXN0LCBidXQgaXMgZGlmZmljdWx0IGZvciBtb3JlIGNvbXBsZXggZGVzaWducy4KLSBBbGxvd3MgZm9yIERhdGEgRHJlZGdpbmcgYmVjYXVzZSB1c2VyIGNhbiBjaG9vc2UgJFNfMCQgCgoKIyMjIEVtcGlyaWNhbCBCYXllcyAKCgpgYGB7ciBlY2hvPUZBTFNFLCBvdXQud2lkdGg9IjUwJSJ9CmtuaXRyOjppbmNsdWRlX2dyYXBoaWNzKCIuL2ZpZ3VyZXMvbGltbWFTaHJpbmthZ2UucG5nIikKYGBgCgpGaWd1cmUgY291cnRlc3kgdG8gUmFmYWVsIElyaXphcnJ5CgokJAogICBUX2dee21vZH0gPSBcZnJhY3tcYmFye1l9X3tnMX0gLSBcYmFye1l9X3tnMn19e0MgXHF1YWQgXHRpbGRle1N9X2d9ICwKICQkCgotICoqZW1waXJpY2FsIEJheWVzKiogdGhlb3J5IHByb3ZpZGVzIGZvcm1hbCBmcmFtZXdvcmsgZm9yIGJvcnJvd2luZyBzdHJlbmd0aCBhY3Jvc3MgcHJvdGVpbnMsCi0gSW1wbGVtZW50ZWQgaW4gcG9wdWxhciBiaW9jb25kdWN0b3IgcGFja2FnZSAqKmxpbW1hKiogYW5kICoqbXNxcm9iMioqCgokJAogIFx0aWxkZXtTfV9nPVxzcXJ0e1xmcmFje2RfZ1NfZ14yK2RfMFNfMF4yfXtkX2crZF8wfX0sCiQkCgotICRTXzBeMiQ6IGNvbW1vbiB2YXJpYW5jZSAob3ZlciBhbGwgcHJvdGVpbnMpIAotIE1vZGVyYXRlZCB0LXN0YXRpc3RpYyBpcyB0LWRpc3RyaWJ1dGVkIHdpdGggJGRfMCtkX2ckIGRlZ3JlZXMgb2YgZnJlZWRvbS4gCi0gTm90ZSB0aGF0IHRoZSBkZWdyZWVzIG9mIGZyZWVkb20gaW5jcmVhc2UgYnkgYm9ycm93aW5nIHN0cmVuZ3RoIGFjcm9zcyBwcm90ZWlucyEKCjxkZXRhaWxzPjxzdW1tYXJ5PiBDbGljayB0byBzZWUgdGhlIGNvZGUgPC9zdW1tYXJ5PjxwPiAgIAoKMS4gV2UgbW9kZWwgdGhlIHByb3RlaW4gbGV2ZWwgZXhwcmVzc2lvbiB2YWx1ZXMgdXNpbmcgdGhlIGBtc3Fyb2JgIGZ1bmN0aW9uLgpCeSBkZWZhdWx0IGBtc3Fyb2IyYCBlc3RpbWF0ZXMgdGhlIG1vZGVsIHBhcmFtZXRlcnMgdXNpbmcgcm9idXN0IHJlZ3Jlc3Npb24uCgpXZSB3aWxsIG1vZGVsIHRoZSBkYXRhIHdpdGggYSBkaWZmZXJlbnQgZ3JvdXAgbWVhbiBmb3IgZXZlcnkgZ2Vub3R5cGUuIApUaGUgZ3JvdXAgaXMgaW5jb2RlZCBpbiB0aGUgdmFyaWFibGUgYGdlbm90eXBlYCBvZiB0aGUgY29sRGF0YS4gCldlIGNhbiBzcGVjaWZ5IHRoaXMgbW9kZWwgYnkgdXNpbmcgYSBmb3JtdWxhIHdpdGggdGhlIGZhY3RvciBgZ2Vub3R5cGVgIGFzIGl0cyBwcmVkaWN0b3I6IApgZm9ybXVsYSA9IH5nZW5vdHlwZWAuCgpOb3RlLCB0aGF0IGEgZm9ybXVsYSBhbHdheXMgc3RhcnRzIHdpdGggYSBzeW1ib2wgJ34nLgpgYGB7ciB3YXJuaW5nPUZBTFNFfQpwZSA8LSBtc3Fyb2Iob2JqZWN0ID0gcGUsIGkgPSAicHJvdGVpbiIsIGZvcm11bGEgPSB+Z2Vub3R5cGUpCmBgYAoKMi4gSW5mZXJlbmNlIAoKV2UgZmlyc3QgZXhwbG9yZSB0aGUgZGVzaWduIG9mIHRoZSBtb2RlbCB0aGF0IHdlIHNwZWNpZmllZCB1c2luZyB0aGUgdGhlIHBhY2thZ2UgYEV4cGxvcmVNb2RlbE1hdHJpeGAgCgpgYGB7cn0KbGlicmFyeShFeHBsb3JlTW9kZWxNYXRyaXgpClZpc3VhbGl6ZURlc2lnbihjb2xEYXRhKHBlKSx+Z2Vub3R5cGUpJHBsb3RsaXN0W1sxXV0KYGBgCgpXZSBoYXZlIHR3byBtb2RlbCBwYXJhbWV0ZXJzLCB0aGUgKEludGVyY2VwdCkgYW5kIGdlbm90eXBlRDguIApUaGlzIHJlc3VsdHMgaW4gYSBtb2RlbCB3aXRoIHR3byBncm91cCBtZWFuczogCgoxLiBGb3IgdGhlIHdpbGQgdHlwZSAoV1QpIHRoZSBleHBlY3RlZCB2YWx1ZSAobWVhbikgb2YgdGhlIGxvZzIgdHJhbnNmb3JtZWQgaW50ZW5zaXR5IHkgZm9yIGEgcHJvdGVpbiB3aWxsIGJlIG1vZGVsbGVkIHVzaW5nIAoKJCRcdGV4dHtFfVtZXHZlcnQgXHRleHR7Z2Vub3R5cGV9PVx0ZXh0e1dUfV0gPSBcdGV4dHsoSW50ZXJjZXB0KX0kJCAKCjIuIEZvciB0aGUga25vY2tvdXQgZ2Vub3R5cGUgRDggdGhlIGV4cGVjdGVkIHZhbHVlIChtZWFuKSBvZiB0aGUgbG9nMiB0cmFuc2Zvcm1lZCBpbnRlbnNpdHkgeSBmb3IgYSBwcm90ZWluIHdpbGwgYmUgbW9kZWxsZWQgdXNpbmcgCgokJFx0ZXh0e0V9W1lcdmVydCBcdGV4dHtnZW5vdHlwZX09XHRleHR7RDh9XSA9IFx0ZXh0eyhJbnRlcmNlcHQpfSArIFx0ZXh0e2dlbm90eXBlRDh9JCQgCgpUaGUgYXZlcmFnZSBsb2cyRkMgYmV0d2VlbiBEOCBhbmQgV1QgaXMgdGh1cwokJFxsb2dfMlx0ZXh0e0ZDfV97RDgtV1R9PSBcdGV4dHtFfVtZXHZlcnQgXHRleHR7Z2Vub3R5cGV9PVx0ZXh0e0Q4fV0gLSBcdGV4dHtFfVtZXHZlcnQgXHRleHR7Z2Vub3R5cGV9PVx0ZXh0e1dUfV0gPSBcdGV4dHtnZW5vdHlwZUQ4fQokJAoKSGVuY2UsIGFzc2Vzc2luZyB0aGUgbnVsbCBoeXBvdGhlc2lzIHRoYXQgdGhlcmUgaXMgbm8gZGlmZmVyZW50aWFsIGFidW5kYW5jZSBiZXR3ZWVuIEQ4IGFuZCBXVCBjYW4gYmUgcmVmb3JtdWxhdGVkIGFzCgokJEhfMDogIFx0ZXh0e2dlbm90eXBlRDh9PTAkJApXZSBjYW4gaW1wbGVtZW50IGEgaHlwb3RoZXNpcyB0ZXN0IGZvciBlYWNoIHByb3RlaW4gaW4gbXNxcm9iMiB1c2luZyB0aGUgY29kZSBiZWxvdzogCgpgYGB7cn0KTCA8LSBtYWtlQ29udHJhc3QoImdlbm90eXBlRDggPSAwIiwgcGFyYW1ldGVyTmFtZXMgPSBjKCJnZW5vdHlwZUQ4IikpCnBlIDwtIGh5cG90aGVzaXNUZXN0KG9iamVjdCA9IHBlLCBpID0gInByb3RlaW4iLCBjb250cmFzdCA9IEwpCmBgYAoKV2UgY2FuIHNob3cgdGhlIGxpc3Qgd2l0aCBhbGwgc2lnbmlmaWNhbnQgREUgcHJvdGVpbnMgYXQgdGhlIDUlIEZEUiB1c2luZyAKYGBge3J9CnJvd0RhdGEocGVbWyJwcm90ZWluIl1dKSRnZW5vdHlwZUQ4ICU+JSAKICBhcnJhbmdlKHB2YWwpICU+JQogIGZpbHRlcihhZGpQdmFsPDAuMDUpCmBgYAoKV2UgY2FuIGFsc28gdmlzdWFsaXNlIHRoZSByZXN1bHRzIHVzaW5nIGEgdm9sY2Fub3Bsb3QKCmBgYHtyfQp2b2xjYW5vIDwtIGdncGxvdCgKICAgIHJvd0RhdGEocGVbWyJwcm90ZWluIl1dKSRnZW5vdHlwZUQ4LAogICAgYWVzKHggPSBsb2dGQywgeSA9IC1sb2cxMChwdmFsKSwgY29sb3IgPSBhZGpQdmFsIDwgMC4wNSkKKSArCiAgICBnZW9tX3BvaW50KGNleCA9IDIuNSkgKwogICAgc2NhbGVfY29sb3JfbWFudWFsKHZhbHVlcyA9IGFscGhhKGMoImJsYWNrIiwgInJlZCIpLCAwLjUpKSArCiAgICB0aGVtZV9taW5pbWFsKCkgKwogICAgZ2d0aXRsZSgibXNxcm9iMiIpCmBgYAo8L3A+PC9kZXRhaWxzPgoKYGBge3J9CmdyaWRFeHRyYTo6Z3JpZC5hcnJhbmdlKAogIHZvbGNhbm9UICsgICAgCiAgICB4bGltKC0zLDMpICsKICBnZ3RpdGxlKCJvcmRpbmFyeSB0LXRlc3QiKSwKICB2b2xjYW5vICsgICAgIAogICAgeGxpbSgtMywzKQosbnJvdz0yKQpgYGAKCi0gVGhlIHZvbGNhbm8gcGxvdCBvcGVucyB1cCB3aGVuIHVzaW5nIHRoZSBFQiB2YXJpYW5jZSBlc3RpbWF0b3IKCi0gIEJvcnJvd2luZyBzdHJlbmd0aCB0byBlc3RpbWF0ZSB0aGUgdmFyaWFuY2UgdXNpbmcgZW1waXJpY2FsIEJheWVzIHNvbHZlcyB0aGUgaXNzdWUgb2YgcmV0dXJuaW5nIHByb3RlaW5zIHdpdGggYSBsb3cgZm9sZCBjaGFuZ2UgYXMgc2lnbmlmaWNhbnQgZHVlIHRvIGEgbG93IHZhcmlhbmNlLiAKCgojIyMgU2hyaW5rYWdlIG9mIHRoZSAgdmFyaWFuY2UgYW5kIG1vZGVyYXRlZCB0LXN0YXRpc3RpY3MKCmBgYHtyfQpxcGxvdCgKICBzYXBwbHkocm93RGF0YShwZVtbInByb3RlaW4iXV0pJG1zcXJvYk1vZGVscyxnZXRTaWdtYSksCiAgc2FwcGx5KHJvd0RhdGEocGVbWyJwcm90ZWluIl1dKSRtc3Fyb2JNb2RlbHMsZ2V0U2lnbWFQb3N0ZXJpb3IpKSArCiAgeGxhYigiU0QiKSArCiAgeWxhYigibW9kZXJhdGVkIFNEIikgKwogIGdlb21fYWJsaW5lKGludGVyY2VwdCA9IDAsc2xvcGUgPSAxKSArCiAgZ2VvbV9obGluZSh5aW50ZXJjZXB0ID0gKSAKYGBgCgotIFNtYWxsIHZhcmlhbmNlcyBhcmUgc2hydW5rZW4gdG93YXJkcyB0aGUgY29tbW9uIHZhcmlhbmNlIHJlc3VsdGluZyBpbiBsYXJnZSBFQiB2YXJpYW5jZSBlc3RpbWF0ZXMKLSBMYXJnZSB2YXJpYW5jZXMgYXJlIHNocnVua2VuIHRvd2FyZHMgdGhlIGNvbW1vbiB2YXJpYW5jZSByZXN1bHRpbmcgaW4gc21hbGxlciBFQiB2YXJpYW5jZSBlc3RpbWF0ZXMgCi0gUG9vbGVkIGRlZ3JlZXMgb2YgZnJlZWRvbSBvZiB0aGUgRUIgdmFyaWFuY2UgZXN0aW1hdG9yIGFyZSBsYXJnZXIgYmVjYXVzZSBpbmZvcm1hdGlvbiBpcyBib3Jyb3dlZCBhY3Jvc3MgcHJvdGVpbnMgdG8gZXN0aW1hdGUgdGhlIHZhcmlhbmNlCgojIyBQbG90cyAKCmBgYHtyfQpzaWdOYW1lcyA8LSByb3dEYXRhKHBlW1sicHJvdGVpbiJdXSkkZ2Vub3R5cGVEOCAlPiUKICAgIHJvd25hbWVzX3RvX2NvbHVtbigicHJvdGVpbiIpICU+JQogICAgZmlsdGVyKGFkalB2YWwgPCAwLjA1KSAlPiUKICAgIHB1bGwocHJvdGVpbikKaGVhdG1hcChhc3NheShwZVtbInByb3RlaW4iXV0pW3NpZ05hbWVzLCBdKQpgYGAKCgpgYGB7ciwgd2FybmluZz1GQUxTRSwgbWVzc2FnZT1GQUxTRX0KZm9yIChwcm90TmFtZSBpbiBzaWdOYW1lcykKICAgIHsKICAgICAgICBwZVBsb3QgPC0gcGVbcHJvdE5hbWUsICwgYygicGVwdGlkZU5vcm0iLCAicHJvdGVpbiIpXQogICAgICAgIHBlUGxvdERmIDwtIGRhdGEuZnJhbWUobG9uZ0Zvcm1hdChwZVBsb3QpKQogICAgICAgIHBlUGxvdERmJGFzc2F5IDwtIGZhY3RvcihwZVBsb3REZiRhc3NheSwKICAgICAgICAgICAgbGV2ZWxzID0gYygicGVwdGlkZU5vcm0iLCAicHJvdGVpbiIpCiAgICAgICAgKQogICAgICAgIHBlUGxvdERmJGdlbm90eXBlIDwtIGFzLmZhY3Rvcihjb2xEYXRhKHBlUGxvdClbcGVQbG90RGYkY29sbmFtZSwgImdlbm90eXBlIl0pCgogICAgICAgICMgcGxvdHRpbmcKICAgICAgICBwMSA8LSBnZ3Bsb3QoCiAgICAgICAgICAgIGRhdGEgPSBwZVBsb3REZiwKICAgICAgICAgICAgYWVzKHggPSBjb2xuYW1lLCB5ID0gdmFsdWUsIGdyb3VwID0gcm93bmFtZSkKICAgICAgICApICsKICAgICAgICAgICAgZ2VvbV9saW5lKCkgKwogICAgICAgICAgICBnZW9tX3BvaW50KCkgKwogICAgICAgICAgICBmYWNldF9ncmlkKH5hc3NheSkgKwogICAgICAgICAgICB0aGVtZShheGlzLnRleHQueCA9IGVsZW1lbnRfdGV4dChhbmdsZSA9IDcwLCBoanVzdCA9IDEsIHZqdXN0ID0gMC41KSkgKwogICAgICAgICAgICBnZ3RpdGxlKHByb3ROYW1lKQogICAgICAgIHByaW50KHAxKQoKICAgICAgICAjIHBsb3R0aW5nIDIKICAgICAgICBwMiA8LSBnZ3Bsb3QocGVQbG90RGYsIGFlcyh4ID0gY29sbmFtZSwgeSA9IHZhbHVlLCBmaWxsID0gZ2Vub3R5cGUpKSArCiAgICAgICAgICAgIGdlb21fYm94cGxvdChvdXRsaWVyLnNoYXBlID0gTkEpICsKICAgICAgICAgICAgZ2VvbV9wb2ludCgKICAgICAgICAgICAgICAgIHBvc2l0aW9uID0gcG9zaXRpb25faml0dGVyKHdpZHRoID0gLjEpLAogICAgICAgICAgICAgICAgYWVzKHNoYXBlID0gcm93bmFtZSkKICAgICAgICAgICAgKSArCiAgICAgICAgICAgIHNjYWxlX3NoYXBlX21hbnVhbCh2YWx1ZXMgPSAxOm5yb3cocGVQbG90RGYpKSArCiAgICAgICAgICAgIGxhYnModGl0bGUgPSBwcm90TmFtZSwgeCA9ICJzYW1wbGUiLCB5ID0gInBlcHRpZGUgaW50ZW5zaXR5IChsb2cyKSIpICsKICAgICAgICAgICAgdGhlbWUoYXhpcy50ZXh0LnggPSBlbGVtZW50X3RleHQoYW5nbGUgPSA3MCwgaGp1c3QgPSAxLCB2anVzdCA9IDAuNSkpICsKICAgICAgICAgICAgZmFjZXRfZ3JpZCh+YXNzYXkpCiAgICAgICAgcHJpbnQocDIpCn0KYGBgCgojIEV4cGVyaW1lbnRhbCBEZXNpZ24KCiMjIFNhbXBsZSBzaXplIAoKPGlmcmFtZSB3aWR0aD0iNTYwIiBoZWlnaHQ9IjMxNSIKc3JjPSJodHRwczovL3d3dy55b3V0dWJlLmNvbS9lbWJlZC91RUxna3pEalZSWSIKZnJhbWVib3JkZXI9IjAiCnN0eWxlPSJkaXNwbGF5OiBibG9jazsgbWFyZ2luOiBhdXRvOyIKYWxsb3c9ImF1dG9wbGF5OyBlbmNyeXB0ZWQtbWVkaWEiIGFsbG93ZnVsbHNjcmVlbj48L2lmcmFtZT4KCiQkCiBcbG9nXzIgXHRleHR7RkN9ID0gXGJhcnt5fV97cDF9LVxiYXJ7eX1fe3AyfQokJAoKJCQKVF9nPVxmcmFje1xsb2dfMiBcdGV4dHtGQ319e1x0ZXh0e3NlfV97XGxvZ18yIFx0ZXh0e0ZDfX19CiQkCgokJApUX2c9XGZyYWN7XHdpZGVoYXR7XHRleHR7c2lnbmFsfX19e1x3aWRlaGF0e1x0ZXh0e05vaXNlfX19CiQkCgpJZiB3ZSBjYW4gYXNzdW1lIGVxdWFsIHZhcmlhbmNlIGluIGJvdGggdHJlYXRtZW50IGdyb3VwczoKCiQkClx0ZXh0e3NlfV97XGxvZ18yIFx0ZXh0e0ZDfX09XHRleHR7U0R9XHNxcnR7XGZyYWN7MX17bl8xfStcZnJhY3sxfXtuXzJ9fQokJAoKJFxyaWdodGFycm93JCBpZiBudW1iZXIgb2YgYmlvLXJlcGVhdHMgaW5jcmVhc2VzIHdlIGhhdmUgYSBoaWdoZXIgcG93ZXIhCgotIGNmci4gU3R1ZHkgb2YgdGFtb3hpZmVuIHRyZWF0ZWQgRXN0cm9nZW4gUmVjZXB0ZXIgKEVSKSBwb3NpdGl2ZSBicmVhc3QgY2FuY2VyIHBhdGllbnRzCgojIyBCbG9ja2luZyAKCjxpZnJhbWUgd2lkdGg9IjU2MCIgaGVpZ2h0PSIzMTUiCnNyYz0iaHR0cHM6Ly93d3cueW91dHViZS5jb20vZW1iZWQvRHNSdWljT05yLVEiCmZyYW1lYm9yZGVyPSIwIgpzdHlsZT0iZGlzcGxheTogYmxvY2s7IG1hcmdpbjogYXV0bzsiCmFsbG93PSJhdXRvcGxheTsgZW5jcnlwdGVkLW1lZGlhIiBhbGxvd2Z1bGxzY3JlZW4+PC9pZnJhbWU+CgpcW1xzaWdtYV4yPSBcc2lnbWFeMl97YmlvfStcc2lnbWFeMl9cdGV4dHtsYWJ9ICtcc2lnbWFeMl9cdGV4dHtleHRyYWN0aW9ufSArIFxzaWdtYV4yX1x0ZXh0e3J1bn0gKyBcbGRvdHNcXQoKLSBCaW9sb2dpY2FsOiBmbHVjdHVhdGlvbnMgaW4gcHJvdGVpbiBsZXZlbCBiZXR3ZWVuIG1pY2UsIGZsdWN0YXRpb25zIGluIHByb3RlaW4gbGV2ZWwgYmV0d2VlbiBjZWxscywgLi4uCi0gVGVjaG5pY2FsOiBjYWdlIGVmZmVjdCwgbGFiIGVmZmVjdCwgd2VlayBlZmZlY3QsIHBsYXNtYSBleHRyYWN0aW9uLCBNUy1ydW4sIC4uLgoKIyMgTmF0dXJlIG1ldGhvZHM6IFBvaW50cyBvZiBzaWduaWZpY2FuY2UgLSBCbG9ja2luZyAKCltodHRwczovL3d3dy5uYXR1cmUuY29tL2FydGljbGVzL25tZXRoLjMwMDUucGRmXShodHRwczovL3d3dy5uYXR1cmUuY29tL2FydGljbGVzL25tZXRoLjMwMDUucGRmKQoKCiMjIE1vdXNlIGV4YW1wbGUgCgpgYGB7ciBlY2hvPUZBTFNFLCBvdXQud2lkdGg9IjUwJSJ9CmtuaXRyOjppbmNsdWRlX2dyYXBoaWNzKCIuL2ZpZ3VyZXMvbW91c2VUY2VsbF9SQ0JfZGVzaWduLnBuZyIpCmBgYApEdWd1ZXQgZXQgYWwuICgyMDE3KSBNQ1AgMTYoOCk6MTQxNi0xNDMyLiBkb2k6IDEwLjEwNzQvbWNwLm0xMTYuMDYyNzQ1CgotIEFsbCB0cmVhdG1lbnRzIG9mIGludGVyZXN0IGFyZSBwcmVzZW50IHdpdGhpbiBibG9jayEKLSBXZSBjYW4gZXN0aW1hdGUgdGhlIGVmZmVjdCBvZiB0aGUgdHJlYXRtZW50IHdpdGhpbiBibG9jayEKLSBXZSBjYW4gaXNvbGF0ZSB0aGUgYmV0d2VlbiBibG9jayB2YXJpYWJpbGl0eSBmcm9tIHRoZSBhbmFseXNpcyB1c2luZyBsaW5lYXIgbW9kZWw6CiQkIAp5IFxzaW0gXHRleHR7dHlwZX0gKyBcdGV4dHttb3VzZX0KJCQKLSBOb3QgcG9zc2libGUgd2l0aCBQZXJzZXVzIQoKIyMjIEFzc2VzcyB0aGUgaW1wYWN0IG9mIGJsb2NraW5nIGluIHRoZSB0dXRvcmlhbCBzZXNzaW9uIQoKLSBDb21wbGV0ZWx5IHJhbmRvbWl6ZWQgZGVzaWduIHdpdGggb25seSBvbmUgY2VsbCB0eXBlIHBlciBtb3VzZSAoVHJlZyBhbmQgVGNvbnYpCgokJFx1cGRvd25hcnJvdyQkCgotIFJhbmRvbWl6ZWQgY29tcGxldGUgYmxvY2sgZGVzaWduIGFzc2Vzc2luZyBUcmVnIGFuZCBUY29udiBvbiBlYWNoIG1vdXNlCgojIFNvZnR3YXJlICYgY29kZQoKLSBPdXIgUi9CaW9jb25kdWN0b3IgcGFja2FnZSBbbXNxcm9iMl0oaHR0cHM6Ly93d3cuYmlvY29uZHVjdG9yLm9yZy9wYWNrYWdlcy9yZWxlYXNlL2Jpb2MvaHRtbC9tc3Fyb2IyLmh0bWwpIGNhbiBiZSB1c2VkIGluIFIgbWFya2Rvd24gc2NyaXB0cyBvciB3aXRoIGEgR1VJL3NoaW55QXBwIGluIHRoZSBbbXNxcm9iMmd1aV0oaHR0cHM6Ly9naXRodWIuY29tL3N0YXRPbWljcy9tc3Fyb2IyZ3VpKSBwYWNrYWdlLgoKLSBUaGUgR1VJIGlzIGludGVuZGVkIGFzIGEgaW50cm9kdWN0aW9uIHRvIHRoZSBrZXkgY29uY2VwdHMgb2YgcHJvdGVvbWljcyBkYXRhIGFuYWx5c2lzIGZvciB1c2VycyB3aG8gaGF2ZSBubyBleHBlcmllbmNlIGluIFIuIAoKLSBIb3dldmVyLCBsZWFybmluZyBob3cgdG8gY29kZSBkYXRhIGFuYWx5c2VzIGluIFIgbWFya2Rvd24gc2NyaXB0cyBpcyBrZXkgZm9yIG9wZW4gZW4gcmVwcm9kdWNpYmxlIHNjaWVuY2UgYW5kIGZvciByZXBvcnRpbmcgeW91ciBwcm90ZW9taWNzIGRhdGEgYW5hbHlzZXMgYW5kIGludGVycHJldGF0aW9uIGluIGEgcmVwcm9kdWNpYmxlIHdheS4gCgoKLSBNb3JlIGluZm9ybWF0aW9uIG9uIG91ciB0b29scyBjYW4gYmUgZm91bmQgaW4gb3VyIHBhcGVycyBbQGdvZW1pbm5lMjAxNl0sIFtAZ29lbWlubmUyMDIwXSBhbmQgW0BzdGlja2VyMjAyMF0uIFBsZWFzZSByZWZlciB0byBvdXIgd29yayB3aGVuIHVzaW5nIG91ciB0b29scy4gCgotIENsaXBzIG9uIHRoZSBjb2RlIG9uIGltcG9ydGluZyB0aGUgZGF0YSBhbmQgcHJlcHJvY2Vzc2luZyBjYW4gYmUgZm91bmQgaW4gW1BhcnQgSSBQcmVwcm9jZXNzaW5nXSguL3BkYV9xdWFudGlmaWNhdGlvbl9wcmVwcm9jZXNzaW5nLmh0bWwpCgotIEEgY2xpcCBvbiB0aGUgY29kZSBmb3IgbW9kZWxsaW5nIGFuZCBzdGF0aXN0aWNhbCBpbmZlcmVuY2Ugd2l0aCBtc3Fyb2IyIGlzIGluY2x1ZGVkIGJlbG93Cgo8aWZyYW1lIHdpZHRoPSI1NjAiIGhlaWdodD0iMzE1IgpzcmM9Imh0dHBzOi8vd3d3LnlvdXR1YmUuY29tL2VtYmVkL2VYeElkekdPUGdZIgpmcmFtZWJvcmRlcj0iMCIKc3R5bGU9ImRpc3BsYXk6IGJsb2NrOyBtYXJnaW46IGF1dG87IgphbGxvdz0iYXV0b3BsYXk7IGVuY3J5cHRlZC1tZWRpYSIgYWxsb3dmdWxsc2NyZWVuPjwvaWZyYW1lPgoKIyBSZWZlcmVuY2Vz</div>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("pda_quantification_inference.Rmd");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

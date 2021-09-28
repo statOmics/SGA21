@@ -430,27 +430,54 @@ div.tocify {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="sequencing_intro.html">Sequencing - Introduction to sequencing</a>
+      <a href="./docs/intro.pdf">Position</a>
     </li>
     <li>
-      <a href="sequencing_countData.html">Sequencing - Working with count data</a>
+      <a href="recapGeneralLinearModel.html">Recap linear model</a>
     </li>
     <li>
-      <a href="sequencing_rnaseqIntro.html">Sequencing - RNA-seq analysis challenges</a>
+      <a href="./docs/martens_proteomics_bioinformatics.pdf">PDA - identification</a>
+    </li>
+    <li>
+      <a href="pda_quantification_preprocessing.html">Quantification - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_robustSummarisation_peptideModels.html">Wrap-up Preprocessing - Peptide-Level-Models</a>
+    </li>
+    <li>
+      <a href="pda_quantification_inference.html">Quantification - Differential Abundance Analysis</a>
+    </li>
+    <li>
+      <a href="pda_blocking_wrapup.html">Wrap-up DA - Blocking</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-laptop"></span>
+     
+    tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="multipleRegression_KPNA2.html">Intro KPNA2</a>
+    </li>
+    <li>
+      <a href="https://www.compomics.com/bioinformatics-for-proteomics/">Identification</a>
+    </li>
+    <li>
+      <a href="pda_tutorialPreprocessing.html">DA - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_tutorialDesign.html">DA - Design</a>
     </li>
   </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li>
-  <a href="https://github.com/statOmics/SGA21">
-    <span class="fab fa-github"></span>
-     
-  </a>
-</li>
-<li>
-  <a href="http://statomics.github.io/">statOmics</a>
-</li>
+        
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -498,8 +525,10 @@ div.tocify {
 <li><a href="https://genome.cshlp.org/content/18/9/1509">Marioni <em>et al.</em> (2008)</a> have shown that, for most genes, the distribution of observed gene expression counts across technical replicates follow a Poisson distribution. A small proportion of genes (<span class="math inline">\(\sim 0.5\%\)</span>) do not follow this Poisson model, however, and actually show evidence for <em>`extra-Poisson variation’</em>.</li>
 </ul>
 <div class="figure">
-<img src="images_sequencing/marioniFigs_cropped.png" alt="" />
-<p class="caption">Figure: Technical replication in RNA-seq. Figures from Marioni et al. (2008).</p>
+<img src="images_sequencing/marioniFigs_cropped.png" alt="Figure: Technical replication in RNA-seq. Figures from Marioni et al. (2008)." width="1996" />
+<p class="caption">
+Figure: Technical replication in RNA-seq. Figures from Marioni et al. (2008).
+</p>
 </div>
 </div>
 <div id="relative-uncertainty-for-poisson-distributed-random-variables" class="section level2">
@@ -635,7 +664,7 @@ Y_i | X_i &amp; \sim &amp; N(\beta_0 + \beta_1 X_i, \sigma^2 \mathbf{I}).
 ## (as &#39;lib&#39; is unspecified)</code></pre>
 <pre><code>## 
 ## The downloaded binary packages are in
-##  /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpkuB30f/downloaded_packages</code></pre>
+##  /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpPcOj1w/downloaded_packages</code></pre>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="co"># load and preview the dataset:</span></span>
 <span id="cb10-2"><a href="#cb10-2"></a><span class="kw">data</span>(<span class="st">&quot;Bikeshare&quot;</span>, <span class="dt">package=</span><span class="st">&quot;ISLR2&quot;</span>)</span>
 <span id="cb10-3"><a href="#cb10-3"></a><span class="kw">head</span>(Bikeshare)</span></code></pre></div>
@@ -1179,7 +1208,7 @@ Y_i | X_i &amp; \sim &amp; N(\beta_0 + \beta_1 X_i, \sigma^2 \mathbf{I}).
 <div id="a-final-note" class="section level1">
 <h1><span class="header-section-number">3</span> A final note</h1>
 <p>In this lecture, we have introduced GLMs to model data that can be assumed to follow a distribution belonging to the exponential family. We focussed on interpretation, statistical inference and some model goodness-of-fit diagnostics. We did not consider important topics like model selection, or even whether a GLM is appropriate for your dataset! These are other important topics which, unfortuantely, we do not have the bandwidth for to include in this course. Therefore, a final note through an <a href="https://xkcd.com/">XKCD comic</a>, after finishing this long chapter!</p>
-<p><img src="images_sequencing/xkcd-1725-linear_regression_2x.png" /><!-- --></p>
+<p><img src="images_sequencing/xkcd-1725-linear_regression_2x.png" width="480" /></p>
 </div>
 <div id="references" class="section level1">
 <h1><span class="header-section-number">4</span> References</h1>

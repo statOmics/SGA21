@@ -336,27 +336,54 @@ div.tocify {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="sequencing_intro.html">Sequencing - Introduction to sequencing</a>
+      <a href="./docs/intro.pdf">Position</a>
     </li>
     <li>
-      <a href="sequencing_countData.html">Sequencing - Working with count data</a>
+      <a href="recapGeneralLinearModel.html">Recap linear model</a>
     </li>
     <li>
-      <a href="sequencing_rnaseqIntro.html">Sequencing - RNA-seq analysis challenges</a>
+      <a href="./docs/martens_proteomics_bioinformatics.pdf">PDA - identification</a>
+    </li>
+    <li>
+      <a href="pda_quantification_preprocessing.html">Quantification - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_robustSummarisation_peptideModels.html">Wrap-up Preprocessing - Peptide-Level-Models</a>
+    </li>
+    <li>
+      <a href="pda_quantification_inference.html">Quantification - Differential Abundance Analysis</a>
+    </li>
+    <li>
+      <a href="pda_blocking_wrapup.html">Wrap-up DA - Blocking</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-laptop"></span>
+     
+    tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="multipleRegression_KPNA2.html">Intro KPNA2</a>
+    </li>
+    <li>
+      <a href="https://www.compomics.com/bioinformatics-for-proteomics/">Identification</a>
+    </li>
+    <li>
+      <a href="pda_tutorialPreprocessing.html">DA - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_tutorialDesign.html">DA - Design</a>
     </li>
   </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li>
-  <a href="https://github.com/statOmics/SGA21">
-    <span class="fab fa-github"></span>
-     
-  </a>
-</li>
-<li>
-  <a href="http://statomics.github.io/">statOmics</a>
-</li>
+        
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -393,8 +420,10 @@ div.tocify {
 <li>The large majority of sequencing data is generated using sequencing-by-synthesis using machines produced by the company Illumina. While new players such as Pacific Biosciences and Oxford Nanopore have entered the scene, these are typically most useful for DNA sequencing rather than gene expression studies, owing to their capability of sequencing long molecules.</li>
 </ul>
 <div class="figure">
-<img src="images_sequencing/seqTechnology_throughput.png" alt="" />
-<p class="caption">Figure: The data output revolution of sequencing machines. Image from Illumina documentation.</p>
+<img src="images_sequencing/seqTechnology_throughput.png" alt="Figure: The data output revolution of sequencing machines. Image from Illumina documentation." width="698" />
+<p class="caption">
+Figure: The data output revolution of sequencing machines. Image from Illumina documentation.
+</p>
 </div>
 <div id="the-sequencing-workflow" class="section level2">
 <h2><span class="header-section-number">2.1</span> The sequencing workflow</h2>
@@ -409,8 +438,10 @@ div.tocify {
 <li>Loading the amplified cDNA library on the sequencing machine. Find out how sequencing-by-synthesis works through <a href="https://www.youtube.com/watch?v=fCd6B5HRaZ8">this video</a>. Note that the video shows paired-end sequencing, where a number of basepairs are sequenced at each end of the fragment. All previous steps together are described as `sample prep’ in that video.</li>
 </ol>
 <div class="figure">
-<img src="images_sequencing/seqWorkflow1_clean.png" alt="" />
-<p class="caption">Figure: The sequencing workflow. Image adapted from Van den Berge et al. (2019).</p>
+<img src="images_sequencing/seqWorkflow1_clean.png" alt="Figure: The sequencing workflow. Image adapted from Van den Berge et al. (2019)." width="822" />
+<p class="caption">
+Figure: The sequencing workflow. Image adapted from Van den Berge et al. (2019).
+</p>
 </div>
 <p>Note that several variants of library preparation protocols are available. The most important ones are:</p>
 <ul>
@@ -432,8 +463,10 @@ div.tocify {
 </ol></li>
 </ul>
 <div class="figure">
-<img src="images_sequencing/fastqLine.png" alt="" />
-<p class="caption">Figure: One read in a FASTQ file. Slide courtesy by Charlotte Soneson.</p>
+<img src="images_sequencing/fastqLine.png" alt="Figure: One read in a FASTQ file. Slide courtesy by Charlotte Soneson." width="5333" />
+<p class="caption">
+Figure: One read in a FASTQ file. Slide courtesy by Charlotte Soneson.
+</p>
 </div>
 <p>As you’ll have noticed, the base call quality scores are encoded as ASCII characters for efficient storage. These ASCII characters can be convered into integers called Phred scores, which are logarithmically related to the probability of an erroneous base call.</p>
 </div>
@@ -443,8 +476,10 @@ div.tocify {
 <p>After sequencing, we typically do a quality control (QC) check to verify the quality of the samples. During QC check, aberrant samples due to e.g. degraded mRNA can be detected.</p>
 <p>The sequencing reads on their own contain a lot of information, but are most useful if we would be able to assign sequencing reads to genomic features (genes, exons, transcripts, etc.), i.e., for each sequencing read we will try to derive the (set of) feature(s) that could have plausibly produced the fragment through the process of gene expression. This process is called ‘mapping’. Most often we map reads to genes.</p>
 <div class="figure">
-<img src="images_sequencing/seqWorkflow2.png" alt="" />
-<p class="caption">Figure: An updated sequencing workflow, including sequencing and mapping. Image adapted from Van den Berge et al. (2019).</p>
+<img src="images_sequencing/seqWorkflow2.png" alt="Figure: An updated sequencing workflow, including sequencing and mapping. Image adapted from Van den Berge et al. (2019)." width="1288" />
+<p class="caption">
+Figure: An updated sequencing workflow, including sequencing and mapping. Image adapted from Van den Berge et al. (2019).
+</p>
 </div>
 <div id="quality-control" class="section level2">
 <h2><span class="header-section-number">3.1</span> Quality control</h2>
@@ -465,12 +500,16 @@ div.tocify {
 <li>Along with a reference genome, an annotation GFF or GTF file defines the coordinates of specific genomic features.</li>
 </ul>
 <div class="figure">
-<img src="images_sequencing/referenceGenome.png" alt="" />
-<p class="caption">Figure: A reference sequence of human chr1.</p>
+<img src="images_sequencing/referenceGenome.png" alt="Figure: A reference sequence of human chr1." width="787" />
+<p class="caption">
+Figure: A reference sequence of human chr1.
+</p>
 </div>
 <div class="figure">
-<img src="images_sequencing/gtfFile.png" alt="" />
-<p class="caption">Figure: An example GTF file.</p>
+<img src="images_sequencing/gtfFile.png" alt="Figure: An example GTF file." width="1084" />
+<p class="caption">
+Figure: An example GTF file.
+</p>
 </div>
 <ul>
 <li>More recently, mapping of RNA-seq data occurs more often against a reference transcriptome, which is a reference file containing the sequences all known isoforms of a particular species, e.g., using <a href="https://www.nature.com/articles/nbt.3519">kallisto</a> or <a href="https://www.nature.com/articles/nmeth.4197">Salmon</a>.</li>
@@ -487,8 +526,10 @@ div.tocify {
 <li>Spliced alignment against a genome is therefore computationally a much harder task. Since the transcript sequences are already spliced when aligning to a reference transcriptome, reads should align contiguously, and many of the computationally expensive steps and heuristics can be avoided.</li>
 </ul>
 <div class="figure">
-<img src="images_sequencing/splicedAlignment.png" alt="" />
-<p class="caption">Figure: Unspliced and spliced alignment. Figure from Van den Berge et al. (2019).</p>
+<img src="images_sequencing/splicedAlignment.png" alt="Figure: Unspliced and spliced alignment. Figure from Van den Berge et al. (2019)." width="802" />
+<p class="caption">
+Figure: Unspliced and spliced alignment. Figure from Van den Berge et al. (2019).
+</p>
 </div>
 </div>
 <div id="alignment-free-workflows" class="section level3">
@@ -498,7 +539,18 @@ div.tocify {
 <li>A <span class="math inline">\(k\)</span>-mer is a short sequence of nucleotides of length <span class="math inline">\(k\)</span>. The space of possible <span class="math inline">\(k\)</span>-mers and the corresponding transcripts can be precomputed in advance using the reference transcriptome, providing a computational advantage as it only needs to be computed once.</li>
 <li>For each fragment, the transcripts its <span class="math inline">\(k\)</span>-mers are compatible with is searched for using an indexed (efficiently searchable) transcriptome. The set of compatible transcripts is called the ‘<span class="math inline">\(k\)</span>-compatibility class’, ‘equivalence class’ or ‘transcript compatibility class’ of the fragment.</li>
 </ul>
-<p><img src="images_sequencing/kallisto_equivalenceClasses.png" alt="Figure: Overview of kallisto, image from Bray et al. (2016)." /><img src="images_sequencing/kallisto_equivalenceClasses_caption.png" alt="Figure: Overview of kallisto, image from Bray et al. (2016)." /></p>
+<div class="figure">
+<img src="images_sequencing/kallisto_equivalenceClasses.png" alt="Figure: Overview of kallisto, image from Bray et al. (2016)." width="478" />
+<p class="caption">
+Figure: Overview of kallisto, image from Bray et al. (2016).
+</p>
+</div>
+<div class="figure">
+<img src="images_sequencing/kallisto_equivalenceClasses_caption.png" alt="Figure: Overview of kallisto, image from Bray et al. (2016)." width="538" />
+<p class="caption">
+Figure: Overview of kallisto, image from Bray et al. (2016).
+</p>
+</div>
 </div>
 </div>
 <div id="abundance-quantification" class="section level2">
@@ -510,8 +562,10 @@ div.tocify {
 <li>Many choices need to be made: Do we count a fragment as soon as it intersects with the gene’s coordinates, or do we require the full fragment to map to the gene? Do we count intronic reads? Do we count multi-mapping reads?</li>
 </ul>
 <div class="figure">
-<img src="images_sequencing/readCounting.png" alt="" />
-<p class="caption">Figure: Gene- and exon-level read counting. Image adapted from Charlotte Soneson.</p>
+<img src="images_sequencing/readCounting.png" alt="Figure: Gene- and exon-level read counting. Image adapted from Charlotte Soneson." width="2844" />
+<p class="caption">
+Figure: Gene- and exon-level read counting. Image adapted from Charlotte Soneson.
+</p>
 </div>
 <p><strong>Estimation</strong>:</p>
 <ul>
@@ -520,8 +574,10 @@ div.tocify {
 <li>In order to derive these, the EM-algorithm is often used, although other approaches have been used by tools like Salmon. A big advantage of the estimation approach is that it probabilistically assigns fragments to transcripts, thereby automatically dealing with multi-mapping reads. The total number of fragments mapping to each transcript is then the sum of all fragment-level probabilities to be assigned to that respective transcript.</li>
 </ul>
 <div class="figure">
-<img src="images_sequencing/abundanceEMAlgorithm.png" alt="" />
-<p class="caption">Figure: Abundance quantification using the EM algorithm. Figure from Van den Berge et al. (2019).</p>
+<img src="images_sequencing/abundanceEMAlgorithm.png" alt="Figure: Abundance quantification using the EM algorithm. Figure from Van den Berge et al. (2019)." width="1300" />
+<p class="caption">
+Figure: Abundance quantification using the EM algorithm. Figure from Van den Berge et al. (2019).
+</p>
 </div>
 <div id="abundance-metrics" class="section level3">
 <h3><span class="header-section-number">3.3.1</span> Abundance metrics</h3>
@@ -544,8 +600,10 @@ div.tocify {
 <h3><span class="header-section-number">3.3.2</span> The final countdown</h3>
 <p>Once abundances have been quantified, the (estimated) counts are typically stored in a count matrix, with genes spanning the rows and samples spanning the columns. This count matrix forms the basis of most downstream analyses to interpret RNA-seq data, and it will be the main object we will be working with in the following lectures.</p>
 <div class="figure">
-<img src="images_sequencing/seqWorkflow3.png" alt="" />
-<p class="caption">Figure: An updated sequencing workflow. Image adapted from Van den Berge et al. (2019).</p>
+<img src="images_sequencing/seqWorkflow3.png" alt="Figure: An updated sequencing workflow. Image adapted from Van den Berge et al. (2019)." width="1291" />
+<p class="caption">
+Figure: An updated sequencing workflow. Image adapted from Van den Berge et al. (2019).
+</p>
 </div>
 </div>
 </div>

@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Lieven Clement" />
+
+
+<title>Introduction to proteomics data analysis: impact summarization</title>
+
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SGA21</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-chalkboard-teacher"></span>
+     
+    Lectures
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="./docs/intro.pdf">Position</a>
+    </li>
+    <li>
+      <a href="recapGeneralLinearModel.html">Recap linear model</a>
+    </li>
+    <li>
+      <a href="./docs/martens_proteomics_bioinformatics.pdf">PDA - identification</a>
+    </li>
+    <li>
+      <a href="pda_quantification_preprocessing.html">Quantification - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_robustSummarisation_peptideModels.html">Wrap-up Preprocessing - Peptide-Level-Models</a>
+    </li>
+    <li>
+      <a href="pda_quantification_inference.html">Quantification - Differential Abundance Analysis</a>
+    </li>
+    <li>
+      <a href="pda_blocking_wrapup.html">Wrap-up DA - Blocking</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-laptop"></span>
+     
+    tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="multipleRegression_KPNA2.html">Intro KPNA2</a>
+    </li>
+    <li>
+      <a href="https://www.compomics.com/bioinformatics-for-proteomics/">Identification</a>
+    </li>
+    <li>
+      <a href="pda_tutorialPreprocessing.html">DA - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_tutorialDesign.html">DA - Design</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Introduction to proteomics data analysis: impact summarization</h1>
+<h4 class="author">Lieven Clement</h4>
+<h4 class="date">statOmics, Ghent University (<a href="https://statomics.github.io" class="uri">https://statomics.github.io</a>)</h4>
+
+</div>
+
+
+<p><a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a></p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/F5d0E-U4rOM" frameborder="0" style="display: block; margin: auto;" allow="autoplay; encrypted-media" allowfullscreen>
+</iframe>
+<div id="starting-msqrob" class="section level3">
+<h3>2.2. Starting MSqRob</h3>
+<p>You can find the installation instructions for the installation of msqrob2 and the msqrob2gui graphical user interface (GUI)/shinyApp in <a href="./software.html">software</a></p>
+<p>Upon installation</p>
+<ol style="list-style-type: decimal">
+<li>Open Rstudio, you will see the following login window</li>
+</ol>
+<div class="figure">
+<img src="figures/rstudio.png" alt="" />
+<p class="caption">Figure 1. RStudio</p>
+</div>
+<ol start="2" style="list-style-type: decimal">
+<li>Copy and paste following commands in the console window and type enter</li>
+</ol>
+<pre><code>library(msqrob2gui)
+launchMsqrob2App()</code></pre>
+<div class="figure">
+<img src="figures/rstudio2.png" alt="" />
+<p class="caption">Figure 2. Rstudio with launchcommand</p>
+</div>
+<ul>
+<li>The first line will load the msqrob2gui package and its dependencies</li>
+<li>The second line will launch the GUI/shinyApp</li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li>A new window will open with the shinyApp</li>
+</ol>
+<div class="figure">
+<img src="figures/shinyApp.png" alt="" />
+<p class="caption">Figure 3. msqrob2 ShinyApp</p>
+</div>
+<ol start="4" style="list-style-type: decimal">
+<li>It is advicable to open the shiny app in a webbrowser. You can do that by clicking on the button <code>Open in Browser</code>, which you can find above the blue navigation bar and the shinyApp will pop up in a new browser tab/window.</li>
+</ol>
+<div class="figure">
+<img src="figures/msqrob2gui.png" alt="" />
+<p class="caption">Figure 4. msqrob2gui in browser tab</p>
+</div>
+</div>
+<div id="the-input-tab" class="section level3">
+<h3>2.2.1. The Input tab</h3>
+<p>Our first step is to choose an appropriate name for the project. This name, appended with a timestamp, will be used when downloading results from the analysis. Here, we use the name “project_CPTAC_AvsB”.</p>
+<p>Next, upload your peptides.txt file. This is the file that contains your peptide-level intensities. For a MaxQuant search [6], this peptides.txt file can be found by default in the “path_to_raw_files/combined/txt/” folder from the MaxQuant output, with “path_to_raw_files” the folder where raw files were saved. In this tutorial, we will use a MaxQuant peptides file from MaxQuant that can be found on the pdaData repository.</p>
+<p>Similarly, upload the experimental annotation file which is called “experimental_annotation.xlsx”. This file should always be a tab-delimited file or an Office Open XML spreadsheet file (“.xlsx” file). Figure 2. shows how this file looks like for our experiment. One column (the “run” column in Fig. 3) of the experimental annotation file should always contain the names of the MS runs. For MaxQuant, these are the names given in the “Experiment” column when the data was searched. The names should be unique. Other columns indicate other variables related to the design that can affect protein expression; here this is only the treatment/spike-in condition.</p>
+<p>You can generate an empty annotation file after uploading the peptide.txt file by clicking on the button generate annotation file. Then a download button will appear. The annotation file will contain one column named run with the names of the different runs in the peptide.txt file.</p>
+<div class="figure">
+<img src="figures/lab3Annotation.png" alt="" />
+<p class="caption">Figure 4. Lab 3 Annotation</p>
+</div>
+<p>Experimental annotation file have a typical structure. For the CPTAC dataset analyzed with MaxQuant, the first column equals the names given in MaxQuant’s “Experiment” column. Other columns indicate other variables related to the study design. Here it is only the treatment (“spike-in condition”).</p>
+<p><em>Hint: If the file location was already specified and the peptides file was uploaded, you can generate the “run” column of this file automatically in the output folder by clicking the “Create annotation file” button. The other columns need to be filled in manually based on the experimental design.</em></p>
+<p>After setting your output location and uploading your files, your input screen should look as follows:</p>
+<div class="figure">
+<img src="figures/guiInput.png" alt="" />
+<p class="caption">Figure 5. MSqRob Input tab</p>
+</div>
+<p>At this stage, everything is set for preprocessing and data exploration, which are implemented in the preprocessing tab.</p>
+</div>
+<div id="the-preprocessing-tab" class="section level3">
+<h3>2.3.2. The Preprocessing tab</h3>
+<p>The preprocessing tab features different preprocessing options, many of which can be safely left at their default state. When you click the preprocessing tab, it should now look as follows:</p>
+<div class="figure">
+<img src="figures/guiPreprocessing.png" alt="" />
+<p class="caption">Figure 6. msqrob2 Preprocessing tab</p>
+</div>
+<p>The other normalization steps are performed upon hitting the “Start Normalization” button on the bottom of the Normalization tab. This is required to generate the normalized peptide object that is needed in the other panels of the app. Now, two additional plots are generated: the second plot shows the distributions of the peptides intensities In each runs after normalization and the third plot is an MDS plot. An MDS plot is a scatter plot that shows the runs in such a way that the distances on the plot are equal to the Euclidian distances of the top 500 most differing peptides between each pair of runs. If we log transform the data these distances are related to log fold changes. Thus, runs that are plotted close to each other are more similar than samples that are far away from each other. Options are provided to show only dots, only labels or both. It is also possible to zoom in on a particular part of the plot by dragging the mouse to select a particular area on the plot and then double-click to zoom in.</p>
+<div class="figure">
+<img src="figures/guiPreprocessing2.png" alt="" />
+<p class="caption">Figure 7. msqrob2 Preprocessing tab upon normalization</p>
+</div>
+<p>The first preprocessing step is log-transformation. Why is log-transformation needed? (Hint: untick the checkbox before “Log-transform data” and see what happens to the data distribution.) [2.3.2.a]</p>
+<p>Why do we choose base 2? (Hint: think of the interpretation later on!) [2.3.2.b] The next step is normalization. It is difficult to propose a one-size-fits-all normalization because the nature and extent of bias in the data are generally unknown. Thus, relative performance of different normalization methods might be different in different datasets [8].</p>
+<p>What can you derive from the MDS plot after normalization? [2.3.2c]</p>
+<p>Razor peptides are peptides that cannot be uniquely attributed to a single protein or protein group. As we are uncertain from which protein group these peptides originate and their intensities might even be a combined value from multiple protein groups, we opt to remove these peptides by default. The option “Remove comprising protein groups” deals with peptides that are shared between protein groups. This option removes all peptides in protein groups for which any of its peptides map to a protein that is also present in another smaller protein group.</p>
+<p>“Minimal number of peptides” indicates a threshold T for how many times a certain peptide sequence should be present in the data before being retained in the final analysis. Peptides that are identified at least T times are retained; other peptides are removed from the data. This value defaults to 2 and there is a very practical reason for this. Indeed, we need to correct for the peptide effect. However, when a peptide occurs only once, the peptide effect cannot be estimated. Note that this is not the same as applying the so-called “two-peptide rule” [9]. A protein identified by only one peptide can contribute to the estimation provided that the peptide is identified in multiple samples.</p>
+<p>You can further filter out reverse sequences (left over from the MaxQuant search) and potential contaminants proteins (such as keratin from the operator’s skin and hair, or leftover trypsin from digestion) [10], by providing the column names of the peptides file that indicate these sequences in the “Filter columns” field.</p>
+</div>
+<div id="the-summarization-tab" class="section level3">
+<h3>2.3.3. The Summarization tab</h3>
+<p>The preprocessing tab features different summarization options. When you click the preprocessing tab, the following screen is obtained:</p>
+<div class="figure">
+<img src="figures/guiSummarization.png" alt="" />
+<p class="caption">Figure 9. msqrob2 Summarization tab</p>
+</div>
+<p>When robust summarization is applied, the novel and much faster two-stage approach is used to fit the MSqRob model. Mean and median summarization are also implemented, but mainly for didactical reasons and to show the problems related to naive summarization methods. You always have to invoke the “Start Summarization!” button in order to create an object needed for downstream quantification. Depending on the method, summarization might take a while.</p>
+<ol style="list-style-type: decimal">
+<li><p>We first select the naive median summarization method and hit the “Start Summarization!” button. When the summarization is finished an MDS plot is generated based on the summarized intensities.</p></li>
+<li><p>We then select the robust method, which we will use in the downstream data analysis method so as to implement the two-stage MSqRob procedure.</p></li>
+</ol>
+<p>What do you see upon summarization with the robust method and why would that be the case? [2.3.3.a]</p>
+</div>
+<div id="the-model-tab" class="section level3">
+<h3>2.3.4. The Model tab</h3>
+<p>When you click the Model tab, the following screen is obtained:</p>
+<div class="figure">
+<img src="figures/guiModel.png" alt="" />
+<p class="caption">Figure 10. msqrob2 Model tab</p>
+</div>
+<p>The Model tab shows information on the experimental design (annotation) in the right panel. In the left panel we have to propose the model to model the intensities of the preprocessed and summarized data.</p>
+<p>msqrob2 makes use of linear models for assessing differential expression. The models for are specified symbolically. The formula is build using the names of the design variables. A typical model has the form ‘ ~ terms’ where ‘terms’ is a series of terms which specifies a linear model.</p>
+<ul>
+<li><p>A terms specification of the form ‘variable1’ will model the preprocessed intensities in function of the design variable ‘variable1’. If ‘variable1’ is a continuous variable this will result in a linear model with an intercept and a slope for the variable treatment. If ‘variable1’ is a factor variable it will result in a linear model with an intercept for the reference class and slope parameters with the interpretation of the average difference between the preprocessed intensity of the current class and the reference class.</p></li>
+<li><p>A terms specification of the form ‘variable1 + variable2’ indicates the inclusion of the main effects (terms for all slope terms) for ‘variable1’ and ‘variable2’.</p></li>
+<li><p>A specification of the form ‘variable1:variable2’ indicates the set of terms obtained by taking the interactions of all terms in ‘variable1’ with all terms in ‘variable2’, i.e. the effect of ‘variable1’ can be altered according to the value of ‘variable2’.</p></li>
+<li><p>The specification ‘variable1*variable’ indicates the <em>cross</em> of ‘variable1’ and ‘variable2’. This is the same as ‘variable1 + variable2 + variable1:variable2’.</p></li>
+</ul>
+<p>Here, we only have one factor ‘treatment’ in the experimental design with two levels: spikein treatment A and B.</p>
+<ol style="list-style-type: decimal">
+<li>So we will define the formula as</li>
+</ol>
+<p><code>~ treatment</code></p>
+<p>Note that as soon as we do that, the design is visualised.</p>
+<div class="figure">
+<img src="figures/guiModel2.png" alt="" />
+<p class="caption">Figure 11. msqrob2 Model tab with design</p>
+</div>
+<p>This visualisation shows the different group means that are modelled.</p>
+<ul>
+<li><p>Here we see that the group mean for the treatment A is modelled using the parameter <code>(Intercept)</code></p></li>
+<li><p>The group mean for the treatment B is modelled using a linear combination of the two model parameters <code>(Intercept) + treatmentB</code></p></li>
+</ul>
+<p>Hence the average difference in preprocessed protein expression value between both conditions equals <code>treatmentB</code></p>
+<p>Remember that we log-transformed the intensities:</p>
+<p><span class="math display">\[ 
+\log_2FC_\text{B-}=\log_2 B - \log_2 A = \log_2\frac{B}{A} = \text{treatmentB}
+\]</span></p>
+<p>Note that a linear combination of model parameters is als referred to as a contrast in statistics. This contrast has the interpretation of a log2 fold change between condition 6B and condition 6A. Positive estimates denote that the abundance of the protein is on average higher in condition B, negative estimates denote that the abundance is on average higher in condition A. An estimate equal to 0 indicates that the estimated abundances are equal.</p>
+<p>A log2 FC = 1 indicates that the average abundance in condition B is 2 x higher than the average abundance in condition A, i.e. an 2 fold upregulation in condition B as compared to condition A.</p>
+<ol start="2" style="list-style-type: decimal">
+<li>We now have to click the <code>Fit Model!</code> button to fit the models for each protein.</li>
+</ol>
+<p>We are now ready for assessing differential abundance of each protein using formal hypothesis testing.</p>
+</div>
+<div id="the-inference-tab" class="section level3">
+<h3>2.3.4. The Inference tab</h3>
+<p>When you click the Model tab, the following screen is obtained:</p>
+<div class="figure">
+<img src="figures/guiInference.png" alt="" />
+<p class="caption">Figure 12. msqrob2 Inference tab</p>
+</div>
+<p>In the statistical analysis we will want to test the null hypothesis that</p>
+<p><span class="math display">\[ H_0: \log_2 B-\log_2 6A = 0 \]</span></p>
+<p>Against the alternative that <span class="math display">\[ H_1: \log_2 B - \log_2 A \neq 0 \]</span></p>
+<ol style="list-style-type: decimal">
+<li>We can specify the nulhypothesis as a linear combination of the model parameters, i.e. </li>
+</ol>
+<p><code>treatmentB = 0</code></p>
+<p>This is what we have to fill in the field null hypothesis.</p>
+<p>We will falsify this null hypothesis for each protein separately based on the linear model. So, under the null hypothesis we reason that there is no effect of the spike-in treatment on the abundance of a specific protein. The p-value of the statistical test than indicates the probability to observe an effect (fold change), that is as extreme or more extreme (equally or more up or down regulated) than what is observed in the sample, by random change (when the null hypothesis is true and when there is in reality no effect of the treatment).</p>
+<ol start="2" style="list-style-type: decimal">
+<li>As soon as you specified the Null Hypothesis the window is updated</li>
+</ol>
+<div class="figure">
+<img src="figures/guiInference2.png" alt="" />
+<p class="caption">Figure 13 msqrob2 Inference tab with contrast</p>
+</div>
+<p>and a volcano plot appears that gives you a view on statistical significance in the y-axis, i.e. the <span class="math inline">\(-\log_{10}\)</span> transformed p-value: a value of 1 equals to a p-value of 0.1, a value of 2 equals a p-value of 0.01, etc against biological relevance/the effect size in the x-axis, which is the <span class="math inline">\(\log_2FC\)</span>.</p>
+<p>You also get a table with selected feature. By default this are all proteins that are significant with the specified significance level in the <code>Significance field</code>. You also obtain a boxplot of the log2-fold changes for all proteins that are selected in the table.</p>
+<p>Note that 20 proteins are displayed. The majority of them are UPS proteins that were spiked-in. Only one yeast protein is recovered in the top 20.</p>
+<ol start="3" style="list-style-type: decimal">
+<li><p>If you untick the option <code>only significant features in table</code> all proteins are shown in the table.</p></li>
+<li><p>You can also select proteins by selecting an area on the volcano plot.</p></li>
+</ol>
+<ul>
+<li><p>Click on the left mouse button and keep the button pressed and drag the mouse: a blue area appears</p></li>
+<li><p>Double click to zoom in now the proteins are selected in the results table. - Double click on an unselected area to reset the plot window.</p></li>
+</ul>
+<ol start="5" style="list-style-type: decimal">
+<li><p>Selecting a protein(s) in the “Results table” results in selecting it on the Volcano plot.</p></li>
+<li><p>You can search for specific proteins in the list by using the search field above the table. E.g. type <code>ups</code>.</p></li>
+<li><p>If you select one protein in the table or by clicking on a point in the volcano-plot you can also explore the underlying normalised peptide intensities and protein intensities of the underlying data in the tab DetailPlots.</p></li>
+</ol>
+</div>
+<div id="the-detailplots-tab" class="section level3">
+<h3>2.3.4 The DetailPlots Tab</h3>
+<ol style="list-style-type: decimal">
+<li><p>Select one protein in the table or by clicking on a point in the volcano-plot</p></li>
+<li><p>Clicking on the DetailPlot tab is visualising the data for your selected protein.</p></li>
+</ol>
+<div class="figure">
+<img src="figures/guiDetailPlot.png" alt="" />
+<p class="caption">Figure 14. msqrob2 DetailPlot tab</p>
+</div>
+<ol start="3" style="list-style-type: decimal">
+<li>You can further modify the plot by coloring the data according to a design variable or by splitting the data horizontally or vertically according to design variables.</li>
+</ol>
+</div>
+<div id="the-report-tab" class="section level3">
+<h3>2.3.5. The Report Tab</h3>
+<p>A reproducible Rmarkdown script and html report with the analysis you performed with the GUI can be downloaded in the novel report tab.</p>
+<div class="figure">
+<img src="figures/guiReport.png" alt="" />
+<p class="caption">Figure 14. msqrob2 DetailPlot tab</p>
+</div>
+<ol style="list-style-type: decimal">
+<li><p>You can select the number of detail plots you want to generate in the report. The default is 10, which indicates that detail plots will be constructed for the 10 most significant protein in your top list. Note, that the number of detail plots can be smaller if there are less than 10 proteins significant at the specified FDR-level.</p></li>
+<li><p>Hit the <code>Generate report</code> button and a report will be compiled. Note, that this will take a while because all analysis steps from each of the tabs have to be conducted again. You will see a progress bar and when it is finished a zip file will be downloaded that contains:</p></li>
+</ol>
+<ul>
+<li>features.txt: A tab delimited file with the raw intensity data</li>
+<li>annotation.xlsx: An excel file with the annotation of the design</li>
+<li>report.Rmd: R/markdown file with the code for the report. If you open the file in Rstudio and if you hit the knit button the report will be compiled to html.</li>
+<li>report.html: The compiled report.</li>
+</ul>
+<p>So, your analysis is stored in a fully reproducible way.</p>
+</div>
+<div id="evaluate-summarization" class="section level3">
+<h3>2.3.6. Evaluate Summarization</h3>
+<p>We further explore the difference between summarization methods. We first assess the quality of the fold change estimates for the robust summarization. We will make use of the boxplot at the bottom of the quantification tab.</p>
+<ol style="list-style-type: decimal">
+<li><p>If you untick the option <code>only significant features in table</code> all proteins are shown in the table. The boxplot below the table visualizes the log2 fold change (FC) estimates for all proteins in the table.</p></li>
+<li><p>We can now filter the ups proteins by typing “ups” in the search field above the table. Now all yeast proteins are removed from the results table and a boxplot of the ups protein log2 FCs will be made.</p></li>
+</ol>
+<div class="figure">
+<img src="figures/guiRobustUps.png" alt="" />
+<p class="caption">Figure 15. msqrob2 Inference tab with Fold Change Boxplot for all UPS proteins</p>
+</div>
+<p>[2.3.6.a] We know the real FC for the spike in proteins (see description of the data 2.2). Note, that the boxplot is showing the log2 FC. What do you observe?</p>
+<p>[2.3.6.b] Now select all yeast proteins. What is the real fold change and what do you observe?</p>
+<p>[2.3.6.c] Repeat this for the median summarization method. What do you observe, how does that compare to the robust summarisation and try to explain this?</p>
+</div>
+<div id="final-remark" class="section level3">
+<h3>Final remark</h3>
+<ul>
+<li><p>Note, that the shiny app is an interface to the statistical programming software R.</p></li>
+<li><p>The analysis can also be conducted using scripts, which gives you much more functionality and the ability to streamline, automate and document your analyses in a reproducible way.</p></li>
+</ul>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

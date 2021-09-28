@@ -430,27 +430,54 @@ div.tocify {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="sequencing_intro.html">Sequencing - Introduction to sequencing</a>
+      <a href="./docs/intro.pdf">Position</a>
     </li>
     <li>
-      <a href="sequencing_countData.html">Sequencing - Working with count data</a>
+      <a href="recapGeneralLinearModel.html">Recap linear model</a>
     </li>
     <li>
-      <a href="sequencing_rnaseqIntro.html">Sequencing - RNA-seq analysis challenges</a>
+      <a href="./docs/martens_proteomics_bioinformatics.pdf">PDA - identification</a>
+    </li>
+    <li>
+      <a href="pda_quantification_preprocessing.html">Quantification - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_robustSummarisation_peptideModels.html">Wrap-up Preprocessing - Peptide-Level-Models</a>
+    </li>
+    <li>
+      <a href="pda_quantification_inference.html">Quantification - Differential Abundance Analysis</a>
+    </li>
+    <li>
+      <a href="pda_blocking_wrapup.html">Wrap-up DA - Blocking</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-laptop"></span>
+     
+    tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="multipleRegression_KPNA2.html">Intro KPNA2</a>
+    </li>
+    <li>
+      <a href="https://www.compomics.com/bioinformatics-for-proteomics/">Identification</a>
+    </li>
+    <li>
+      <a href="pda_tutorialPreprocessing.html">DA - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_tutorialDesign.html">DA - Design</a>
     </li>
   </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li>
-  <a href="https://github.com/statOmics/SGA21">
-    <span class="fab fa-github"></span>
-     
-  </a>
-</li>
-<li>
-  <a href="http://statomics.github.io/">statOmics</a>
-</li>
+        
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -488,8 +515,10 @@ div.tocify {
 <h2><span class="header-section-number">1.1</span> Experimental design</h2>
 <p>Let’s try to work out the experimental design using the following paragraph from the Methods section of the paper.</p>
 <div class="figure">
-<img src="images_sequencing/expDesign_para.png" alt="" />
-<p class="caption">Figure: A paragraph from the Methods section.</p>
+<img src="images_sequencing/expDesign_para.png" alt="Figure: A paragraph from the Methods section." width="689" />
+<p class="caption">
+Figure: A paragraph from the Methods section.
+</p>
 </div>
 </div>
 <div id="data-import-and-exploration" class="section level2">
@@ -868,8 +897,10 @@ s_i = \text{median}_{\{{g:Y^{*}_{gr} \ne 0}\}} \frac{Y_{gi}}{Y^{*}_{gr}},
 <h2><span class="header-section-number">4.1</span> Defining the model for the mean</h2>
 <p>Let’s first check how the authors of the original study parameterized the mean model.</p>
 <div class="figure">
-<img src="images_sequencing/deAnalysis_para.png" alt="" />
-<p class="caption">Figure: Another paragraph from the Methods section.</p>
+<img src="images_sequencing/deAnalysis_para.png" alt="Figure: Another paragraph from the Methods section." width="683" />
+<p class="caption">
+Figure: Another paragraph from the Methods section.
+</p>
 </div>
 <p>The authors write that they are “employing treatment type, time point and sample ID as factors in the model”. Concerning experimental variables, this suggests they have added covariates defining the treatment and time point for each sample. The sample ID in the text refers to the original tissue sample and therefore corresponds to the donor patient. While there is also a variable called <code>sample</code> in the <code>colData</code>, this is not what the authors refer to. Note the ambiguity here and since the authors didn’t share their code, this is hard to check! But, more on reproducibility later.</p>
 <p><strong>Question</strong>. What are the authors assuming using this structure for the mean model? Do you think that there are extensions or simplifications of the mean model that would be relevant?</p>
@@ -887,8 +918,10 @@ The authors are acknowledging the relatedness of samples derived from the same d
 <p>Once initial estimates (<span class="math inline">\(\hat{\Phi}_g^{ML}\)</span> in the figure) have been derived, we use a parametric model to estimate its distribution (typically as a function of the mean), which we’re calling the prior distribution. Then, each initial estimate is shrunken towards that empirically estimated prior distribution. The amount of shrinkage being performed is data-driven, and depends on the data, taking into account the precision of our initial estimate (i.e., shape of the likelihood) and the width of the prior.</p>
 <p>These strategies result in impressive performance gains in terms of differential expression analysis and are implemented in all popular differential expression analysis software packages (though in slightly differing ways) like <code>limma</code>, <code>edgeR</code> and <code>DESeq2</code>.</p>
 <div class="figure">
-<img src="images_sequencing/empiricalBayes.png" alt="" />
-<p class="caption">Figure 8 from Van den Berge <em>et al.</em> (2019).</p>
+<img src="images_sequencing/empiricalBayes.png" alt="Figure 8 from Van den Berge *et al.* (2019)." width="1040" />
+<p class="caption">
+Figure 8 from Van den Berge <em>et al.</em> (2019).
+</p>
 </div>
 </div>
 <div id="in-practice" class="section level2">
@@ -1000,17 +1033,17 @@ The authors are acknowledging the relatedness of samples derived from the same d
 <span id="cb45-10"><a href="#cb45-10"></a>                                          <span class="dt">main =</span> <span class="kw">colnames</span>(pvalMat)[ii],</span>
 <span id="cb45-11"><a href="#cb45-11"></a>                                          <span class="dt">xlab =</span> <span class="st">&quot;p-value&quot;</span>))</span></code></pre></div>
 <pre><code>##          [,1]            [,2]            [,3]            [,4]           
-## breaks   Numeric,21      Numeric,21      Numeric,21      Numeric,21     
-## counts   Integer,20      Integer,20      Integer,20      Integer,20     
-## density  Numeric,20      Numeric,20      Numeric,20      Numeric,20     
-## mids     Numeric,20      Numeric,20      Numeric,20      Numeric,20     
+## breaks   numeric,21      numeric,21      numeric,21      numeric,21     
+## counts   integer,20      integer,20      integer,20      integer,20     
+## density  numeric,20      numeric,20      numeric,20      numeric,20     
+## mids     numeric,20      numeric,20      numeric,20      numeric,20     
 ## xname    &quot;pvalMat[, ii]&quot; &quot;pvalMat[, ii]&quot; &quot;pvalMat[, ii]&quot; &quot;pvalMat[, ii]&quot;
 ## equidist TRUE            TRUE            TRUE            TRUE           
 ##          [,5]            [,6]            [,7]           
-## breaks   Numeric,21      Numeric,21      Numeric,21     
-## counts   Integer,20      Integer,20      Integer,20     
-## density  Numeric,20      Numeric,20      Numeric,20     
-## mids     Numeric,20      Numeric,20      Numeric,20     
+## breaks   numeric,21      numeric,21      numeric,21     
+## counts   integer,20      integer,20      integer,20     
+## density  numeric,20      numeric,20      numeric,20     
+## mids     numeric,20      numeric,20      numeric,20     
 ## xname    &quot;pvalMat[, ii]&quot; &quot;pvalMat[, ii]&quot; &quot;pvalMat[, ii]&quot;
 ## equidist TRUE            TRUE            TRUE</code></pre>
 <p><img src="sequencing_rnaseqIntro_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
