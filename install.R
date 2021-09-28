@@ -1,13 +1,13 @@
 ## Add packages used in Rmd files
 
 pkgs <- c(
-  'remotes', 
+  'remotes',
+  'devtools',
+  'tidyverse',
   'latex2exp',
   'plotly',
-  'devtools',
   'rmarkdown',
   'knitr',
-  'tidyverse',
   'car',
   'multcomp',
   'gridExtra',
@@ -24,5 +24,6 @@ pkgs <- c(
   'scales',
   'QFeatures',
   'msqrob2')
+
 install.packages("BiocManager", Ncpus = 2L)
 BiocManager::install(pkgs)
