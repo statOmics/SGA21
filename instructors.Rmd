@@ -1,0 +1,22 @@
+---
+title: ""  
+author: "Lieven Clement"
+date: "statOmics, Ghent University (https://statomics.github.io)"
+output:
+    html_document:
+      theme: cosmo
+      toc: false
+      toc_float: false
+      highlight: tango
+      number_sections: false
+      
+---
+
+### Lieven Clement
+```{r echo=FALSE,out.width="20%",out.extra='style="float:left; padding:10px;text-align: justify"'}
+knitr::include_graphics("./figures/lieven.jpg")
+```
+
+Lieven Clement is an Associate Professor of Statistical Genomics at Ghent University, where he leads the [statOmics](https://statomics.github.io/) Group. He is an expert in developing statistical methods and open source tools for differential omics data analysis. His research efforts resulted in numerous publications on novel methods and tools for, and applied research in omics data analysis. His lab is built around three strategic research pillars each connected to an omics domain: metagenomics, transcriptomics and proteomics and he also has a strong interest in leveraging his expertise to translational research. He also serves as a member of the core team that established a new Master of Science in Bioinformatics at Ghent University and as a board member of the Belgian Proteomics Association.
+
+Affiliation: Department of Applied Mathematics, Computer Science and Statistics, Ghent University, Ghent, BE

@@ -74,11 +74,13 @@ source("https://raw.githubusercontent.com/statOmics/SGA21/master/install.R")
    - Wrap-up: [Blocking](./pda_blocking_wrapup.html) [[PDF](./pda_blocking_wrapup.pdf)]
 
 
-# Lecturers
+# Instructors
 
  - [Koen Van den Berge](https://koenvandenberge.github.io/)
- - [Lieven Clement](https://statomics.github.io/pages/about.html)
+ - [Lieven Clement](./instructors.html)
  - [Lennart Martens](https://www.compomics.com/people/lennart-martens/)
+
+
 
 # License
 
