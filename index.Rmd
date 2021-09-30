@@ -38,6 +38,10 @@ In addition, knowledge of programming in `R` is preferred. A primer to `R` and D
 source("https://raw.githubusercontent.com/statOmics/SGA21/master/install.R")
 ```
 
+- Participants who have issues with the installation of the R/Rstudio can use an Rstudio instance in the cloud with all packages installed for the course in the mean time. Note, that this is instance is not for routine use. 
+
+[![Binder](http://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/statOmics/SGA21/binder?urlpath=rstudio)
+
 # Detailed Program
 
 
