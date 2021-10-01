@@ -61,6 +61,7 @@ The plot suggests
 - Mean variance relation?
 
 ## Model
+
 Histologic grade and lymph node status can be associated with the kpna2 gene expression. Moreover, it is also possible that the differential expression associated with histological grade is different in patients that have unaffected lymph nodes and patients for which the lymph nodes had to be removed. Hence, we will have to model the gene expression by using main effects for grade, node and a grade x node interaction. 
  
 ```{r}
@@ -91,6 +92,7 @@ Anova(fit,type="III")
 
 The output shows that there is a very significant interaction ($p=$ `r format(Anova(fit,type="III")["grade:node",4],digits=2)`). Hence, the association of the histological grade on the gene expression differs according to the lymph node status and vice versa.
 
+
 The researchers are therefore interested in studying and reporting on the following hypotheses:
 
 - Is the KPNA2 expression on average different between grade 3 and grade 1 tumors from patients with unaffected lymph nodes (by testing $H_0: \log_2{FC}_{g3n0-g1n0}=0\text{ vs }H1: \log_2{FC}_{g3n0-g1n0}\neq 0$)
@@ -105,6 +107,12 @@ The researchers are therefore interested in studying and reporting on the follow
 
 
 # Interpretation of model parameters and statistical tests
+
+```{r}
+ExploreModelMatrix::VisualizeDesign(kpna2,~grade*node)$plotlist
+```
+
+
 ```{r}
 summary(fit)
 #Calculate confidence intervals for parameters of model
