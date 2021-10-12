@@ -12,7 +12,7 @@
 <meta name="author" content="Koen Van den Berge" />
 
 
-<title>Sequencing: Technical topics</title>
+<title>Sequencing: Selected technical topics</title>
 
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -494,83 +494,155 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Sequencing: Technical topics</h1>
+<h1 class="title toc-ignore">Sequencing: Selected technical topics</h1>
 <h4 class="author">Koen Van den Berge</h4>
 <h4 class="date">7/5/2021</h4>
 
 </div>
 
 
-<div id="aliasing" class="section level1">
-<h1><span class="header-section-number">1</span> Aliasing</h1>
-<p>Suppose we are working with the following experimental design. Studying the effect of alcoholism on gene expression, researchers gather RNA-seq data from four alcoholic individuals and four healthy individuals. For each individual, they obtain RNA-seq data from a blood sample as well as liver tissue. The research question relates to differential expression between the diseased versus control conditions, in both tissues.</p>
-<p>If we would like to model all data simultaneously, then we could imagine a design such as <code>~ patient + disease*tissue</code>, where</p>
+<div id="independent-filtering" class="section level1">
+<h1><span class="header-section-number">1</span> Independent filtering</h1>
+<p>Independent filtering, where genes/transcripts/proteins are filtered out prior to statistical analysis, is a common practice in ‘omics experiments. Typically, lowly expressed features are filtered out, and one can argue that these features’ expression is too low to be deemed biologically relevant. In addition, low-count features are also associated with a low statistical power for differential expression (remember relative uncertainty of counts, and <code>edgeR</code>’s BCV plot), and will increase the number of tests performed, and therefore lead to a more severe multiple testing correction.</p>
+<div class="figure">
+<img src="images_sequencing/independentFiltering.png" alt="Figure 1 from Bourgon *et al.* (2010)." width="1440" />
+<p class="caption">
+Figure 1 from Bourgon <em>et al.</em> (2010).
+</p>
+</div>
+<hr />
+<p>Independent filtering has been formalized by <a href="https://www.pnas.org/content/107/21/9546">Bourgon <em>et al.</em> (2010)</a>, and the concept can be summarized as follows.</p>
 <ul>
-<li><code>disease</code> is a binary indicator referring to alcoholic versus control sample.</li>
-<li><code>tissue</code> defines if the sample is a liver or blood sample.</li>
+<li>For each feature we calculate two statistics, <span class="math inline">\(S_F\)</span> and <span class="math inline">\(S_T\)</span>, respectively used for two stages: filtering and testing (e.g., differential expression).</li>
+<li>In order for a feature to be deemed significant, both of its statistics must be greater than some cut-off.</li>
+<li>We want to control the type I error rate of the second stage (testing). But note that <strong>the second stage is conditional on the first stage</strong>, as we only test features passing the filter, and basically ignore the fact that filtering was performed. Indeed, one criticism is that computing and correcting the <span class="math inline">\(p\)</span>-values as if filtering had not been performed may lead to overoptimistic adjusted <span class="math inline">\(p\)</span>-values.</li>
+<li><a href="https://www.pnas.org/content/107/21/9546">Bourgon <em>et al.</em> (2010)</a> show that filtering is only appropriate (i.e., does not inflate type I error rate) if the conditional null distribution of test statistics for features passing the filter is the same as the unconditional null distribution. Therefore, <strong>filtering is appropriate if the statistic used for filtering is independent of the statistic used for testing under the null hypothesis</strong>.</li>
+</ul>
+<div class="figure">
+<img src="images_sequencing/independentFiltering2.png" alt="Figure 2 from Bourgon *et al.* (2010)." width="1438" />
+<p class="caption">
+Figure 2 from Bourgon <em>et al.</em> (2010).
+</p>
+</div>
+<hr />
+<p>Let’s try a couple of examples to get some intuition using simulated data.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">suppressPackageStartupMessages</span>(<span class="kw">library</span>(DESeq2))</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">set.seed</span>(<span class="dv">24</span>)</span>
+<span id="cb1-3"><a href="#cb1-3"></a>dds &lt;-<span class="st"> </span>DESeq2<span class="op">::</span><span class="kw">makeExampleDESeqDataSet</span>()</span>
+<span id="cb1-4"><a href="#cb1-4"></a>simCounts &lt;-<span class="st"> </span><span class="kw">counts</span>(dds)</span>
+<span id="cb1-5"><a href="#cb1-5"></a>group &lt;-<span class="st"> </span>dds<span class="op">$</span>condition</span></code></pre></div>
+<div id="a-dependent-test-statistic" class="section level2">
+<h2><span class="header-section-number">1.1</span> A dependent test statistic</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>filterStatEffectSize &lt;-<span class="st"> </span><span class="kw">abs</span>(<span class="kw">rowMeans</span>(simCounts[,group <span class="op">==</span><span class="st"> &quot;A&quot;</span>]) <span class="op">-</span><span class="st"> </span><span class="kw">rowMeans</span>(simCounts[,group <span class="op">==</span><span class="st"> &quot;B&quot;</span>]))</span>
+<span id="cb2-2"><a href="#cb2-2"></a>testStat &lt;-<span class="st"> </span>genefilter<span class="op">::</span><span class="kw">rowttests</span>(simCounts, group)</span>
+<span id="cb2-3"><a href="#cb2-3"></a></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="co">## unconditional distribution</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="kw">plot</span>(<span class="kw">density</span>(testStat<span class="op">$</span>statistic, <span class="dt">na.rm=</span><span class="ot">TRUE</span>),</span>
+<span id="cb2-6"><a href="#cb2-6"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Test statistic&quot;</span>,</span>
+<span id="cb2-7"><a href="#cb2-7"></a>     <span class="dt">main =</span> <span class="st">&quot;Unconditional distribution&quot;</span>)</span></code></pre></div>
+<p><img src="sequencing_technicalDE_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">## conditional distribution: very different!</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="kw">mean</span>(filterStatEffectSize <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>)</span></code></pre></div>
+<pre><code>## [1] 0.792</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">hist</span>(filterStatEffectSize, <span class="dt">breaks=</span><span class="dv">40</span>)</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="kw">abline</span>(<span class="dt">v=</span><span class="dv">1</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</span></code></pre></div>
+<p><img src="sequencing_technicalDE_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>keepEffectSize &lt;-<span class="st"> </span>filterStatEffectSize <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">plot</span>(<span class="kw">density</span>(testStat<span class="op">$</span>statistic[keepEffectSize], <span class="dt">na.rm=</span><span class="ot">TRUE</span>),</span>
+<span id="cb6-3"><a href="#cb6-3"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Test statistic&quot;</span>,</span>
+<span id="cb6-4"><a href="#cb6-4"></a>     <span class="dt">main =</span> <span class="st">&quot;Conditional distribution&quot;</span>)</span></code></pre></div>
+<p><img src="sequencing_technicalDE_files/figure-html/unnamed-chunk-5-3.png" width="672" /></p>
+</div>
+<div id="an-independent-test-statistic" class="section level2">
+<h2><span class="header-section-number">1.2</span> An independent test statistic</h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>filterStatGlobalMean &lt;-<span class="st"> </span><span class="kw">rowMeans</span>(simCounts)</span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="kw">mean</span>(filterStatGlobalMean <span class="op">&gt;</span><span class="st"> </span><span class="dv">5</span>) <span class="co"># we remove a similar fraction</span></span></code></pre></div>
+<pre><code>## [1] 0.771</code></pre>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>keepGlobalMean &lt;-<span class="st"> </span>filterStatGlobalMean <span class="op">&gt;</span><span class="st"> </span><span class="dv">5</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="co">## unconditional distribution</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="kw">plot</span>(<span class="kw">density</span>(testStat<span class="op">$</span>statistic, <span class="dt">na.rm=</span><span class="ot">TRUE</span>),</span>
+<span id="cb9-5"><a href="#cb9-5"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Test statistic&quot;</span>,</span>
+<span id="cb9-6"><a href="#cb9-6"></a>     <span class="dt">main =</span> <span class="st">&quot;Unconditional distribution&quot;</span>)</span></code></pre></div>
+<p><img src="sequencing_technicalDE_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="co">## conditional distribution: the same.</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="kw">plot</span>(<span class="kw">density</span>(testStat<span class="op">$</span>statistic[keepGlobalMean], <span class="dt">na.rm=</span><span class="ot">TRUE</span>),</span>
+<span id="cb10-3"><a href="#cb10-3"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Test statistic&quot;</span>,</span>
+<span id="cb10-4"><a href="#cb10-4"></a>     <span class="dt">main =</span> <span class="st">&quot;Conditional distribution&quot;</span>)</span></code></pre></div>
+<p><img src="sequencing_technicalDE_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
+</div>
+</div>
+<div id="aliasing" class="section level1">
+<h1><span class="header-section-number">2</span> Aliasing</h1>
+<p>Suppose we are working with the following experimental design on colon cancer. Studying the effect of a drug on gene expression, researchers gather RNA-seq data from four colon cancer patients and four healthy individuals. For each individual, they obtain RNA-seq data from a blood sample before as well as two weeks after taking a daily dose of the drug. The research question relates to differential expression after vs. before taking the drug, in particular whether this is different for the diseased versus healthy group (i.e., the interaction between time (before/after taking the drug) and disease status (healthy/colon cancer)).</p>
+<p>In terms of the model matrix, we could imagine a design such as <code>~ patient + disease*time</code>, where</p>
+<ul>
+<li><code>disease</code> is a binary indicator referring to colon cancer versus control sample.</li>
+<li><code>time</code> defines if the sample is taken before or after taking the drug.</li>
 <li><code>patient</code> defines the individual donor the sample comes from.</li>
 </ul>
+<p>The research question could then amount to testing the <code>disease * time</code> interaction.</p>
 <p>Let’s try this, by simulating random data for one gene.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">set.seed</span>(<span class="dv">2</span>)</span>
-<span id="cb1-2"><a href="#cb1-2"></a>patient &lt;-<span class="st"> </span><span class="kw">factor</span>(<span class="kw">rep</span>(letters[<span class="dv">1</span><span class="op">:</span><span class="dv">8</span>], <span class="dt">each=</span><span class="dv">2</span>)) <span class="co"># 2 samples per patient</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a>disease &lt;-<span class="st"> </span><span class="kw">factor</span>(<span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;healthy&quot;</span>,<span class="dv">8</span>), <span class="kw">rep</span>(<span class="st">&quot;alcohol&quot;</span>,<span class="dv">8</span>))) <span class="co"># first four are healthy, next four are alcoholic</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a>tissue &lt;-<span class="st"> </span><span class="kw">factor</span>(<span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;blood&quot;</span>, <span class="st">&quot;liver&quot;</span>), <span class="dv">8</span>)) <span class="co"># one liver and one blood sample for each</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a></span>
-<span id="cb1-6"><a href="#cb1-6"></a><span class="kw">table</span>(patient, disease, tissue)</span></code></pre></div>
-<pre><code>## , , tissue = blood
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="kw">set.seed</span>(<span class="dv">2</span>)</span>
+<span id="cb11-2"><a href="#cb11-2"></a>patient &lt;-<span class="st"> </span><span class="kw">factor</span>(<span class="kw">rep</span>(letters[<span class="dv">1</span><span class="op">:</span><span class="dv">8</span>], <span class="dt">each=</span><span class="dv">2</span>)) <span class="co"># 2 samples per patient</span></span>
+<span id="cb11-3"><a href="#cb11-3"></a>disease &lt;-<span class="st"> </span><span class="kw">factor</span>(<span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;healthy&quot;</span>,<span class="dv">8</span>), <span class="kw">rep</span>(<span class="st">&quot;cancer&quot;</span>,<span class="dv">8</span>)), <span class="dt">levels=</span><span class="kw">c</span>(<span class="st">&quot;healthy&quot;</span>, <span class="st">&quot;cancer&quot;</span>)) <span class="co"># first four are healthy, next four are alcoholic</span></span>
+<span id="cb11-4"><a href="#cb11-4"></a>time &lt;-<span class="st"> </span><span class="kw">factor</span>(<span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;before&quot;</span>, <span class="st">&quot;after&quot;</span>), <span class="dv">8</span>), <span class="dt">levels=</span><span class="kw">c</span>(<span class="st">&quot;before&quot;</span>, <span class="st">&quot;after&quot;</span>)) <span class="co"># one before and one after sample for each</span></span>
+<span id="cb11-5"><a href="#cb11-5"></a></span>
+<span id="cb11-6"><a href="#cb11-6"></a><span class="kw">table</span>(patient, disease, time)</span></code></pre></div>
+<pre><code>## , , time = before
 ## 
 ##        disease
-## patient alcohol healthy
-##       a       0       1
-##       b       0       1
-##       c       0       1
-##       d       0       1
-##       e       1       0
-##       f       1       0
-##       g       1       0
-##       h       1       0
+## patient healthy cancer
+##       a       1      0
+##       b       1      0
+##       c       1      0
+##       d       1      0
+##       e       0      1
+##       f       0      1
+##       g       0      1
+##       h       0      1
 ## 
-## , , tissue = liver
+## , , time = after
 ## 
 ##        disease
-## patient alcohol healthy
-##       a       0       1
-##       b       0       1
-##       c       0       1
-##       d       0       1
-##       e       1       0
-##       f       1       0
-##       g       1       0
-##       h       1       0</code></pre>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">## simulate data for one gene</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a>n &lt;-<span class="st"> </span><span class="dv">16</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a>y &lt;-<span class="st"> </span><span class="kw">rpois</span>(<span class="dt">n =</span> n, <span class="dt">lambda =</span> <span class="dv">50</span>)</span>
-<span id="cb3-4"><a href="#cb3-4"></a></span>
-<span id="cb3-5"><a href="#cb3-5"></a><span class="co">## fit a Poisson model</span></span>
-<span id="cb3-6"><a href="#cb3-6"></a>m &lt;-<span class="st"> </span><span class="kw">glm</span>(y <span class="op">~</span><span class="st"> </span>patient <span class="op">+</span><span class="st"> </span>disease<span class="op">*</span>tissue,</span>
-<span id="cb3-7"><a href="#cb3-7"></a>         <span class="dt">family =</span> <span class="st">&quot;poisson&quot;</span>)</span>
-<span id="cb3-8"><a href="#cb3-8"></a><span class="kw">summary</span>(m)</span></code></pre></div>
+## patient healthy cancer
+##       a       1      0
+##       b       1      0
+##       c       1      0
+##       d       1      0
+##       e       0      1
+##       f       0      1
+##       g       0      1
+##       h       0      1</code></pre>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="co">## simulate data for one gene</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a>n &lt;-<span class="st"> </span><span class="dv">16</span></span>
+<span id="cb13-3"><a href="#cb13-3"></a>y &lt;-<span class="st"> </span><span class="kw">rpois</span>(<span class="dt">n =</span> n, <span class="dt">lambda =</span> <span class="dv">50</span>)</span>
+<span id="cb13-4"><a href="#cb13-4"></a></span>
+<span id="cb13-5"><a href="#cb13-5"></a><span class="co">## fit a Poisson model</span></span>
+<span id="cb13-6"><a href="#cb13-6"></a>m &lt;-<span class="st"> </span><span class="kw">glm</span>(y <span class="op">~</span><span class="st"> </span>patient <span class="op">+</span><span class="st"> </span>disease<span class="op">*</span>time,</span>
+<span id="cb13-7"><a href="#cb13-7"></a>         <span class="dt">family =</span> <span class="st">&quot;poisson&quot;</span>)</span>
+<span id="cb13-8"><a href="#cb13-8"></a><span class="kw">summary</span>(m)</span></code></pre></div>
 <pre><code>## 
 ## Call:
-## glm(formula = y ~ patient + disease * tissue, family = &quot;poisson&quot;)
+## glm(formula = y ~ patient + disease * time, family = &quot;poisson&quot;)
 ## 
 ## Deviance Residuals: 
 ##      Min        1Q    Median        3Q       Max  
 ## -1.52772  -0.43544   0.00013   0.44162   1.34650  
 ## 
 ## Coefficients: (1 not defined because of singularities)
-##                            Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)                 3.76900    0.11916  31.631   &lt;2e-16 ***
-## patientb                    0.06744    0.14999   0.450   0.6530    
-## patientc                    0.06744    0.14999   0.450   0.6530    
-## patientd                    0.27304    0.14310   1.908   0.0564 .  
-## patiente                    0.16449    0.16224   1.014   0.3107    
-## patientf                    0.02565    0.16644   0.154   0.8775    
-## patientg                   -0.01784    0.16785  -0.106   0.9154    
-## patienth                    0.05706    0.16544   0.345   0.7302    
-## diseasehealthy                   NA         NA      NA       NA    
-## tissueliver                 0.10807    0.10155   1.064   0.2872    
-## diseasehealthy:tissueliver -0.12374    0.14407  -0.859   0.3904    
+##                         Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)              3.76900    0.11916  31.631   &lt;2e-16 ***
+## patientb                 0.06744    0.14999   0.450   0.6530    
+## patientc                 0.06744    0.14999   0.450   0.6530    
+## patientd                 0.27304    0.14310   1.908   0.0564 .  
+## patiente                 0.16449    0.16224   1.014   0.3107    
+## patientf                 0.02565    0.16644   0.154   0.8775    
+## patientg                -0.01784    0.16785  -0.106   0.9154    
+## patienth                 0.05706    0.16544   0.345   0.7302    
+## diseasecancer                 NA         NA      NA       NA    
+## timeafter               -0.01567    0.10220  -0.153   0.8782    
+## diseasecancer:timeafter  0.12374    0.14407   0.859   0.3904    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
@@ -582,91 +654,151 @@ div.tocify {
 ## 
 ## Number of Fisher Scoring iterations: 4</code></pre>
 <hr />
-<p>We find that one of the coefficients is <code>NA</code>! This is obviously not because we’re dealing with <code>NA</code> values in the data as we’ve just simulated the response variable.</p>
-<p>Instead, one of the parameters, in this case the parameter distinguising diseased from healthy patients <strong>cannot be estimated as it is a linear combination of other parameters</strong>. In our case, estimating the diseased effect would use information that is already used to estimate the patient-level intercepts. In other words, <strong>once you know the patient, you immediately also know the diseased status</strong>, so estimating the diseased vs healthy effect on top of the patient effect provides no additional information if we have already estimated the patient-level effects. This concept is called aliasing, and is common in RNA-seq experiments with complex experimental designs.</p>
+<p>We find that one of the coefficients is <code>NA</code>! This is obviously not because we’re dealing with <code>NA</code> values in the data as we’ve just simulated the response variable. What’s going on?</p>
+<p>One of the parameters, in this case the parameter distinguishing cancer from healthy patients <strong>cannot be estimated as it is a linear combination of other parameters</strong>. In our case, estimating the diseased effect would use information that is already used to estimate the patient-level intercepts. In other words, <strong>once you know the patient, you immediately also know the disease status</strong>, so estimating the diseased vs healthy effect on top of the patient effect provides no additional information if we have already estimated the patient-level effects. This concept is called aliasing, and is a common technical issue in ’omics experiments with complex experimental designs.</p>
 <hr />
 <p>While to understand the origin of the aliasing it is crucial to understand the relationship between the variables in the experimental design, we can also investigate it in detail using the <code>alias</code> function, to give us an idea.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">alias</span>(m)</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="kw">alias</span>(m)</span></code></pre></div>
 <pre><code>## Model :
-## y ~ patient + disease * tissue
+## y ~ patient + disease * time
 ## 
 ## Complete :
-##                (Intercept) patientb patientc patientd patiente patientf
-## diseasehealthy  1           0        0        0       -1       -1      
-##                patientg patienth tissueliver diseasehealthy:tissueliver
-## diseasehealthy -1       -1        0           0</code></pre>
-<p>We see that the effect <code>diseasehealthy</code> is a linear combination of the the intercept minus the patient-specific effects of the alcoholic patients. This makes sense! For clarity, let’s reproduce this using our design matrix.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>X &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(<span class="op">~</span><span class="st"> </span>patient <span class="op">+</span><span class="st"> </span>disease<span class="op">*</span>tissue)</span>
-<span id="cb7-2"><a href="#cb7-2"></a></span>
-<span id="cb7-3"><a href="#cb7-3"></a><span class="co">## these are indeed the same.</span></span>
-<span id="cb7-4"><a href="#cb7-4"></a>X[,<span class="st">&quot;diseasehealthy&quot;</span>]</span></code></pre></div>
+##               (Intercept) patientb patientc patientd patiente patientf patientg
+## diseasecancer 0           0        0        0        1        1        1       
+##               patienth timeafter diseasecancer:timeafter
+## diseasecancer 1        0         0</code></pre>
+<p>We see that the effect <code>diseasecancer</code> is a linear combination of the patient-specific effects of the cancer patients. This makes sense!</p>
+<hr />
+<p>For clarity, let’s reproduce this using our design matrix.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>X &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(<span class="op">~</span><span class="st"> </span>patient <span class="op">+</span><span class="st"> </span>disease<span class="op">*</span>time) <span class="co"># this is the design used in glm()</span></span>
+<span id="cb17-2"><a href="#cb17-2"></a></span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="co">## these are indeed identical.</span></span>
+<span id="cb17-4"><a href="#cb17-4"></a>X[,<span class="st">&quot;diseasecancer&quot;</span>]</span></code></pre></div>
 <pre><code>##  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 
-##  1  1  1  1  1  1  1  1  0  0  0  0  0  0  0  0</code></pre>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>X[,<span class="st">&quot;(Intercept)&quot;</span>] <span class="op">-</span><span class="st"> </span>X[,<span class="st">&quot;patiente&quot;</span>] <span class="op">-</span><span class="st"> </span>X[,<span class="st">&quot;patientf&quot;</span>] <span class="op">-</span><span class="st"> </span>X[,<span class="st">&quot;patientg&quot;</span>] <span class="op">-</span><span class="st"> </span>X[,<span class="st">&quot;patienth&quot;</span>]</span></code></pre></div>
+##  0  0  0  0  0  0  0  0  1  1  1  1  1  1  1  1</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>X[,<span class="st">&quot;patiente&quot;</span>] <span class="op">+</span><span class="st"> </span>X[,<span class="st">&quot;patientf&quot;</span>] <span class="op">+</span><span class="st"> </span>X[,<span class="st">&quot;patientg&quot;</span>] <span class="op">+</span><span class="st"> </span>X[,<span class="st">&quot;patienth&quot;</span>]</span></code></pre></div>
 <pre><code>##  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 
-##  1  1  1  1  1  1  1  1  0  0  0  0  0  0  0  0</code></pre>
-<p>Since one of our parameters is a linear combination of other parameters, it cannot be estimated simultaneously with the other parameters. In this case, we can actually drop the <code>tissue</code> effect from the model, since we know that it is already included in the <code>patient</code> effect. The most convenient way will be to make a new variable that represents the interaction between patient and tissue. This covariate will contain all the information we need. Below, we fit it using a model without an intercept; this eases interpretation as each coefficient can be interpreted as the average expression for that particular tissue of that particular patient.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>patientTissue &lt;-<span class="st"> </span><span class="kw">as.factor</span>(<span class="kw">paste0</span>(tissue, <span class="st">&quot;_&quot;</span>, patient))</span>
-<span id="cb11-2"><a href="#cb11-2"></a>patientTissue</span></code></pre></div>
-<pre><code>##  [1] blood_a liver_a blood_b liver_b blood_c liver_c blood_d liver_d blood_e
-## [10] liver_e blood_f liver_f blood_g liver_g blood_h liver_h
-## 16 Levels: blood_a blood_b blood_c blood_d blood_e blood_f blood_g ... liver_h</code></pre>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>m2 &lt;-<span class="st"> </span><span class="kw">glm</span>(y <span class="op">~</span><span class="st"> </span><span class="dv">-1</span> <span class="op">+</span><span class="st"> </span>patientTissue,</span>
-<span id="cb13-2"><a href="#cb13-2"></a>          <span class="dt">family =</span> <span class="st">&quot;poisson&quot;</span>)</span>
-<span id="cb13-3"><a href="#cb13-3"></a></span>
-<span id="cb13-4"><a href="#cb13-4"></a><span class="kw">summary</span>(m2)</span></code></pre></div>
+##  0  0  0  0  0  0  0  0  1  1  1  1  1  1  1  1</code></pre>
+<p>Since one of our parameters is a linear combination of other parameters, it cannot be estimated simultaneously with the other parameters. In this case, we can actually drop the <code>disease</code> main effect from the model, since we know that it is already included in the <code>patient</code> effect.</p>
+<hr />
+<p>We will have to carefully construct our design matrix in order to account for all important sources of variation while still allowing us to answer the research question of interest. The aliasing exploration above has made it clear we may drop the <code>disease</code> main effect, so let’s start by constructing this design matrix.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>X &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(<span class="op">~</span><span class="st"> </span>patient <span class="op">+</span><span class="st"> </span>time <span class="op">+</span><span class="st"> </span>disease<span class="op">:</span>time)</span>
+<span id="cb21-2"><a href="#cb21-2"></a></span>
+<span id="cb21-3"><a href="#cb21-3"></a>m2 &lt;-<span class="st"> </span><span class="kw">glm</span>(y <span class="op">~</span><span class="st"> </span><span class="dv">-1</span> <span class="op">+</span><span class="st"> </span>X,</span>
+<span id="cb21-4"><a href="#cb21-4"></a>         <span class="dt">family =</span> <span class="st">&quot;poisson&quot;</span>)</span>
+<span id="cb21-5"><a href="#cb21-5"></a><span class="kw">summary</span>(m2)</span></code></pre></div>
 <pre><code>## 
 ## Call:
-## glm(formula = y ~ -1 + patientTissue, family = &quot;poisson&quot;)
+## glm(formula = y ~ -1 + X, family = &quot;poisson&quot;)
 ## 
 ## Deviance Residuals: 
-##  [1]  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+##      Min        1Q    Median        3Q       Max  
+## -1.52772  -0.43544   0.00013   0.44162   1.34650  
 ## 
-## Coefficients:
-##                      Estimate Std. Error z value Pr(&gt;|z|)    
-## patientTissueblood_a   3.7612     0.1525   24.66   &lt;2e-16 ***
-## patientTissueblood_b   3.7377     0.1543   24.22   &lt;2e-16 ***
-## patientTissueblood_c   3.7842     0.1508   25.10   &lt;2e-16 ***
-## patientTissueblood_d   4.1589     0.1250   33.27   &lt;2e-16 ***
-## patientTissueblood_e   3.9512     0.1387   28.49   &lt;2e-16 ***
-## patientTissueblood_f   3.8501     0.1459   26.39   &lt;2e-16 ***
-## patientTissueblood_g   3.4965     0.1741   20.09   &lt;2e-16 ***
-## patientTissueblood_h   3.9512     0.1387   28.49   &lt;2e-16 ***
-## patientTissueliver_a   3.7612     0.1525   24.66   &lt;2e-16 ***
-## patientTissueliver_b   3.9120     0.1414   27.66   &lt;2e-16 ***
-## patientTissueliver_c   3.8712     0.1443   26.82   &lt;2e-16 ***
-## patientTissueliver_d   3.8918     0.1429   27.24   &lt;2e-16 ***
-## patientTissueliver_e   4.0254     0.1336   30.12   &lt;2e-16 ***
-## patientTissueliver_f   3.8501     0.1459   26.39   &lt;2e-16 ***
-## patientTissueliver_g   4.0431     0.1325   30.52   &lt;2e-16 ***
-## patientTissueliver_h   3.8067     0.1491   25.54   &lt;2e-16 ***
+## Coefficients: (1 not defined because of singularities)
+##                           Estimate Std. Error z value Pr(&gt;|z|)    
+## X(Intercept)               3.76900    0.11916  31.631   &lt;2e-16 ***
+## Xpatientb                  0.06744    0.14999   0.450   0.6530    
+## Xpatientc                  0.06744    0.14999   0.450   0.6530    
+## Xpatientd                  0.27304    0.14310   1.908   0.0564 .  
+## Xpatiente                  0.28823    0.16077   1.793   0.0730 .  
+## Xpatientf                  0.14939    0.16500   0.905   0.3653    
+## Xpatientg                  0.10590    0.16643   0.636   0.5246    
+## Xpatienth                  0.18081    0.16400   1.102   0.2703    
+## Xtimeafter                -0.01567    0.10220  -0.153   0.8782    
+## Xtimebefore:diseasecancer -0.12374    0.14407  -0.859   0.3904    
+## Xtimeafter:diseasecancer        NA         NA      NA       NA    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## (Dispersion parameter for poisson family taken to be 1)
 ## 
-##     Null deviance:  4.4893e+03  on 16  degrees of freedom
-## Residual deviance: -2.0206e-14  on  0  degrees of freedom
-## AIC: 123.32
+##     Null deviance: 4489.2752  on 16  degrees of freedom
+## Residual deviance:    8.8417  on  6  degrees of freedom
+## AIC: 120.16
 ## 
-## Number of Fisher Scoring iterations: 3</code></pre>
-<p><strong>Question.</strong> What do the <span class="math inline">\(p\)</span>-values mean here? Why are they all significant?</p>
+## Number of Fisher Scoring iterations: 4</code></pre>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a><span class="kw">alias</span>(m2)</span></code></pre></div>
+<pre><code>## Model :
+## y ~ -1 + X
+## 
+## Complete :
+##                          X(Intercept) Xpatientb Xpatientc Xpatientd Xpatiente
+## Xtimeafter:diseasecancer  0            0         0         0         1       
+##                          Xpatientf Xpatientg Xpatienth Xtimeafter
+## Xtimeafter:diseasecancer  1         1         1         0        
+##                          Xtimebefore:diseasecancer
+## Xtimeafter:diseasecancer -1</code></pre>
+<p>We are still confronted with aliasing as the model matrix contains an interaction effect <code>timebefore:diseasecancer</code> as well as <code>timeafter:diseasecancer</code>, while only the latter is relevant. Indeed, we know that we can derive the <code>timebefore:diseasecancer</code> effect by averaging the patient effects of the cancer patients.</p>
+<hr />
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a>X &lt;-<span class="st"> </span>X[,<span class="op">!</span><span class="kw">colnames</span>(X) <span class="op">%in%</span><span class="st"> &quot;timebefore:diseasecancer&quot;</span>]</span>
+<span id="cb25-2"><a href="#cb25-2"></a></span>
+<span id="cb25-3"><a href="#cb25-3"></a></span>
+<span id="cb25-4"><a href="#cb25-4"></a><span class="co">## fit a Poisson model</span></span>
+<span id="cb25-5"><a href="#cb25-5"></a>m2 &lt;-<span class="st"> </span><span class="kw">glm</span>(y <span class="op">~</span><span class="st"> </span><span class="dv">-1</span> <span class="op">+</span><span class="st"> </span>X,</span>
+<span id="cb25-6"><a href="#cb25-6"></a>         <span class="dt">family =</span> <span class="st">&quot;poisson&quot;</span>)</span>
+<span id="cb25-7"><a href="#cb25-7"></a><span class="kw">summary</span>(m2)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## glm(formula = y ~ -1 + X, family = &quot;poisson&quot;)
+## 
+## Deviance Residuals: 
+##      Min        1Q    Median        3Q       Max  
+## -1.52772  -0.43544   0.00013   0.44162   1.34650  
+## 
+## Coefficients:
+##                          Estimate Std. Error z value Pr(&gt;|z|)    
+## X(Intercept)              3.76900    0.11916  31.631   &lt;2e-16 ***
+## Xpatientb                 0.06744    0.14999   0.450   0.6530    
+## Xpatientc                 0.06744    0.14999   0.450   0.6530    
+## Xpatientd                 0.27304    0.14310   1.908   0.0564 .  
+## Xpatiente                 0.16449    0.16224   1.014   0.3107    
+## Xpatientf                 0.02565    0.16644   0.154   0.8775    
+## Xpatientg                -0.01784    0.16785  -0.106   0.9154    
+## Xpatienth                 0.05706    0.16544   0.345   0.7302    
+## Xtimeafter               -0.01567    0.10220  -0.153   0.8782    
+## Xtimeafter:diseasecancer  0.12374    0.14407   0.859   0.3904    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for poisson family taken to be 1)
+## 
+##     Null deviance: 4489.2752  on 16  degrees of freedom
+## Residual deviance:    8.8417  on  6  degrees of freedom
+## AIC: 120.16
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<p>We see that all coefficients can now be estimated. The <code>timeafter</code> effect may be interpreted as the time effect for healthy patients, while the <code>timeafter:diseasecancer</code> effect may be interpreted as the difference in the time effect for cancer patients, with the time effect for healthy patients, i.e., it is the relevant interaction effect we are interested in.</p>
+<p><strong>Question</strong>. Taking this further, suppose that we can safely assume that there is no interaction effect between disease status and time. How would you now test for differential expression between healthy and cancer patients at the first timepoint? Specify the experimental design and contrast used.</p>
 <details>
 <summary> Answer. </summary>
 <p>
-Since now we are working with an intercept-free model, each coefficient represents the average gene expression of that patient for the particular tissue. The coefficients therefore can no longer be interpreted as a difference with respect to the intercept on the linear predictor scale. The null hypothesis is still the same as usual, i.e., the <span class="math inline">\(p\)</span>-value corresponding to <span class="math inline">\(\beta_2\)</span> tests the null hypothesis <span class="math inline">\(H_0: \beta_2 = 0\)</span>. Thus, the test is now assessing whether the average gene expression is different from zero (rather than different from the intercept).
+<p>Assuming no interaction, we can specify the design as follows:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a>XMain &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(<span class="op">~</span><span class="st"> </span>patient <span class="op">+</span><span class="st"> </span>time)</span>
+<span id="cb27-2"><a href="#cb27-2"></a><span class="kw">head</span>(XMain)</span></code></pre></div>
+<pre><code>##   (Intercept) patientb patientc patientd patiente patientf patientg patienth
+## 1           1        0        0        0        0        0        0        0
+## 2           1        0        0        0        0        0        0        0
+## 3           1        1        0        0        0        0        0        0
+## 4           1        1        0        0        0        0        0        0
+## 5           1        0        1        0        0        0        0        0
+## 6           1        0        1        0        0        0        0        0
+##   timeafter
+## 1         0
+## 2         1
+## 3         0
+## 4         1
+## 5         0
+## 6         1</code></pre>
+In order to set up the contrast testing for healthy versus diseased patients at the first timepoint, we need to take the average of the appropriate patient-level intercepts. The average expression for healthy patients is <span class="math display">\[ \log \mu_{healthy} = \frac{1}{4} \left\{ \beta_0 + (\beta_0 + \beta_1) + (\beta_0 + \beta_2) + (\beta_0 + \beta_3) \right\}. \]</span> Similar, for the diseased patients it equals <span class="math display">\[ \log \mu_{diseased} = \frac{1}{4} \left\{ (\beta_0 + \beta_4) + (\beta_0 + \beta_5) + (\beta_0 + \beta_6) + (\beta_0 + \beta_7) \right\}. \]</span> And thus the relevant contrast <span class="math display">\[ \log \frac{\mu_{diseased}}{\mu_{healthy}} = \frac{1}{4} (\beta_4 + \beta_5 + \beta_6 + \beta_7 ) - \frac{1}{4} (\beta_1 + \beta_2 + \beta_3).\]</span>
 </p>
 </details>
-<p>We see that all coefficients can now be estimated.</p>
-</div>
-<div id="independent-filtering" class="section level1">
-<h1><span class="header-section-number">2</span> Independent filtering</h1>
 </div>
 <div id="other-approaches-to-modeling-counts-limma-voom" class="section level1">
 <h1><span class="header-section-number">3</span> Other approaches to modeling counts: limma-voom</h1>
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAnU2VxdWVuY2luZzogVGVjaG5pY2FsIHRvcGljcycKYXV0aG9yOiAiS29lbiBWYW4gZGVuIEJlcmdlIgpkYXRlOiAiNy81LzIwMjEiCm91dHB1dDogCiAgcGRmX2RvY3VtZW50OgogICAgdG9jOiB0cnVlCiAgICBudW1iZXJfc2VjdGlvbnM6IHRydWUKICAgIGxhdGV4X2VuZ2luZTogeGVsYXRleAogIGh0bWxfZG9jdW1lbnQ6CiAgICB0b2M6IHRydWUKICAgIHRvY19mbG9hdDogdHJ1ZQotLS0KCiMgQWxpYXNpbmcKClN1cHBvc2Ugd2UgYXJlIHdvcmtpbmcgd2l0aCB0aGUgZm9sbG93aW5nIGV4cGVyaW1lbnRhbCBkZXNpZ24uIFN0dWR5aW5nIHRoZSBlZmZlY3Qgb2YgYWxjb2hvbGlzbSBvbiBnZW5lIGV4cHJlc3Npb24sIHJlc2VhcmNoZXJzIGdhdGhlciBSTkEtc2VxIGRhdGEgZnJvbSBmb3VyIGFsY29ob2xpYyBpbmRpdmlkdWFscyBhbmQgZm91ciBoZWFsdGh5IGluZGl2aWR1YWxzLiBGb3IgZWFjaCBpbmRpdmlkdWFsLCB0aGV5IG9idGFpbiBSTkEtc2VxIGRhdGEgZnJvbSBhIGJsb29kIHNhbXBsZSBhcyB3ZWxsIGFzIGxpdmVyIHRpc3N1ZS4gVGhlIHJlc2VhcmNoIHF1ZXN0aW9uIHJlbGF0ZXMgdG8gZGlmZmVyZW50aWFsIGV4cHJlc3Npb24gYmV0d2VlbiB0aGUgZGlzZWFzZWQgdmVyc3VzIGNvbnRyb2wgY29uZGl0aW9ucywgaW4gYm90aCB0aXNzdWVzLgoKSWYgd2Ugd291bGQgbGlrZSB0byBtb2RlbCBhbGwgZGF0YSBzaW11bHRhbmVvdXNseSwgdGhlbiB3ZSBjb3VsZCBpbWFnaW5lIGEgZGVzaWduIHN1Y2ggYXMgYCB+IHBhdGllbnQgKyBkaXNlYXNlKnRpc3N1ZWAsIHdoZXJlIAoKIC0gYGRpc2Vhc2VgIGlzIGEgYmluYXJ5IGluZGljYXRvciByZWZlcnJpbmcgdG8gYWxjb2hvbGljIHZlcnN1cyBjb250cm9sIHNhbXBsZS4KIC0gYHRpc3N1ZWAgZGVmaW5lcyBpZiB0aGUgc2FtcGxlIGlzIGEgbGl2ZXIgb3IgYmxvb2Qgc2FtcGxlLgogLSBgcGF0aWVudGAgZGVmaW5lcyB0aGUgaW5kaXZpZHVhbCBkb25vciB0aGUgc2FtcGxlIGNvbWVzIGZyb20uCgpMZXQncyB0cnkgdGhpcywgYnkgc2ltdWxhdGluZyByYW5kb20gZGF0YSBmb3Igb25lIGdlbmUuCgpgYGB7cn0Kc2V0LnNlZWQoMikKcGF0aWVudCA8LSBmYWN0b3IocmVwKGxldHRlcnNbMTo4XSwgZWFjaD0yKSkgIyAyIHNhbXBsZXMgcGVyIHBhdGllbnQKZGlzZWFzZSA8LSBmYWN0b3IoYyhyZXAoImhlYWx0aHkiLDgpLCByZXAoImFsY29ob2wiLDgpKSkgIyBmaXJzdCBmb3VyIGFyZSBoZWFsdGh5LCBuZXh0IGZvdXIgYXJlIGFsY29ob2xpYwp0aXNzdWUgPC0gZmFjdG9yKHJlcChjKCJibG9vZCIsICJsaXZlciIpLCA4KSkgIyBvbmUgbGl2ZXIgYW5kIG9uZSBibG9vZCBzYW1wbGUgZm9yIGVhY2gKCnRhYmxlKHBhdGllbnQsIGRpc2Vhc2UsIHRpc3N1ZSkKCiMjIHNpbXVsYXRlIGRhdGEgZm9yIG9uZSBnZW5lCm4gPC0gMTYKeSA8LSBycG9pcyhuID0gbiwgbGFtYmRhID0gNTApCgojIyBmaXQgYSBQb2lzc29uIG1vZGVsCm0gPC0gZ2xtKHkgfiBwYXRpZW50ICsgZGlzZWFzZSp0aXNzdWUsCiAgICAgICAgIGZhbWlseSA9ICJwb2lzc29uIikKc3VtbWFyeShtKQpgYGAKCiAtLS0KIApXZSBmaW5kIHRoYXQgb25lIG9mIHRoZSBjb2VmZmljaWVudHMgaXMgYE5BYCEgVGhpcyBpcyBvYnZpb3VzbHkgbm90IGJlY2F1c2Ugd2UncmUgZGVhbGluZyB3aXRoIGBOQWAgdmFsdWVzIGluIHRoZSBkYXRhIGFzIHdlJ3ZlIGp1c3Qgc2ltdWxhdGVkIHRoZSByZXNwb25zZSB2YXJpYWJsZS4gCgpJbnN0ZWFkLCBvbmUgb2YgdGhlIHBhcmFtZXRlcnMsIGluIHRoaXMgY2FzZSB0aGUgcGFyYW1ldGVyIGRpc3Rpbmd1aXNpbmcgZGlzZWFzZWQgZnJvbSBoZWFsdGh5IHBhdGllbnRzICoqY2Fubm90IGJlIGVzdGltYXRlZCBhcyBpdCBpcyBhIGxpbmVhciBjb21iaW5hdGlvbiBvZiBvdGhlciBwYXJhbWV0ZXJzKiouIEluIG91ciBjYXNlLCBlc3RpbWF0aW5nIHRoZSBkaXNlYXNlZCBlZmZlY3Qgd291bGQgdXNlIGluZm9ybWF0aW9uIHRoYXQgaXMgYWxyZWFkeSB1c2VkIHRvIGVzdGltYXRlIHRoZSBwYXRpZW50LWxldmVsIGludGVyY2VwdHMuIEluIG90aGVyIHdvcmRzLCAqKm9uY2UgeW91IGtub3cgdGhlIHBhdGllbnQsIHlvdSBpbW1lZGlhdGVseSBhbHNvIGtub3cgdGhlIGRpc2Vhc2VkIHN0YXR1cyoqLCBzbyBlc3RpbWF0aW5nIHRoZSBkaXNlYXNlZCB2cyBoZWFsdGh5IGVmZmVjdCBvbiB0b3Agb2YgdGhlIHBhdGllbnQgZWZmZWN0IHByb3ZpZGVzIG5vIGFkZGl0aW9uYWwgaW5mb3JtYXRpb24gaWYgd2UgaGF2ZSBhbHJlYWR5IGVzdGltYXRlZCB0aGUgcGF0aWVudC1sZXZlbCBlZmZlY3RzLiBUaGlzIGNvbmNlcHQgaXMgY2FsbGVkIGFsaWFzaW5nLCBhbmQgaXMgY29tbW9uIGluIFJOQS1zZXEgZXhwZXJpbWVudHMgd2l0aCBjb21wbGV4IGV4cGVyaW1lbnRhbCBkZXNpZ25zLiAKCiAtLS0KCldoaWxlIHRvIHVuZGVyc3RhbmQgdGhlIG9yaWdpbiBvZiB0aGUgYWxpYXNpbmcgaXQgaXMgY3J1Y2lhbCB0byB1bmRlcnN0YW5kIHRoZSByZWxhdGlvbnNoaXAgYmV0d2VlbiB0aGUgdmFyaWFibGVzIGluIHRoZSBleHBlcmltZW50YWwgZGVzaWduLCB3ZSBjYW4gYWxzbyBpbnZlc3RpZ2F0ZSBpdCBpbiBkZXRhaWwgdXNpbmcgdGhlIGBhbGlhc2AgZnVuY3Rpb24sIHRvIGdpdmUgdXMgYW4gaWRlYS4KCmBgYHtyfQphbGlhcyhtKQpgYGAKCldlIHNlZSB0aGF0IHRoZSBlZmZlY3QgYGRpc2Vhc2VoZWFsdGh5YCBpcyBhIGxpbmVhciBjb21iaW5hdGlvbiBvZiB0aGUgdGhlIGludGVyY2VwdCBtaW51cyB0aGUgcGF0aWVudC1zcGVjaWZpYyBlZmZlY3RzIG9mIHRoZSBhbGNvaG9saWMgcGF0aWVudHMuIFRoaXMgbWFrZXMgc2Vuc2UhCkZvciBjbGFyaXR5LCBsZXQncyByZXByb2R1Y2UgdGhpcyB1c2luZyBvdXIgZGVzaWduIG1hdHJpeC4KCmBgYHtyfQpYIDwtIG1vZGVsLm1hdHJpeCh+IHBhdGllbnQgKyBkaXNlYXNlKnRpc3N1ZSkKCiMjIHRoZXNlIGFyZSBpbmRlZWQgdGhlIHNhbWUuClhbLCJkaXNlYXNlaGVhbHRoeSJdClhbLCIoSW50ZXJjZXB0KSJdIC0gWFssInBhdGllbnRlIl0gLSBYWywicGF0aWVudGYiXSAtIFhbLCJwYXRpZW50ZyJdIC0gWFssInBhdGllbnRoIl0KYGBgCgpTaW5jZSBvbmUgb2Ygb3VyIHBhcmFtZXRlcnMgaXMgYSBsaW5lYXIgY29tYmluYXRpb24gb2Ygb3RoZXIgcGFyYW1ldGVycywgaXQgY2Fubm90IGJlIGVzdGltYXRlZCBzaW11bHRhbmVvdXNseSB3aXRoIHRoZSBvdGhlciBwYXJhbWV0ZXJzLiBJbiB0aGlzIGNhc2UsIHdlIGNhbiBhY3R1YWxseSBkcm9wIHRoZSBgdGlzc3VlYCBlZmZlY3QgZnJvbSB0aGUgbW9kZWwsIHNpbmNlIHdlIGtub3cgdGhhdCBpdCBpcyBhbHJlYWR5IGluY2x1ZGVkIGluIHRoZSBgcGF0aWVudGAgZWZmZWN0LiBUaGUgbW9zdCBjb252ZW5pZW50IHdheSB3aWxsIGJlIHRvIG1ha2UgYSBuZXcgdmFyaWFibGUgdGhhdCByZXByZXNlbnRzIHRoZSBpbnRlcmFjdGlvbiBiZXR3ZWVuIHBhdGllbnQgYW5kIHRpc3N1ZS4gVGhpcyBjb3ZhcmlhdGUgd2lsbCBjb250YWluIGFsbCB0aGUgaW5mb3JtYXRpb24gd2UgbmVlZC4gQmVsb3csIHdlIGZpdCBpdCB1c2luZyBhIG1vZGVsIHdpdGhvdXQgYW4gaW50ZXJjZXB0OyB0aGlzIGVhc2VzIGludGVycHJldGF0aW9uIGFzIGVhY2ggY29lZmZpY2llbnQgY2FuIGJlIGludGVycHJldGVkIGFzIHRoZSBhdmVyYWdlIGV4cHJlc3Npb24gZm9yIHRoYXQgcGFydGljdWxhciB0aXNzdWUgb2YgdGhhdCBwYXJ0aWN1bGFyIHBhdGllbnQuCgpgYGB7cn0KcGF0aWVudFRpc3N1ZSA8LSBhcy5mYWN0b3IocGFzdGUwKHRpc3N1ZSwgIl8iLCBwYXRpZW50KSkKcGF0aWVudFRpc3N1ZQoKbTIgPC0gZ2xtKHkgfiAtMSArIHBhdGllbnRUaXNzdWUsCiAgICAgICAgICBmYW1pbHkgPSAicG9pc3NvbiIpCgpzdW1tYXJ5KG0yKQpgYGAKCioqUXVlc3Rpb24uKiogV2hhdCBkbyB0aGUgJHAkLXZhbHVlcyBtZWFuIGhlcmU/IFdoeSBhcmUgdGhleSBhbGwgc2lnbmlmaWNhbnQ/Cgo8ZGV0YWlscz48c3VtbWFyeT4gQW5zd2VyLiA8L3N1bW1hcnk+PHA+ClNpbmNlIG5vdyB3ZSBhcmUgd29ya2luZyB3aXRoIGFuIGludGVyY2VwdC1mcmVlIG1vZGVsLCBlYWNoIGNvZWZmaWNpZW50IHJlcHJlc2VudHMgdGhlIGF2ZXJhZ2UgZ2VuZSBleHByZXNzaW9uIG9mIHRoYXQgcGF0aWVudCBmb3IgdGhlIHBhcnRpY3VsYXIgdGlzc3VlLiBUaGUgY29lZmZpY2llbnRzIHRoZXJlZm9yZSBjYW4gbm8gbG9uZ2VyIGJlIGludGVycHJldGVkIGFzIGEgZGlmZmVyZW5jZSB3aXRoIHJlc3BlY3QgdG8gdGhlIGludGVyY2VwdCBvbiB0aGUgbGluZWFyIHByZWRpY3RvciBzY2FsZS4gVGhlIG51bGwgaHlwb3RoZXNpcyBpcyBzdGlsbCB0aGUgc2FtZSBhcyB1c3VhbCwgaS5lLiwgdGhlICRwJC12YWx1ZSBjb3JyZXNwb25kaW5nIHRvICRcYmV0YV8yJCB0ZXN0cyB0aGUgbnVsbCBoeXBvdGhlc2lzICRIXzA6IFxiZXRhXzIgPSAwJC4gVGh1cywgdGhlIHRlc3QgaXMgbm93IGFzc2Vzc2luZyB3aGV0aGVyIHRoZSBhdmVyYWdlIGdlbmUgZXhwcmVzc2lvbiBpcyBkaWZmZXJlbnQgZnJvbSB6ZXJvIChyYXRoZXIgdGhhbiBkaWZmZXJlbnQgZnJvbSB0aGUgaW50ZXJjZXB0KS4KPC9wPjwvZGV0YWlscz4KCldlIHNlZSB0aGF0IGFsbCBjb2VmZmljaWVudHMgY2FuIG5vdyBiZSBlc3RpbWF0ZWQuCgoKIyBJbmRlcGVuZGVudCBmaWx0ZXJpbmcKCiMgT3RoZXIgYXBwcm9hY2hlcyB0byBtb2RlbGluZyBjb3VudHM6IGxpbW1hLXZvb20KCgo=</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAnU2VxdWVuY2luZzogU2VsZWN0ZWQgdGVjaG5pY2FsIHRvcGljcycKYXV0aG9yOiAiS29lbiBWYW4gZGVuIEJlcmdlIgpkYXRlOiAiNy81LzIwMjEiCm91dHB1dDogCiAgcGRmX2RvY3VtZW50OgogICAgdG9jOiB0cnVlCiAgICBudW1iZXJfc2VjdGlvbnM6IHRydWUKICAgIGxhdGV4X2VuZ2luZTogeGVsYXRleAogIGh0bWxfZG9jdW1lbnQ6CiAgICB0b2M6IHRydWUKICAgIHRvY19mbG9hdDogdHJ1ZQotLS0KCmBgYHtyIGZ1bmN0aW9ucywgaW5jbHVkZT1GQUxTRX0KIyBBIGZ1bmN0aW9uIGZvciBjYXB0aW9uaW5nIGFuZCByZWZlcmVuY2luZyBpbWFnZXMKZmlnIDwtIGxvY2FsKHsKICAgIGkgPC0gMAogICAgcmVmIDwtIGxpc3QoKQogICAgbGlzdCgKICAgICAgICBjYXA9ZnVuY3Rpb24ocmVmTmFtZSwgdGV4dCkgewogICAgICAgICAgICBpIDw8LSBpICsgMQogICAgICAgICAgICByZWZbW3JlZk5hbWVdXSA8PC0gaQogICAgICAgICAgICBwYXN0ZSgiRmlndXJlICIsIGksICI6ICIsIHRleHQsIHNlcD0iIikKICAgICAgICB9LAogICAgICAgIHJlZj1mdW5jdGlvbihyZWZOYW1lKSB7CiAgICAgICAgICAgIHJlZltbcmVmTmFtZV1dCiAgICAgICAgfSkKfSkKYGBgIAoKYGBge3IsIGVjaG89RkFMU0UsIG1lc3NhZ2U9RkFMU0UsIGV2YWw9VFJVRX0Kc3VwcHJlc3NQYWNrYWdlU3RhcnR1cE1lc3NhZ2VzKHsKICBsaWJyYXJ5KGtuaXRyKQogIGxpYnJhcnkocm1hcmtkb3duKQogIGxpYnJhcnkoZ2dwbG90MikKfSkKYGBgCgojIEluZGVwZW5kZW50IGZpbHRlcmluZwoKSW5kZXBlbmRlbnQgZmlsdGVyaW5nLCB3aGVyZSBnZW5lcy90cmFuc2NyaXB0cy9wcm90ZWlucyBhcmUgZmlsdGVyZWQgb3V0IHByaW9yIHRvIHN0YXRpc3RpY2FsIGFuYWx5c2lzLCBpcyBhIGNvbW1vbiBwcmFjdGljZSBpbiAnb21pY3MgZXhwZXJpbWVudHMuIFR5cGljYWxseSwgbG93bHkgZXhwcmVzc2VkIGZlYXR1cmVzIGFyZSBmaWx0ZXJlZCBvdXQsIGFuZCBvbmUgY2FuIGFyZ3VlIHRoYXQgdGhlc2UgZmVhdHVyZXMnIGV4cHJlc3Npb24gaXMgdG9vIGxvdyB0byBiZSBkZWVtZWQgYmlvbG9naWNhbGx5IHJlbGV2YW50LiBJbiBhZGRpdGlvbiwgbG93LWNvdW50IGZlYXR1cmVzIGFyZSBhbHNvIGFzc29jaWF0ZWQgd2l0aCBhIGxvdyBzdGF0aXN0aWNhbCBwb3dlciBmb3IgZGlmZmVyZW50aWFsIGV4cHJlc3Npb24gKHJlbWVtYmVyIHJlbGF0aXZlIHVuY2VydGFpbnR5IG9mIGNvdW50cywgYW5kIGBlZGdlUmAncyBCQ1YgcGxvdCksIGFuZCB3aWxsIGluY3JlYXNlIHRoZSBudW1iZXIgb2YgdGVzdHMgcGVyZm9ybWVkLCBhbmQgdGhlcmVmb3JlIGxlYWQgdG8gYSBtb3JlIHNldmVyZSBtdWx0aXBsZSB0ZXN0aW5nIGNvcnJlY3Rpb24uCgpgYGB7ciwgZWNobz1GQUxTRSwgZmlnLmNhcD1wYXN0ZSgiRmlndXJlIDEgZnJvbSBCb3VyZ29uICpldCBhbC4qICgyMDEwKS4iKX0KIyBBbGwgZGVmYXVsdHMKaW5jbHVkZV9ncmFwaGljcygiLi9pbWFnZXNfc2VxdWVuY2luZy9pbmRlcGVuZGVudEZpbHRlcmluZy5wbmciKQpgYGAKCiAtLS0KCkluZGVwZW5kZW50IGZpbHRlcmluZyBoYXMgYmVlbiBmb3JtYWxpemVkIGJ5IFtCb3VyZ29uICpldCBhbC4qICgyMDEwKV0oaHR0cHM6Ly93d3cucG5hcy5vcmcvY29udGVudC8xMDcvMjEvOTU0NiksIGFuZCB0aGUgY29uY2VwdCBjYW4gYmUgc3VtbWFyaXplZCBhcyBmb2xsb3dzLgoKIC0gRm9yIGVhY2ggZmVhdHVyZSB3ZSBjYWxjdWxhdGUgdHdvIHN0YXRpc3RpY3MsICRTX0YkIGFuZCAkU19UJCwgcmVzcGVjdGl2ZWx5IHVzZWQgZm9yIHR3byBzdGFnZXM6IGZpbHRlcmluZyBhbmQgdGVzdGluZyAoZS5nLiwgZGlmZmVyZW50aWFsIGV4cHJlc3Npb24pLgogLSBJbiBvcmRlciBmb3IgYSBmZWF0dXJlIHRvIGJlIGRlZW1lZCBzaWduaWZpY2FudCwgYm90aCBvZiBpdHMgc3RhdGlzdGljcyBtdXN0IGJlIGdyZWF0ZXIgdGhhbiBzb21lIGN1dC1vZmYuCiAtIFdlIHdhbnQgdG8gY29udHJvbCB0aGUgdHlwZSBJIGVycm9yIHJhdGUgb2YgdGhlIHNlY29uZCBzdGFnZSAodGVzdGluZykuIEJ1dCBub3RlIHRoYXQgKip0aGUgc2Vjb25kIHN0YWdlIGlzIGNvbmRpdGlvbmFsIG9uIHRoZSBmaXJzdCBzdGFnZSoqLCBhcyB3ZSBvbmx5IHRlc3QgZmVhdHVyZXMgcGFzc2luZyB0aGUgZmlsdGVyLCBhbmQgYmFzaWNhbGx5IGlnbm9yZSB0aGUgZmFjdCB0aGF0IGZpbHRlcmluZyB3YXMgcGVyZm9ybWVkLiBJbmRlZWQsIG9uZSBjcml0aWNpc20gaXMgdGhhdCBjb21wdXRpbmcgYW5kIGNvcnJlY3RpbmcgdGhlICRwJC12YWx1ZXMgYXMgaWYgZmlsdGVyaW5nIGhhZCBub3QgYmVlbiBwZXJmb3JtZWQgbWF5IGxlYWQgdG8gb3Zlcm9wdGltaXN0aWMgYWRqdXN0ZWQgJHAkLXZhbHVlcy4KIC0gW0JvdXJnb24gKmV0IGFsLiogKDIwMTApXShodHRwczovL3d3dy5wbmFzLm9yZy9jb250ZW50LzEwNy8yMS85NTQ2KSBzaG93IHRoYXQgZmlsdGVyaW5nIGlzIG9ubHkgYXBwcm9wcmlhdGUgKGkuZS4sIGRvZXMgbm90IGluZmxhdGUgdHlwZSBJIGVycm9yIHJhdGUpIGlmIHRoZSBjb25kaXRpb25hbCBudWxsIGRpc3RyaWJ1dGlvbiBvZiB0ZXN0IHN0YXRpc3RpY3MgZm9yIGZlYXR1cmVzIHBhc3NpbmcgdGhlIGZpbHRlciBpcyB0aGUgc2FtZSBhcyB0aGUgdW5jb25kaXRpb25hbCBudWxsIGRpc3RyaWJ1dGlvbi4gVGhlcmVmb3JlLCAqKmZpbHRlcmluZyBpcyBhcHByb3ByaWF0ZSBpZiB0aGUgc3RhdGlzdGljIHVzZWQgZm9yIGZpbHRlcmluZyBpcyBpbmRlcGVuZGVudCBvZiB0aGUgc3RhdGlzdGljIHVzZWQgZm9yIHRlc3RpbmcgdW5kZXIgdGhlIG51bGwgaHlwb3RoZXNpcyoqLgogCmBgYHtyLCBlY2hvPUZBTFNFLCBmaWcuY2FwPXBhc3RlKCJGaWd1cmUgMiBmcm9tIEJvdXJnb24gKmV0IGFsLiogKDIwMTApLiIpfQojIEFsbCBkZWZhdWx0cwppbmNsdWRlX2dyYXBoaWNzKCIuL2ltYWdlc19zZXF1ZW5jaW5nL2luZGVwZW5kZW50RmlsdGVyaW5nMi5wbmciKQpgYGAKICAtLS0KICAKTGV0J3MgdHJ5IGEgY291cGxlIG9mIGV4YW1wbGVzIHRvIGdldCBzb21lIGludHVpdGlvbiB1c2luZyBzaW11bGF0ZWQgZGF0YS4KCmBgYHtyfQpzdXBwcmVzc1BhY2thZ2VTdGFydHVwTWVzc2FnZXMobGlicmFyeShERVNlcTIpKQpzZXQuc2VlZCgyNCkKZGRzIDwtIERFU2VxMjo6bWFrZUV4YW1wbGVERVNlcURhdGFTZXQoKQpzaW1Db3VudHMgPC0gY291bnRzKGRkcykKZ3JvdXAgPC0gZGRzJGNvbmRpdGlvbgpgYGAKCiMjIEEgZGVwZW5kZW50IHRlc3Qgc3RhdGlzdGljCgpgYGB7cn0KZmlsdGVyU3RhdEVmZmVjdFNpemUgPC0gYWJzKHJvd01lYW5zKHNpbUNvdW50c1ssZ3JvdXAgPT0gIkEiXSkgLSByb3dNZWFucyhzaW1Db3VudHNbLGdyb3VwID09ICJCIl0pKQp0ZXN0U3RhdCA8LSBnZW5lZmlsdGVyOjpyb3d0dGVzdHMoc2ltQ291bnRzLCBncm91cCkKCiMjIHVuY29uZGl0aW9uYWwgZGlzdHJpYnV0aW9uCnBsb3QoZGVuc2l0eSh0ZXN0U3RhdCRzdGF0aXN0aWMsIG5hLnJtPVRSVUUpLAogICAgIHhsYWIgPSAiVGVzdCBzdGF0aXN0aWMiLAogICAgIG1haW4gPSAiVW5jb25kaXRpb25hbCBkaXN0cmlidXRpb24iKQoKIyMgY29uZGl0aW9uYWwgZGlzdHJpYnV0aW9uOiB2ZXJ5IGRpZmZlcmVudCEKbWVhbihmaWx0ZXJTdGF0RWZmZWN0U2l6ZSA+IDEpCmhpc3QoZmlsdGVyU3RhdEVmZmVjdFNpemUsIGJyZWFrcz00MCkKYWJsaW5lKHY9MSwgY29sPSJyZWQiKQprZWVwRWZmZWN0U2l6ZSA8LSBmaWx0ZXJTdGF0RWZmZWN0U2l6ZSA+IDEKcGxvdChkZW5zaXR5KHRlc3RTdGF0JHN0YXRpc3RpY1trZWVwRWZmZWN0U2l6ZV0sIG5hLnJtPVRSVUUpLAogICAgIHhsYWIgPSAiVGVzdCBzdGF0aXN0aWMiLAogICAgIG1haW4gPSAiQ29uZGl0aW9uYWwgZGlzdHJpYnV0aW9uIikKYGBgCgoKIyMgQW4gaW5kZXBlbmRlbnQgdGVzdCBzdGF0aXN0aWMKCmBgYHtyfQpmaWx0ZXJTdGF0R2xvYmFsTWVhbiA8LSByb3dNZWFucyhzaW1Db3VudHMpCm1lYW4oZmlsdGVyU3RhdEdsb2JhbE1lYW4gPiA1KSAjIHdlIHJlbW92ZSBhIHNpbWlsYXIgZnJhY3Rpb24Ka2VlcEdsb2JhbE1lYW4gPC0gZmlsdGVyU3RhdEdsb2JhbE1lYW4gPiA1CgojIyB1bmNvbmRpdGlvbmFsIGRpc3RyaWJ1dGlvbgpwbG90KGRlbnNpdHkodGVzdFN0YXQkc3RhdGlzdGljLCBuYS5ybT1UUlVFKSwKICAgICB4bGFiID0gIlRlc3Qgc3RhdGlzdGljIiwKICAgICBtYWluID0gIlVuY29uZGl0aW9uYWwgZGlzdHJpYnV0aW9uIikKCiMjIGNvbmRpdGlvbmFsIGRpc3RyaWJ1dGlvbjogdGhlIHNhbWUuCnBsb3QoZGVuc2l0eSh0ZXN0U3RhdCRzdGF0aXN0aWNba2VlcEdsb2JhbE1lYW5dLCBuYS5ybT1UUlVFKSwKICAgICB4bGFiID0gIlRlc3Qgc3RhdGlzdGljIiwKICAgICBtYWluID0gIkNvbmRpdGlvbmFsIGRpc3RyaWJ1dGlvbiIpCmBgYAoKCiMgQWxpYXNpbmcKClN1cHBvc2Ugd2UgYXJlIHdvcmtpbmcgd2l0aCB0aGUgZm9sbG93aW5nIGV4cGVyaW1lbnRhbCBkZXNpZ24gb24gY29sb24gY2FuY2VyLiBTdHVkeWluZyB0aGUgZWZmZWN0IG9mIGEgZHJ1ZyBvbiBnZW5lIGV4cHJlc3Npb24sIHJlc2VhcmNoZXJzIGdhdGhlciBSTkEtc2VxIGRhdGEgZnJvbSBmb3VyIGNvbG9uIGNhbmNlciBwYXRpZW50cyBhbmQgZm91ciBoZWFsdGh5IGluZGl2aWR1YWxzLiBGb3IgZWFjaCBpbmRpdmlkdWFsLCB0aGV5IG9idGFpbiBSTkEtc2VxIGRhdGEgZnJvbSBhIGJsb29kIHNhbXBsZSBiZWZvcmUgYXMgd2VsbCBhcyB0d28gd2Vla3MgYWZ0ZXIgdGFraW5nIGEgZGFpbHkgZG9zZSBvZiB0aGUgZHJ1Zy4gVGhlIHJlc2VhcmNoIHF1ZXN0aW9uIHJlbGF0ZXMgdG8gZGlmZmVyZW50aWFsIGV4cHJlc3Npb24gYWZ0ZXIgdnMuIGJlZm9yZSB0YWtpbmcgdGhlIGRydWcsIGluIHBhcnRpY3VsYXIgd2hldGhlciB0aGlzIGlzIGRpZmZlcmVudCBmb3IgdGhlIGRpc2Vhc2VkIHZlcnN1cyBoZWFsdGh5IGdyb3VwIChpLmUuLCB0aGUgaW50ZXJhY3Rpb24gYmV0d2VlbiB0aW1lIChiZWZvcmUvYWZ0ZXIgdGFraW5nIHRoZSBkcnVnKSBhbmQgZGlzZWFzZSBzdGF0dXMgKGhlYWx0aHkvY29sb24gY2FuY2VyKSkuCgpJbiB0ZXJtcyBvZiB0aGUgbW9kZWwgbWF0cml4LCB3ZSBjb3VsZCBpbWFnaW5lIGEgZGVzaWduIHN1Y2ggYXMgYCB+IHBhdGllbnQgKyBkaXNlYXNlKnRpbWVgLCB3aGVyZSAKCiAtIGBkaXNlYXNlYCBpcyBhIGJpbmFyeSBpbmRpY2F0b3IgcmVmZXJyaW5nIHRvIGNvbG9uIGNhbmNlciB2ZXJzdXMgY29udHJvbCBzYW1wbGUuCiAtIGB0aW1lYCBkZWZpbmVzIGlmIHRoZSBzYW1wbGUgaXMgdGFrZW4gYmVmb3JlIG9yIGFmdGVyIHRha2luZyB0aGUgZHJ1Zy4KIC0gYHBhdGllbnRgIGRlZmluZXMgdGhlIGluZGl2aWR1YWwgZG9ub3IgdGhlIHNhbXBsZSBjb21lcyBmcm9tLgoKVGhlIHJlc2VhcmNoIHF1ZXN0aW9uIGNvdWxkIHRoZW4gYW1vdW50IHRvIHRlc3RpbmcgdGhlIGBkaXNlYXNlICogdGltZWAgaW50ZXJhY3Rpb24uCgpMZXQncyB0cnkgdGhpcywgYnkgc2ltdWxhdGluZyByYW5kb20gZGF0YSBmb3Igb25lIGdlbmUuCgpgYGB7cn0Kc2V0LnNlZWQoMikKcGF0aWVudCA8LSBmYWN0b3IocmVwKGxldHRlcnNbMTo4XSwgZWFjaD0yKSkgIyAyIHNhbXBsZXMgcGVyIHBhdGllbnQKZGlzZWFzZSA8LSBmYWN0b3IoYyhyZXAoImhlYWx0aHkiLDgpLCByZXAoImNhbmNlciIsOCkpLCBsZXZlbHM9YygiaGVhbHRoeSIsICJjYW5jZXIiKSkgIyBmaXJzdCBmb3VyIGFyZSBoZWFsdGh5LCBuZXh0IGZvdXIgYXJlIGFsY29ob2xpYwp0aW1lIDwtIGZhY3RvcihyZXAoYygiYmVmb3JlIiwgImFmdGVyIiksIDgpLCBsZXZlbHM9YygiYmVmb3JlIiwgImFmdGVyIikpICMgb25lIGJlZm9yZSBhbmQgb25lIGFmdGVyIHNhbXBsZSBmb3IgZWFjaAoKdGFibGUocGF0aWVudCwgZGlzZWFzZSwgdGltZSkKCiMjIHNpbXVsYXRlIGRhdGEgZm9yIG9uZSBnZW5lCm4gPC0gMTYKeSA8LSBycG9pcyhuID0gbiwgbGFtYmRhID0gNTApCgojIyBmaXQgYSBQb2lzc29uIG1vZGVsCm0gPC0gZ2xtKHkgfiBwYXRpZW50ICsgZGlzZWFzZSp0aW1lLAogICAgICAgICBmYW1pbHkgPSAicG9pc3NvbiIpCnN1bW1hcnkobSkKYGBgCgogLS0tCiAKV2UgZmluZCB0aGF0IG9uZSBvZiB0aGUgY29lZmZpY2llbnRzIGlzIGBOQWAhIFRoaXMgaXMgb2J2aW91c2x5IG5vdCBiZWNhdXNlIHdlJ3JlIGRlYWxpbmcgd2l0aCBgTkFgIHZhbHVlcyBpbiB0aGUgZGF0YSBhcyB3ZSd2ZSBqdXN0IHNpbXVsYXRlZCB0aGUgcmVzcG9uc2UgdmFyaWFibGUuIFdoYXQncyBnb2luZyBvbj8KCk9uZSBvZiB0aGUgcGFyYW1ldGVycywgaW4gdGhpcyBjYXNlIHRoZSBwYXJhbWV0ZXIgZGlzdGluZ3Vpc2hpbmcgY2FuY2VyIGZyb20gaGVhbHRoeSBwYXRpZW50cyAqKmNhbm5vdCBiZSBlc3RpbWF0ZWQgYXMgaXQgaXMgYSBsaW5lYXIgY29tYmluYXRpb24gb2Ygb3RoZXIgcGFyYW1ldGVycyoqLiBJbiBvdXIgY2FzZSwgZXN0aW1hdGluZyB0aGUgZGlzZWFzZWQgZWZmZWN0IHdvdWxkIHVzZSBpbmZvcm1hdGlvbiB0aGF0IGlzIGFscmVhZHkgdXNlZCB0byBlc3RpbWF0ZSB0aGUgcGF0aWVudC1sZXZlbCBpbnRlcmNlcHRzLiBJbiBvdGhlciB3b3JkcywgKipvbmNlIHlvdSBrbm93IHRoZSBwYXRpZW50LCB5b3UgaW1tZWRpYXRlbHkgYWxzbyBrbm93IHRoZSBkaXNlYXNlIHN0YXR1cyoqLCBzbyBlc3RpbWF0aW5nIHRoZSBkaXNlYXNlZCB2cyBoZWFsdGh5IGVmZmVjdCBvbiB0b3Agb2YgdGhlIHBhdGllbnQgZWZmZWN0IHByb3ZpZGVzIG5vIGFkZGl0aW9uYWwgaW5mb3JtYXRpb24gaWYgd2UgaGF2ZSBhbHJlYWR5IGVzdGltYXRlZCB0aGUgcGF0aWVudC1sZXZlbCBlZmZlY3RzLiBUaGlzIGNvbmNlcHQgaXMgY2FsbGVkIGFsaWFzaW5nLCBhbmQgaXMgYSBjb21tb24gdGVjaG5pY2FsIGlzc3VlIGluICdvbWljcyBleHBlcmltZW50cyB3aXRoIGNvbXBsZXggZXhwZXJpbWVudGFsIGRlc2lnbnMuIAoKIC0tLQoKV2hpbGUgdG8gdW5kZXJzdGFuZCB0aGUgb3JpZ2luIG9mIHRoZSBhbGlhc2luZyBpdCBpcyBjcnVjaWFsIHRvIHVuZGVyc3RhbmQgdGhlIHJlbGF0aW9uc2hpcCBiZXR3ZWVuIHRoZSB2YXJpYWJsZXMgaW4gdGhlIGV4cGVyaW1lbnRhbCBkZXNpZ24sIHdlIGNhbiBhbHNvIGludmVzdGlnYXRlIGl0IGluIGRldGFpbCB1c2luZyB0aGUgYGFsaWFzYCBmdW5jdGlvbiwgdG8gZ2l2ZSB1cyBhbiBpZGVhLgoKYGBge3J9CmFsaWFzKG0pCmBgYAoKV2Ugc2VlIHRoYXQgdGhlIGVmZmVjdCBgZGlzZWFzZWNhbmNlcmAgaXMgYSBsaW5lYXIgY29tYmluYXRpb24gb2YgdGhlIHBhdGllbnQtc3BlY2lmaWMgZWZmZWN0cyBvZiB0aGUgY2FuY2VyIHBhdGllbnRzLiBUaGlzIG1ha2VzIHNlbnNlIQoKIC0tLSAKCkZvciBjbGFyaXR5LCBsZXQncyByZXByb2R1Y2UgdGhpcyB1c2luZyBvdXIgZGVzaWduIG1hdHJpeC4KCmBgYHtyfQpYIDwtIG1vZGVsLm1hdHJpeCh+IHBhdGllbnQgKyBkaXNlYXNlKnRpbWUpICMgdGhpcyBpcyB0aGUgZGVzaWduIHVzZWQgaW4gZ2xtKCkKCiMjIHRoZXNlIGFyZSBpbmRlZWQgaWRlbnRpY2FsLgpYWywiZGlzZWFzZWNhbmNlciJdClhbLCJwYXRpZW50ZSJdICsgWFssInBhdGllbnRmIl0gKyBYWywicGF0aWVudGciXSArIFhbLCJwYXRpZW50aCJdCmBgYAoKU2luY2Ugb25lIG9mIG91ciBwYXJhbWV0ZXJzIGlzIGEgbGluZWFyIGNvbWJpbmF0aW9uIG9mIG90aGVyIHBhcmFtZXRlcnMsIGl0IGNhbm5vdCBiZSBlc3RpbWF0ZWQgc2ltdWx0YW5lb3VzbHkgd2l0aCB0aGUgb3RoZXIgcGFyYW1ldGVycy4gSW4gdGhpcyBjYXNlLCB3ZSBjYW4gYWN0dWFsbHkgZHJvcCB0aGUgYGRpc2Vhc2VgIG1haW4gZWZmZWN0IGZyb20gdGhlIG1vZGVsLCBzaW5jZSB3ZSBrbm93IHRoYXQgaXQgaXMgYWxyZWFkeSBpbmNsdWRlZCBpbiB0aGUgYHBhdGllbnRgIGVmZmVjdC4KCiAtLS0KCldlIHdpbGwgaGF2ZSB0byBjYXJlZnVsbHkgY29uc3RydWN0IG91ciBkZXNpZ24gbWF0cml4IGluIG9yZGVyIHRvIGFjY291bnQgZm9yIGFsbCBpbXBvcnRhbnQgc291cmNlcyBvZiB2YXJpYXRpb24gd2hpbGUgc3RpbGwgYWxsb3dpbmcgdXMgdG8gYW5zd2VyIHRoZSByZXNlYXJjaCBxdWVzdGlvbiBvZiBpbnRlcmVzdC4gVGhlIGFsaWFzaW5nIGV4cGxvcmF0aW9uIGFib3ZlIGhhcyBtYWRlIGl0IGNsZWFyIHdlIG1heSBkcm9wIHRoZSBgZGlzZWFzZWAgbWFpbiBlZmZlY3QsIHNvIGxldCdzIHN0YXJ0IGJ5IGNvbnN0cnVjdGluZyB0aGlzIGRlc2lnbiBtYXRyaXguCgoKYGBge3J9ClggPC0gbW9kZWwubWF0cml4KH4gcGF0aWVudCArIHRpbWUgKyBkaXNlYXNlOnRpbWUpCgptMiA8LSBnbG0oeSB+IC0xICsgWCwKICAgICAgICAgZmFtaWx5ID0gInBvaXNzb24iKQpzdW1tYXJ5KG0yKQphbGlhcyhtMikKYGBgCgpXZSBhcmUgc3RpbGwgY29uZnJvbnRlZCB3aXRoIGFsaWFzaW5nIGFzIHRoZSBtb2RlbCBtYXRyaXggY29udGFpbnMgYW4gaW50ZXJhY3Rpb24gZWZmZWN0IGB0aW1lYmVmb3JlOmRpc2Vhc2VjYW5jZXJgIGFzIHdlbGwgYXMgYHRpbWVhZnRlcjpkaXNlYXNlY2FuY2VyYCwgd2hpbGUgb25seSB0aGUgbGF0dGVyIGlzIHJlbGV2YW50LiBJbmRlZWQsIHdlIGtub3cgdGhhdCB3ZSBjYW4gZGVyaXZlIHRoZSBgdGltZWJlZm9yZTpkaXNlYXNlY2FuY2VyYCBlZmZlY3QgYnkgYXZlcmFnaW5nIHRoZSBwYXRpZW50IGVmZmVjdHMgb2YgdGhlIGNhbmNlciBwYXRpZW50cy4KCiAtLS0KCmBgYHtyfQpYIDwtIFhbLCFjb2xuYW1lcyhYKSAlaW4lICJ0aW1lYmVmb3JlOmRpc2Vhc2VjYW5jZXIiXQoKCiMjIGZpdCBhIFBvaXNzb24gbW9kZWwKbTIgPC0gZ2xtKHkgfiAtMSArIFgsCiAgICAgICAgIGZhbWlseSA9ICJwb2lzc29uIikKc3VtbWFyeShtMikKYGBgCgpXZSBzZWUgdGhhdCBhbGwgY29lZmZpY2llbnRzIGNhbiBub3cgYmUgZXN0aW1hdGVkLiBUaGUgYHRpbWVhZnRlcmAgZWZmZWN0IG1heSBiZSBpbnRlcnByZXRlZCBhcyB0aGUgdGltZSBlZmZlY3QgZm9yIGhlYWx0aHkgcGF0aWVudHMsIHdoaWxlIHRoZSBgdGltZWFmdGVyOmRpc2Vhc2VjYW5jZXJgIGVmZmVjdCBtYXkgYmUgaW50ZXJwcmV0ZWQgYXMgdGhlIGRpZmZlcmVuY2UgaW4gdGhlIHRpbWUgZWZmZWN0IGZvciBjYW5jZXIgcGF0aWVudHMsIHdpdGggdGhlIHRpbWUgZWZmZWN0IGZvciBoZWFsdGh5IHBhdGllbnRzLCBpLmUuLCBpdCBpcyB0aGUgcmVsZXZhbnQgaW50ZXJhY3Rpb24gZWZmZWN0IHdlIGFyZSBpbnRlcmVzdGVkIGluLiAKCioqUXVlc3Rpb24qKi4gVGFraW5nIHRoaXMgZnVydGhlciwgc3VwcG9zZSB0aGF0IHdlIGNhbiBzYWZlbHkgYXNzdW1lIHRoYXQgdGhlcmUgaXMgbm8gaW50ZXJhY3Rpb24gZWZmZWN0IGJldHdlZW4gZGlzZWFzZSBzdGF0dXMgYW5kIHRpbWUuIEhvdyB3b3VsZCB5b3Ugbm93IHRlc3QgZm9yIGRpZmZlcmVudGlhbCBleHByZXNzaW9uIGJldHdlZW4gaGVhbHRoeSBhbmQgY2FuY2VyIHBhdGllbnRzIGF0IHRoZSBmaXJzdCB0aW1lcG9pbnQ/IFNwZWNpZnkgdGhlIGV4cGVyaW1lbnRhbCBkZXNpZ24gYW5kIGNvbnRyYXN0IHVzZWQuCgo8ZGV0YWlscz48c3VtbWFyeT4gQW5zd2VyLiA8L3N1bW1hcnk+PHA+CkFzc3VtaW5nIG5vIGludGVyYWN0aW9uLCB3ZSBjYW4gc3BlY2lmeSB0aGUgZGVzaWduIGFzIGZvbGxvd3M6CgpgYGB7cn0KWE1haW4gPC0gbW9kZWwubWF0cml4KH4gcGF0aWVudCArIHRpbWUpCmhlYWQoWE1haW4pCmBgYAoKSW4gb3JkZXIgdG8gc2V0IHVwIHRoZSBjb250cmFzdCB0ZXN0aW5nIGZvciBoZWFsdGh5IHZlcnN1cyBkaXNlYXNlZCBwYXRpZW50cyBhdCB0aGUgZmlyc3QgdGltZXBvaW50LCB3ZSBuZWVkIHRvIHRha2UgdGhlIGF2ZXJhZ2Ugb2YgdGhlIGFwcHJvcHJpYXRlIHBhdGllbnQtbGV2ZWwgaW50ZXJjZXB0cy4KVGhlIGF2ZXJhZ2UgZXhwcmVzc2lvbiBmb3IgaGVhbHRoeSBwYXRpZW50cyBpcwokJCBcbG9nIFxtdV97aGVhbHRoeX0gPSBcZnJhY3sxfXs0fSBcbGVmdFx7IFxiZXRhXzAgKyAoXGJldGFfMCArIFxiZXRhXzEpICsgKFxiZXRhXzAgKyBcYmV0YV8yKSArIChcYmV0YV8wICsgXGJldGFfMykgXHJpZ2h0XH0uICQkClNpbWlsYXIsIGZvciB0aGUgZGlzZWFzZWQgcGF0aWVudHMgaXQgZXF1YWxzCiQkIFxsb2cgXG11X3tkaXNlYXNlZH0gPSBcZnJhY3sxfXs0fSBcbGVmdFx7IChcYmV0YV8wICsgXGJldGFfNCkgKyAoXGJldGFfMCArIFxiZXRhXzUpICsgKFxiZXRhXzAgKyBcYmV0YV82KSArIChcYmV0YV8wICsgXGJldGFfNykgXHJpZ2h0XH0uICQkCkFuZCB0aHVzIHRoZSByZWxldmFudCBjb250cmFzdAokJCBcbG9nIFxmcmFje1xtdV97ZGlzZWFzZWR9fXtcbXVfe2hlYWx0aHl9fSA9IFxmcmFjezF9ezR9IChcYmV0YV80ICsgXGJldGFfNSArIFxiZXRhXzYgKyBcYmV0YV83ICkgLSBcZnJhY3sxfXs0fSAoXGJldGFfMSArIFxiZXRhXzIgKyBcYmV0YV8zKS4kJAo8L3A+PC9kZXRhaWxzPgoKIyBPdGhlciBhcHByb2FjaGVzIHRvIG1vZGVsaW5nIGNvdW50czogbGltbWEtdm9vbQoKCg==</div>
 
 
 </div>
