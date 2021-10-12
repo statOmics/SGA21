@@ -1,5 +1,5 @@
 ---
-title: 'Sequencing: Technical topics'
+title: 'Sequencing: Selected technical topics'
 author: "Koen Van den Berge"
 date: "7/5/2021"
 output: 
@@ -12,41 +12,143 @@ output:
     toc_float: true
 ---
 
+```{r functions, include=FALSE}
+# A function for captioning and referencing images
+fig <- local({
+    i <- 0
+    ref <- list()
+    list(
+        cap=function(refName, text) {
+            i <<- i + 1
+            ref[[refName]] <<- i
+            paste("Figure ", i, ": ", text, sep="")
+        },
+        ref=function(refName) {
+            ref[[refName]]
+        })
+})
+``` 
+
+```{r, echo=FALSE, message=FALSE, eval=TRUE}
+suppressPackageStartupMessages({
+  library(knitr)
+  library(rmarkdown)
+  library(ggplot2)
+})
+```
+
+# Independent filtering
+
+Independent filtering, where genes/transcripts/proteins are filtered out prior to statistical analysis, is a common practice in 'omics experiments. Typically, lowly expressed features are filtered out, and one can argue that these features' expression is too low to be deemed biologically relevant. In addition, low-count features are also associated with a low statistical power for differential expression (remember relative uncertainty of counts, and `edgeR`'s BCV plot), and will increase the number of tests performed, and therefore lead to a more severe multiple testing correction.
+
+```{r, echo=FALSE, fig.cap=paste("Figure 1 from Bourgon *et al.* (2010).")}
+# All defaults
+include_graphics("./images_sequencing/independentFiltering.png")
+```
+
+ ---
+
+Independent filtering has been formalized by [Bourgon *et al.* (2010)](https://www.pnas.org/content/107/21/9546), and the concept can be summarized as follows.
+
+ - For each feature we calculate two statistics, $S_F$ and $S_T$, respectively used for two stages: filtering and testing (e.g., differential expression).
+ - In order for a feature to be deemed significant, both of its statistics must be greater than some cut-off.
+ - We want to control the type I error rate of the second stage (testing). But note that **the second stage is conditional on the first stage**, as we only test features passing the filter, and basically ignore the fact that filtering was performed. Indeed, one criticism is that computing and correcting the $p$-values as if filtering had not been performed may lead to overoptimistic adjusted $p$-values.
+ - [Bourgon *et al.* (2010)](https://www.pnas.org/content/107/21/9546) show that filtering is only appropriate (i.e., does not inflate type I error rate) if the conditional null distribution of test statistics for features passing the filter is the same as the unconditional null distribution. Therefore, **filtering is appropriate if the statistic used for filtering is independent of the statistic used for testing under the null hypothesis**.
+ 
+```{r, echo=FALSE, fig.cap=paste("Figure 2 from Bourgon *et al.* (2010).")}
+# All defaults
+include_graphics("./images_sequencing/independentFiltering2.png")
+```
+  ---
+  
+Let's try a couple of examples to get some intuition using simulated data.
+
+```{r}
+suppressPackageStartupMessages(library(DESeq2))
+set.seed(24)
+dds <- DESeq2::makeExampleDESeqDataSet()
+simCounts <- counts(dds)
+group <- dds$condition
+```
+
+## A dependent test statistic
+
+```{r}
+filterStatEffectSize <- abs(rowMeans(simCounts[,group == "A"]) - rowMeans(simCounts[,group == "B"]))
+testStat <- genefilter::rowttests(simCounts, group)
+
+## unconditional distribution
+plot(density(testStat$statistic, na.rm=TRUE),
+     xlab = "Test statistic",
+     main = "Unconditional distribution")
+
+## conditional distribution: very different!
+mean(filterStatEffectSize > 1)
+hist(filterStatEffectSize, breaks=40)
+abline(v=1, col="red")
+keepEffectSize <- filterStatEffectSize > 1
+plot(density(testStat$statistic[keepEffectSize], na.rm=TRUE),
+     xlab = "Test statistic",
+     main = "Conditional distribution")
+```
+
+
+## An independent test statistic
+
+```{r}
+filterStatGlobalMean <- rowMeans(simCounts)
+mean(filterStatGlobalMean > 5) # we remove a similar fraction
+keepGlobalMean <- filterStatGlobalMean > 5
+
+## unconditional distribution
+plot(density(testStat$statistic, na.rm=TRUE),
+     xlab = "Test statistic",
+     main = "Unconditional distribution")
+
+## conditional distribution: the same.
+plot(density(testStat$statistic[keepGlobalMean], na.rm=TRUE),
+     xlab = "Test statistic",
+     main = "Conditional distribution")
+```
+
+
 # Aliasing
 
-Suppose we are working with the following experimental design. Studying the effect of alcoholism on gene expression, researchers gather RNA-seq data from four alcoholic individuals and four healthy individuals. For each individual, they obtain RNA-seq data from a blood sample as well as liver tissue. The research question relates to differential expression between the diseased versus control conditions, in both tissues.
+Suppose we are working with the following experimental design on colon cancer. Studying the effect of a drug on gene expression, researchers gather RNA-seq data from four colon cancer patients and four healthy individuals. For each individual, they obtain RNA-seq data from a blood sample before as well as two weeks after taking a daily dose of the drug. The research question relates to differential expression after vs. before taking the drug, in particular whether this is different for the diseased versus healthy group (i.e., the interaction between time (before/after taking the drug) and disease status (healthy/colon cancer)).
 
-If we would like to model all data simultaneously, then we could imagine a design such as ` ~ patient + disease*tissue`, where 
+In terms of the model matrix, we could imagine a design such as ` ~ patient + disease*time`, where 
 
- - `disease` is a binary indicator referring to alcoholic versus control sample.
- - `tissue` defines if the sample is a liver or blood sample.
+ - `disease` is a binary indicator referring to colon cancer versus control sample.
+ - `time` defines if the sample is taken before or after taking the drug.
  - `patient` defines the individual donor the sample comes from.
+
+The research question could then amount to testing the `disease * time` interaction.
 
 Let's try this, by simulating random data for one gene.
 
 ```{r}
 set.seed(2)
 patient <- factor(rep(letters[1:8], each=2)) # 2 samples per patient
-disease <- factor(c(rep("healthy",8), rep("alcohol",8))) # first four are healthy, next four are alcoholic
-tissue <- factor(rep(c("blood", "liver"), 8)) # one liver and one blood sample for each
+disease <- factor(c(rep("healthy",8), rep("cancer",8)), levels=c("healthy", "cancer")) # first four are healthy, next four are alcoholic
+time <- factor(rep(c("before", "after"), 8), levels=c("before", "after")) # one before and one after sample for each
 
-table(patient, disease, tissue)
+table(patient, disease, time)
 
 ## simulate data for one gene
 n <- 16
 y <- rpois(n = n, lambda = 50)
 
 ## fit a Poisson model
-m <- glm(y ~ patient + disease*tissue,
+m <- glm(y ~ patient + disease*time,
          family = "poisson")
 summary(m)
 ```
 
  ---
  
-We find that one of the coefficients is `NA`! This is obviously not because we're dealing with `NA` values in the data as we've just simulated the response variable. 
+We find that one of the coefficients is `NA`! This is obviously not because we're dealing with `NA` values in the data as we've just simulated the response variable. What's going on?
 
-Instead, one of the parameters, in this case the parameter distinguising diseased from healthy patients **cannot be estimated as it is a linear combination of other parameters**. In our case, estimating the diseased effect would use information that is already used to estimate the patient-level intercepts. In other words, **once you know the patient, you immediately also know the diseased status**, so estimating the diseased vs healthy effect on top of the patient effect provides no additional information if we have already estimated the patient-level effects. This concept is called aliasing, and is common in RNA-seq experiments with complex experimental designs. 
+One of the parameters, in this case the parameter distinguishing cancer from healthy patients **cannot be estimated as it is a linear combination of other parameters**. In our case, estimating the diseased effect would use information that is already used to estimate the patient-level intercepts. In other words, **once you know the patient, you immediately also know the disease status**, so estimating the diseased vs healthy effect on top of the patient effect provides no additional information if we have already estimated the patient-level effects. This concept is called aliasing, and is a common technical issue in 'omics experiments with complex experimental designs. 
 
  ---
 
@@ -56,39 +158,70 @@ While to understand the origin of the aliasing it is crucial to understand the r
 alias(m)
 ```
 
-We see that the effect `diseasehealthy` is a linear combination of the the intercept minus the patient-specific effects of the alcoholic patients. This makes sense!
+We see that the effect `diseasecancer` is a linear combination of the patient-specific effects of the cancer patients. This makes sense!
+
+ --- 
+
 For clarity, let's reproduce this using our design matrix.
 
 ```{r}
-X <- model.matrix(~ patient + disease*tissue)
+X <- model.matrix(~ patient + disease*time) # this is the design used in glm()
 
-## these are indeed the same.
-X[,"diseasehealthy"]
-X[,"(Intercept)"] - X[,"patiente"] - X[,"patientf"] - X[,"patientg"] - X[,"patienth"]
+## these are indeed identical.
+X[,"diseasecancer"]
+X[,"patiente"] + X[,"patientf"] + X[,"patientg"] + X[,"patienth"]
 ```
 
-Since one of our parameters is a linear combination of other parameters, it cannot be estimated simultaneously with the other parameters. In this case, we can actually drop the `tissue` effect from the model, since we know that it is already included in the `patient` effect. The most convenient way will be to make a new variable that represents the interaction between patient and tissue. This covariate will contain all the information we need. Below, we fit it using a model without an intercept; this eases interpretation as each coefficient can be interpreted as the average expression for that particular tissue of that particular patient.
+Since one of our parameters is a linear combination of other parameters, it cannot be estimated simultaneously with the other parameters. In this case, we can actually drop the `disease` main effect from the model, since we know that it is already included in the `patient` effect.
+
+ ---
+
+We will have to carefully construct our design matrix in order to account for all important sources of variation while still allowing us to answer the research question of interest. The aliasing exploration above has made it clear we may drop the `disease` main effect, so let's start by constructing this design matrix.
+
 
 ```{r}
-patientTissue <- as.factor(paste0(tissue, "_", patient))
-patientTissue
+X <- model.matrix(~ patient + time + disease:time)
 
-m2 <- glm(y ~ -1 + patientTissue,
-          family = "poisson")
+m2 <- glm(y ~ -1 + X,
+         family = "poisson")
+summary(m2)
+alias(m2)
+```
 
+We are still confronted with aliasing as the model matrix contains an interaction effect `timebefore:diseasecancer` as well as `timeafter:diseasecancer`, while only the latter is relevant. Indeed, we know that we can derive the `timebefore:diseasecancer` effect by averaging the patient effects of the cancer patients.
+
+ ---
+
+```{r}
+X <- X[,!colnames(X) %in% "timebefore:diseasecancer"]
+
+
+## fit a Poisson model
+m2 <- glm(y ~ -1 + X,
+         family = "poisson")
 summary(m2)
 ```
 
-**Question.** What do the $p$-values mean here? Why are they all significant?
+We see that all coefficients can now be estimated. The `timeafter` effect may be interpreted as the time effect for healthy patients, while the `timeafter:diseasecancer` effect may be interpreted as the difference in the time effect for cancer patients, with the time effect for healthy patients, i.e., it is the relevant interaction effect we are interested in. 
+
+**Question**. Taking this further, suppose that we can safely assume that there is no interaction effect between disease status and time. How would you now test for differential expression between healthy and cancer patients at the first timepoint? Specify the experimental design and contrast used.
 
 <details><summary> Answer. </summary><p>
-Since now we are working with an intercept-free model, each coefficient represents the average gene expression of that patient for the particular tissue. The coefficients therefore can no longer be interpreted as a difference with respect to the intercept on the linear predictor scale. The null hypothesis is still the same as usual, i.e., the $p$-value corresponding to $\beta_2$ tests the null hypothesis $H_0: \beta_2 = 0$. Thus, the test is now assessing whether the average gene expression is different from zero (rather than different from the intercept).
+Assuming no interaction, we can specify the design as follows:
+
+```{r}
+XMain <- model.matrix(~ patient + time)
+head(XMain)
+```
+
+In order to set up the contrast testing for healthy versus diseased patients at the first timepoint, we need to take the average of the appropriate patient-level intercepts.
+The average expression for healthy patients is
+$$ \log \mu_{healthy} = \frac{1}{4} \left\{ \beta_0 + (\beta_0 + \beta_1) + (\beta_0 + \beta_2) + (\beta_0 + \beta_3) \right\}. $$
+Similar, for the diseased patients it equals
+$$ \log \mu_{diseased} = \frac{1}{4} \left\{ (\beta_0 + \beta_4) + (\beta_0 + \beta_5) + (\beta_0 + \beta_6) + (\beta_0 + \beta_7) \right\}. $$
+And thus the relevant contrast
+$$ \log \frac{\mu_{diseased}}{\mu_{healthy}} = \frac{1}{4} (\beta_4 + \beta_5 + \beta_6 + \beta_7 ) - \frac{1}{4} (\beta_1 + \beta_2 + \beta_3).$$
 </p></details>
-
-We see that all coefficients can now be estimated.
-
-
-# Independent filtering
 
 # Other approaches to modeling counts: limma-voom
 

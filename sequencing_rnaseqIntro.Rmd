@@ -412,13 +412,7 @@ dds <- DESeq2::estimateSizeFactors(dds)
 sizeFactors(dds)
 ```
 
-## Conditional quantile normalization (`cqn`)
-
-The `cqn` method, introduced by [Hansen *et al.* (2012)](https://academic.oup.com/biostatistics/article/13/2/204/1746212) and implemented in the `cqn` `R` package, starts by assuming a Poisson model for the gene expression counts $Y_{gi}$. Median regression is used to model, for each sample, the log-transformed accessibility count as a smooth function of GC-content as well as gene length, focusing on genes with high average count (above $50$ by default). Next, subset quantile normalization ([Wu *et al.* (2010)](https://www.liebertpub.com/doi/10.1089/cmb.2010.0049)) is performed on the residuals of that model (i.e., on the counts adjusted for GC-content) for between-sample normalization. The method could intuitively be thought of as full-quantile normalization after removing a smoothed sample-specific GC-content effect. Normalized counts are calculated as recommended in the `cqn` vignette, i.e.,
-$$
-\tilde{Y}_{gi} = \left(\frac{(Y_{gi}+1) 10^6}{\sum_g Y_{gi}}\right)  2^{O_{gi}},
-$$
-with $O_{gi}$ the normalization offset estimated by `cqn`, which is on the $\log_2$ scale. Note that `cqn` normalization works with a gene- and sample-specific offset, unlike TMM and median-of-ratios normalization which only work with a sample-specific offset.
+You may also want to check out the [StatQuest video on DESeq2 normalization](https://www.youtube.com/watch?v=UFB993xufUU).
 
 ## Full quantile (FQ) normalization
 
@@ -429,6 +423,14 @@ In practice, we implement full-quantile normalization using the following proced
  2. sort each column to get $\mathbf{Y}^S$,
  3. replace all elements of each row by the median (or average) for that row,
  4. obtain the normalized counts $\tilde{\mathbf{Y}}$ by re-arranging (i.e., unsorting) each column. 
+
+## Conditional quantile normalization (`cqn`)
+
+The `cqn` method, introduced by [Hansen *et al.* (2012)](https://academic.oup.com/biostatistics/article/13/2/204/1746212) and implemented in the `cqn` `R` package, starts by assuming a Poisson model for the gene expression counts $Y_{gi}$. Median regression is used to model, for each sample, the log-transformed accessibility count as a smooth function of GC-content as well as gene length, focusing on genes with high average count (above $50$ by default). Next, subset quantile normalization ([Wu *et al.* (2010)](https://www.liebertpub.com/doi/10.1089/cmb.2010.0049)) is performed on the residuals of that model (i.e., on the counts adjusted for GC-content) for between-sample normalization. The method could intuitively be thought of as full-quantile normalization after removing a smoothed sample-specific GC-content effect. Normalized counts are calculated as recommended in the `cqn` vignette, i.e.,
+$$
+\tilde{Y}_{gi} = \left(\frac{(Y_{gi}+1) 10^6}{\sum_g Y_{gi}}\right)  2^{O_{gi}},
+$$
+with $O_{gi}$ the normalization offset estimated by `cqn`, which is on the $\log_2$ scale. Note that `cqn` normalization works with a gene- and sample-specific offset, unlike TMM and median-of-ratios normalization which only work with a sample-specific offset.
 
 # Challenge III: Parameter estimation (under limited information setting)
 
