@@ -49,3 +49,5 @@ if(!"edgeR" %in% installed.packages()[,1]){
 
  - Implement FQ normalization yourself and compare results to default edgeR normalization.
  - Assess impact of blocking like in parathyroid study.
+ - Compare a limma-voom to an edgeR analysis.
+ 

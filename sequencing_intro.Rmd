@@ -1,7 +1,7 @@
 ---
 title: "Introduction to sequencing: Sequencing technology and preprocessing of sequencing data"
 author: "Koen Van den Berge"
-date: "6/25/2021"
+date: ``
 output: 
   html_document:
     toc: true
@@ -39,15 +39,15 @@ suppressPackageStartupMessages({
 
 # The study of gene expression
 
-The first part of this course has focussed on proteomics, studying the concentration of proteins in biological samples. We have seen that identification of proteins and measuring their respective concentrations are extremely challenging, leading to many technological and statistical challenges in order to interpret these data.
-In the second part of the course, we will now focus on measuring gene expression, i.e., measuring the concentration of mRNA molecules, that may eventually be translated into proteins, but may also have functions on their own.
+ - The first part of this course focussed on proteomics, studying the concentration of proteins in biological samples. We have seen that identification of proteins and measuring their respective concentrations are extremely challenging, leading to many technological and statistical challenges in order to interpret these data.
+ - In the second part of the course, we will focus on measuring gene expression, i.e., measuring the concentration of mRNA molecules, that may eventually be translated into proteins, but may also have functions on their own.
 
 # Sequencing technology
 
  - Measuring mRNA molecules typically happens through sequencing.
- - The technology continues to evolve at an incredible speed. The data output of so-called `next generation sequencing' machines has more than doubled each year! Simultaneously, the cost of sequencing (in terms of $ per Gigabase) is dropping. Each year, we're able to sequence more for less money.
+ - The technology continues to evolve at an incredible speed. The data output of so-called `next generation' sequencing machines has more than doubled each year! Simultaneously, the cost of sequencing (in terms of $ per Gigabase) is dropping. Each year, we're able to sequence more for less money, providing more information, as well as also computational and statistical challenges.
  - This tremendous technological revolution has revolutionized biology, and genomic sequencing is now a core component of the modern-day biologist's toolkit.
- - The large majority of sequencing data is generated using sequencing-by-synthesis using machines produced by the company Illumina. While new players such as Pacific Biosciences and Oxford Nanopore have entered the scene, these are typically most useful for DNA sequencing rather than gene expression studies, owing to their capability of sequencing long molecules.
+ - The large majority of sequencing data is generated using sequencing-by-synthesis using machines produced by the company Illumina. While new players such as Pacific Biosciences and Oxford Nanopore have entered the scene, these are typically most useful for (but not limited to) DNA sequencing rather than gene expression studies, owing to their capability of sequencing long molecules.
 
 ```{r, echo=FALSE, fig.cap=paste("Figure: The data output revolution of sequencing machines. Image from Illumina documentation.")}
 # All defaults
@@ -58,13 +58,13 @@ include_graphics("./images_sequencing/seqTechnology_throughput.png")
 
 Library preparation steps:
 
-1. First, the biological samples of interest are collected. Owing to the maturity of different protocols for sequencing, several types of biological input samples are amenable to sequencing, such as frozen tissues or FFPE-preserved samples.
-2. The mRNA molecules from our sample are captured. If the tissue sample used as input is still intact, this also involves cell lysis in order to release the mRNA molecules from within the cells. The mRNA molecules are mosten often captured using (i) polyA-capture to select for polyadenylated RNA, or (ii) ribosomal deplation, where ribosomal and transfer RNAs are depleted. In the case of `targeted sequencing', where relevant molecules are of main interest (e.g., a gene panel), these targets can be specifically targeted in this step.
-3. Fragmentation of captured molecules. The captured molecules are fragmented, either chemically or mechanically. The appropriate size of fragments depends on the sequencing machines (often in the range of 300 - 500bp).
-4. Reverse transcription. Current dominant sequencing machines only sequence double-stranded DNA molecules. Therefore, in order to measure single-stranded mRNA, we must first isolate the mRNA molecules from the biological sample(s) of interest, and reverse transcribe these molecules to a double-stranded complementary (cDNA) molecule.
-5. Addition of adapters. Adapters are oligonucleotides (short sequences of nucleotides) that are platform-specific sequences for fragment recognition by the sequencing machines. These are added either to the 3' or 5' end of the cDNA molecules or used as primers in the reverse transcription reaction. The final cDNA library consists of cDNA inserts flanked by an adapter sequence on each end. 
-6. PCR amplification. To increase concentration, several PCR reactions are performed.
-7. Loading the amplified cDNA library on the sequencing machine. Find out how sequencing-by-synthesis works through [this video](https://www.youtube.com/watch?v=fCd6B5HRaZ8). Note that the video shows paired-end sequencing, where a number of basepairs are sequenced at each end of the fragment. All previous steps together are described as `sample prep' in that video.
+1. First, the biological **samples of interest are collected**. Owing to the maturity of different protocols for sequencing, several types of biological input samples are amenable to sequencing, such as frozen tissues or FFPE-preserved samples.
+2. The **mRNA molecules from our sample are captured**. This typically involves cell lysis in order to release the mRNA molecules from within the cells. The mRNA molecules are most often captured using (i) polyA-capture to select for polyadenylated RNA, or (ii) ribosomal depletion, where ribosomal and transfer RNAs are depleted, and so also non-polyA-mRNA molecules may be captured, such as long non-coding RNAs. In the case of `targeted sequencing', where relevant molecules are of main interest (e.g., a gene panel), these targets can be specifically targeted in this step.
+3. **Fragmentation** of captured molecules. The captured molecules are fragmented, either chemically or mechanically. The appropriate size of fragments depends on the sequencing machines, but is often in the range of 300 - 500bp.
+4. **Reverse transcription**. Current dominant sequencing machines only sequence double-stranded DNA molecules. Therefore, in order to measure single-stranded mRNA, we must first reverse transcribe these molecules to a double-stranded complementary (cDNA) molecule.
+5. **Adapter ligation**. Adapters are oligonucleotides (short sequences of nucleotides) that are platform-specific sequences for fragment recognition by the sequencing machines. These are added either to the 3' or 5' end of the cDNA molecules or used as primers in the reverse transcription reaction. The final cDNA library consists of cDNA inserts flanked by an adapter sequence on each end. 
+6. **PCR amplification**. To increase concentration, several PCR reactions are performed.
+7. Loading the amplified cDNA library on the **sequencing** machine. Find out how sequencing-by-synthesis works through [this video](https://www.youtube.com/watch?v=fCd6B5HRaZ8). Note that the video shows paired-end sequencing, where a number of basepairs are sequenced at each end of the fragment. All previous steps together are described as `sample prep' in that video.
 
 ```{r, echo=FALSE, fig.cap=paste("Figure: The sequencing workflow. Image adapted from Van den Berge et al. (2019).")}
 include_graphics("./images_sequencing/seqWorkflow1_clean.png")
@@ -72,14 +72,14 @@ include_graphics("./images_sequencing/seqWorkflow1_clean.png")
 
 Note that several variants of library preparation protocols are available. The most important ones are:
 
- - Single-end vs paired-end sequecing: In single-end sequencing, a single end (3' or 5') of the cDNA fragment is sequenced. In paired-end sequencing, both ends are sequenced.
- - Strand specific protocols: Some library preparation protocols allow measuring strand specificity, where the strand information of each read can be preserved.
+ - Single-end vs paired-end sequencing: In single-end sequencing, a single end (3' or 5') of the cDNA fragment is sequenced. In paired-end sequencing, both ends are sequenced, and depending on the size of the fragment, the reads may or may not overlap.
+ - Strand-specific protocols: Some library preparation protocols allow measuring strand specificity, where the strand information (i.e., sense/antisense) of each read can be preserved.
 
 ## The sequencing output files
 
 - The typical output of a sequencing machine we will be working with are FASTA or FASTQ files for each sample. Each of these files are several gigbases large and contain millions of sequences, which we will call **reads**. For paired-end sequencing, there are two files for each sample, one for each end of the sequenced fragments.
  - The difference between a FASTA file and a FASTQ file, is that while FASTA files only store the results of base calls (sequences), FASTQ files also store the quality score of each base call (i.e., each called nucleotide), which can be useful in downstream analyses such as mapping or variant calling.
- - A fASTQ file contains four lines for each sequenced read:
+ - A FASTQ file contains four lines for each sequenced read:
     1. Sequence identifier line, starting with @.
     2. The sequence.
     3. Another sequence identifier line, now starting with +.
@@ -89,13 +89,13 @@ Note that several variants of library preparation protocols are available. The m
 include_graphics("./images_sequencing/fastqLine.png")
 ```
 
-As you'll have noticed, the base call quality scores are encoded as ASCII characters for efficient storage. These ASCII characters can be convered into integers called Phred scores, which are logarithmically related to the probability of an erroneous base call.
+As you'll have noticed, the base call quality scores are encoded as ASCII characters for efficient storage. These ASCII characters can be converted into integers called Phred scores, which are logarithmically related to the probability of an erroneous base call.
 
 # Preprocessing of raw sequencing data
 
 After sequencing, we typically do a quality control (QC) check to verify the quality of the samples. During QC check, aberrant samples due to e.g. degraded mRNA can be detected.
 
-The sequencing reads on their own contain a lot of information, but are most useful if we would be able to assign sequencing reads to genomic features (genes, exons, transcripts, etc.), i.e., for each sequencing read we will try to derive the (set of) feature(s) that could have plausibly produced the fragment through the process of gene expression. This process is called 'mapping'. Most often we map reads to genes. 
+The sequencing reads on their own contain a lot of information, but are most useful if we would be able to assign sequencing reads to genomic features (genes, exons, transcripts, etc.), i.e., for each sequencing read we will try to derive the (set of) feature(s) that could have plausibly produced the fragment through the process of gene expression. This process is called **mapping**. Most often we map reads to genes. 
 
 ```{r, echo=FALSE, fig.cap=paste("Figure: An updated sequencing workflow, including sequencing and mapping. Image adapted from Van den Berge et al. (2019).")}
 include_graphics("./images_sequencing/seqWorkflow2.png")
@@ -105,23 +105,23 @@ include_graphics("./images_sequencing/seqWorkflow2.png")
 
 During quality control, diagnostic plots are created for each sample in order to determine its quality. The most popular QC tool for bulk RNA-seq data is [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/). If many samples are sequenced, then [MultiQC](https://multiqc.info/) can be used to aggregate the QC checks across samples in a conveniently organized overview.
 
-The FastQC website provides interesting example reports for us to look at and compare against. Here are example reports of [high-quality Illumina data](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/good_sequence_short_fastqc.html) and [low-quality Illumina](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/bad_sequence_fastqc.html) data.
+The FastQC website provides interesting example reports for us to look at and compare against. Here are example reports of [high-quality Illumina data](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/good_sequence_short_fastqc.html) and [low-quality Illumina data](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/bad_sequence_fastqc.html).
 
 ## Mapping
 
-Mapping is a critical step in the interpretation of RNA-seq data, where we are attributing reads to genomic features. This attribution eventually allows us to measure how strong a feature such as a gene is expressed. Indeed, the number of reads mapping to a gene serve as a proxy for how high that gene has been expressed in the sample. This opens the door to downstream data analysis, but of course relies on an appropriate mapping.
-
-Note that we are typically not able to assign each individual read uniquely to one specific gene; some reads cannot be unambiguously mapped and are compatible with multiple genes. These reads are said to be 'multi-mapping'.
-
-While here we will focus on reference-based alignment, i.e., alignment where a reference genome or transcriptome is available, note that a *de novo* construction of a reference transcriptome is also possible, where the reference may be constructed from the observed sequencing reads.
-
-Finally, a note on terminology. In this text we will use the words 'read' or 'fragment' (referring to the fragmented mRNA molecule being sequenced) to designate a datum, note that this could be either a single read (in single-end sequencing) or a read pair (in paired-end sequencing). The literature may also use these words interchangably, although 'fragment' seems better at avoiding ambiguity between single-end reads and paired-end read pairs.
+ - Mapping is a critical step in the interpretation of RNA-seq data, where we are attributing reads to genomic features. 
+ - Allows us to measure how strong a feature such as a gene is expressed: the number of reads mapping to a gene serve as a proxy for how high that gene has been expressed in the sample. 
+ - While this opens the door to many opportunities, mapping is hard.
+ - We are **typically unable to assign each individual read uniquely** to one specific gene; some reads cannot be unambiguously mapped and are compatible with multiple genes. These reads are said to be 'multi-mapping'.
+ 
+Finally, a note on terminology. In this text we will use the words 'read' or 'fragment' (referring to the fragmented mRNA molecule being sequenced) to designate a datum, note that this could be either a single read (in single-end sequencing) or a read pair (in paired-end sequencing). The literature may also use these words interchangeably, although 'fragment' seems better at avoiding ambiguity between single-end reads and paired-end read pairs.
 
 ### Reference files
 
- - The alignment most often relies on a reference genome of the species, which can be considered a 'representative example' of the genome sequence of that species. Reference genomes are contiuously updated and released periodically.
+ - The alignment most often relies on a **reference genome** of the species, which can be considered a 'representative example' of the genome sequence of that species. Reference genomes are contiuously updated and released periodically.
  - Reference genomes can be freely downloaded from several providers, for example [Ensembl](http://www.ensembl.org/info/data/ftp/index.html) or [Gencode](https://www.gencodegenes.org/human/).
  - Along with a reference genome, an annotation GFF or GTF file defines the coordinates of specific genomic features.
+ - While here we will focus on reference-based alignment, i.e., alignment where a reference genome or transcriptome is available, note that a *de novo* construction of a reference transcriptome is also possible, where the reference may be constructed from the observed sequencing reads.
  
 ```{r, echo=FALSE, fig.cap=paste("Figure: A reference sequence of human chr1.")}
 include_graphics("./images_sequencing/referenceGenome.png")
@@ -131,16 +131,16 @@ include_graphics("./images_sequencing/referenceGenome.png")
 include_graphics("./images_sequencing/gtfFile.png")
 ```
 
- - More recently, mapping of RNA-seq data occurs more often against a reference transcriptome, which is a reference file containing the sequences all known isoforms of a particular species, e.g., using [kallisto](https://www.nature.com/articles/nbt.3519) or [Salmon](https://www.nature.com/articles/nmeth.4197).
- - The set of spliced transcripts is much smaller than the entire genome, and therefore mapping against a reference transcriptome is typically fast and memory efficient.
- - However, [it has been noted](https://www.biorxiv.org/content/10.1101/2021.05.05.442755v1) that mapping against a reference transcriptome may also introduce spurious expression for genes that are not expressed. These observations can be explained by intronic reads that share some sequence similarity with transcripts, and could map to spliced transcript sequences. Recent methods, such as [alevin-fry](https://www.biorxiv.org/content/10.1101/2021.06.29.450377v1), avoid this by expanding the reference transcriptome to also include intronic sequences.
+ - More recently, mapping of RNA-seq data occurs more often against a **reference transcriptome**, which is a reference file containing the sequences all known isoforms of a particular species, e.g., using [kallisto](https://www.nature.com/articles/nbt.3519) or [Salmon](https://www.nature.com/articles/nmeth.4197).
+ - The set of spliced transcripts is much smaller than the entire genome, and therefore mapping against a reference transcriptome is typically **fast and memory efficient**.
+ - However, [it has been noted](https://www.biorxiv.org/content/10.1101/2021.05.05.442755v1) that mapping against a reference transcriptome may also introduce spurious expression for genes that are not expressed. These observations can be explained by **intronic reads** that share some sequence similarity with transcripts, and could map to spliced transcript sequences. Recent methods, such as [alevin-fry](https://www.biorxiv.org/content/10.1101/2021.06.29.450377v1), avoid this by expanding the reference transcriptome to also include intronic sequences.
 
 ### Alignment-based workflows
 
- - Traditionally, alignment-based workflows have been used to map reads, where one tries to find the exact coordinates a read most likely maps on the reference genome or the reference transcriptome.
+ - Traditionally, alignment-based workflows have been used to map reads, where one tries to find the exact coordinates a read maps to on the reference genome or the reference transcriptome.
  - Note that due to alternative splicing, reads do not necessarily map contiguously on a reference genome, as a read can overlap with a splicing junction, where an intron has been excised. When mapping against a transcriptome, however, reads should be mapping contiguously.
   - A main challenge in spliced alignment against a reference genome is the proper alignment of reads that span a splice junction, especially when these junctions are not annotated a priori. Indeed, in spliced alignment reads can be split at any nucleotide, and the corresponding subsequences can map several thousands of basepairs apart. Meanwhile, the main challenge in unspliced alignment to a transcriptome is the redundant sequence among related transcripts in the transcriptome, which often leads to a high multi-mapping rate (i.e., reads that cannot be unambiguously assigned to a single transcript).
- - Spliced alignment against a genome is therefore computationally a much harder task. Since the transcript sequences are already spliced when aligning to a reference transcriptome, reads should align contiguously, and many of the computationally expensive steps and heuristics can be avoided.
+ - Spliced alignment against a genome is therefore computationally a much harder task. Since the transcript sequences are already spliced when aligning to a reference transcriptome, reads should align contiguously, and many of the computationally expensive steps and heuristics can be avoided, there.
 
 ```{r, echo=FALSE, fig.cap=paste("Figure: Unspliced and spliced alignment. Figure from Van den Berge et al. (2019).")}
 include_graphics("./images_sequencing/splicedAlignment.png")
@@ -164,7 +164,7 @@ Given a set of mappings, using either alignment-based or alignment-free workflow
 **Counting**:
 
  - In alignment-based workflows, one could do a direct counting of fragments at the gene-level, counting the number fragments mapping to each gene. This has been the dominant approach for the first decade of RNA-seq data, often obtained using reference genome alignments. 
- - Many choices need to be made: Do we count a fragment as soon as it intersects with the gene's coordinates, or do we require the full fragment to map to the gene? Do we count intronic reads? Do we count multi-mapping reads?
+ - Many heuristic choices need to be made: Do we count a fragment as soon as it intersects with the gene's coordinates, or do we require the full fragment to map to the gene? Do we count intronic reads? Do we count multi-mapping reads?
  
 ```{r, echo=FALSE, fig.cap=paste("Figure: Gene- and exon-level read counting. Image adapted from Charlotte Soneson.")}
 include_graphics("./images_sequencing/readCounting.png")
