@@ -1,7 +1,7 @@
 ---
 title: 'Sequencing: Selected technical topics'
 author: "Koen Van den Berge"
-date: "7/5/2021"
+date: "Last edited on `r format(Sys.time(), '%d %B, %Y')`"
 output: 
   pdf_document:
     toc: true
