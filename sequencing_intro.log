@@ -1,11 +1,11 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021) (preloaded format=xelatex 2021.10.12)  12 OCT 2021 14:15
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021) (preloaded format=xelatex 2021.10.13)  14 OCT 2021 08:51
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
 **sequencing_intro.tex
 (./sequencing_intro.tex
 LaTeX2e <2021-06-01> patch level 1
-L3 programming layer <2021-08-27> (/Users/runner/Library/TinyTeX/texmf-dist/tex
+L3 programming layer <2021-10-12> (/Users/runner/Library/TinyTeX/texmf-dist/tex
 /latex/base/article.cls
 Document Class: article 2021/02/12 v1.4n Standard LaTeX document class
 (/Users/runner/Library/TinyTeX/texmf-dist/tex/latex/base/size10.clo
@@ -128,11 +128,11 @@ Package: ifluatex 2019/10/25 v1.5 ifluatex legacy package. Use iftex instead.
 )
 (/Users/runner/Library/TinyTeX/texmf-dist/tex/latex/unicode-math/unicode-math.s
 ty (/Users/runner/Library/TinyTeX/texmf-dist/tex/latex/l3kernel/expl3.sty
-Package: expl3 2021-08-27 L3 programming layer (loader) 
+Package: expl3 2021-10-12 L3 programming layer (loader) 
 
 (/Users/runner/Library/TinyTeX/texmf-dist/tex/latex/l3backend/l3backend-xetex.d
 ef
-File: l3backend-xetex.def 2021-08-04 L3 backend support: XeTeX
+File: l3backend-xetex.def 2021-10-12 L3 backend support: XeTeX
 (|extractbb --version)
 \c__kernel_sys_dvipdfmx_version_int=\count198
 \l__color_backend_stack_int=\count199
@@ -771,7 +771,7 @@ LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
 File: ./images_sequencing/seqTechnology_throughput.png Graphic file (type bmp)
 <./images_sequencing/seqTechnology_throughput.png>
 
-Overfull \hbox (230.93951pt too wide) in paragraph at lines 115--115
+Overfull \hbox (230.93951pt too wide) in paragraph at lines 123--123
 [][] 
  []
 
@@ -779,7 +779,7 @@ Overfull \hbox (230.93951pt too wide) in paragraph at lines 115--115
 File: ./images_sequencing/seqWorkflow1_clean.png Graphic file (type bmp)
 <./images_sequencing/seqWorkflow1_clean.png>
 
-Overfull \hbox (355.36784pt too wide) in paragraph at lines 171--171
+Overfull \hbox (355.36784pt too wide) in paragraph at lines 179--179
 [][] 
  []
 
@@ -787,12 +787,12 @@ Overfull \hbox (355.36784pt too wide) in paragraph at lines 171--171
 File: ./images_sequencing/fastqLine.pdf Graphic file (type pdf)
 <use ./images_sequencing/fastqLine.pdf>
 
-Overfull \hbox (686.60332pt too wide) in paragraph at lines 225--225
+Overfull \hbox (686.60332pt too wide) in paragraph at lines 234--234
 [][] 
  []
 
 
-LaTeX Warning: Float too large for page by 24.08157pt on input line 226.
+LaTeX Warning: Float too large for page by 24.08157pt on input line 235.
 
 File: ./images_sequencing/seqWorkflow2.png Graphic file (type bmp)
 <./images_sequencing/seqWorkflow2.png>
@@ -800,14 +800,14 @@ File: ./images_sequencing/seqWorkflow2.png Graphic file (type bmp)
 File: ./images_sequencing/referenceGenome.png Graphic file (type bmp)
 <./images_sequencing/referenceGenome.png>
 
-Overfull \hbox (320.24692pt too wide) in paragraph at lines 321--321
+Overfull \hbox (320.24692pt too wide) in paragraph at lines 336--336
 [][] 
  []
 
 File: ./images_sequencing/gtfFile.png Graphic file (type bmp)
 <./images_sequencing/gtfFile.png>
 
-Overfull \hbox (618.3965pt too wide) in paragraph at lines 325--325
+Overfull \hbox (618.3965pt too wide) in paragraph at lines 340--340
 [][] 
  []
 
@@ -815,7 +815,7 @@ Overfull \hbox (618.3965pt too wide) in paragraph at lines 325--325
 File: ./images_sequencing/splicedAlignment.png Graphic file (type bmp)
 <./images_sequencing/splicedAlignment.png>
 
-Overfull \hbox (335.29192pt too wide) in paragraph at lines 388--388
+Overfull \hbox (335.29192pt too wide) in paragraph at lines 403--403
 [][] 
  []
 
@@ -823,7 +823,7 @@ File: ./images_sequencing/kallisto_equivalenceClasses.png Graphic file (type bm
 p)
 <./images_sequencing/kallisto_equivalenceClasses.png>
 
-Overfull \hbox (10.09026pt too wide) in paragraph at lines 417--417
+Overfull \hbox (10.09026pt too wide) in paragraph at lines 432--432
 [][] 
  []
 
@@ -831,19 +831,19 @@ File: ./images_sequencing/kallisto_equivalenceClasses_caption.png Graphic file
 (type bmp)
 <./images_sequencing/kallisto_equivalenceClasses_caption.png>
 
-Overfull \hbox (70.29712pt too wide) in paragraph at lines 420--420
+Overfull \hbox (70.29712pt too wide) in paragraph at lines 435--435
 [][] 
  []
 
 File: ./images_sequencing/readCounting.png Graphic file (type bmp)
 <./images_sequencing/readCounting.png>
 
-Overfull \hbox (397.49017pt too wide) in paragraph at lines 447--447
+Overfull \hbox (397.49017pt too wide) in paragraph at lines 462--462
 [][] 
  []
 
 
-LaTeX Warning: Float too large for page by 24.06392pt on input line 448.
+LaTeX Warning: Float too large for page by 24.06392pt on input line 463.
 
 File: ./images_sequencing/abundanceEMAlgorithm.png Graphic file (type bmp)
 <./images_sequencing/abundanceEMAlgorithm.png>
@@ -857,7 +857,7 @@ Package rerunfilecheck Info: File `sequencing_intro.out' has not changed.
 Here is how much of TeX's memory you used:
  16037 strings out of 478492
  293330 string characters out of 5861015
- 752090 words of memory out of 5000000
+ 752121 words of memory out of 5000000
  36112 multiletter control sequences out of 15000+600000
  409841 words of font info for 75 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
