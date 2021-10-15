@@ -12,8 +12,6 @@ output:
     toc_float: true
 ---
 
-**TODO: Add independent filtering**
-
 ```{r functions, include=FALSE}
 # A function for captioning and referencing images
 fig <- local({
@@ -158,16 +156,26 @@ table(patient, treatment, time) # agrees with paper.
  - By directly matching columns (samples) and rows (genes) to their relevant metadata, the `SummarizedExperiment` class avoids mistakes by mis-matching columns and rows with each other (provided you haven't mismatched them when you creat the object).
  - The `SummarizedExperiment` class is modular and extendable, and extensions exist for example for the analysis of single-cell RNA-seq data.
  - Due to their convenient organization and widely supported usage within Bioconductor, we will typically work with such containers in the analysis of RNA-seq data.
+ 
+## Independent filtering
 
-## Data exploration
+Independent filtering is a strategy to remove features (in this case, genes) prior to the analysis. Removal of these features may lower the multiple testing correction for other genes that pass the filter. We try to remove genes that have a low power to be found statistically significant, and/or that are biologically less relevant. 
+A common filtering strategy is to remove genes with a generally low expression, as low counts have lower relative uncertainty (hence lower statistical power), and may be considered biologically less relevant.
 
 ```{r}
-
 suppressPackageStartupMessages({
   library(limma)
   library(edgeR)
 })
 
+keep <- rowSums(cpm(se) > 2) >= 3
+table(keep)
+se <- se[keep,]
+```
+
+## Data exploration
+
+```{r}
 # library size distribution
 hist(colSums(assays(se)$counts)/1e6, breaks=10)
 boxplot(colSums(assays(se)$counts)/1e6 ~ treatment)
@@ -228,29 +236,29 @@ par(mfrow=c(3,2), mar=c(2,2,2,1))
 for(kk in 1:length(idList)){
   # extract counts for each condition
   curCounts <- assays(se)$counts[,idList[[kk]]]
+  curFracs <- sweep(curCounts, 2, FUN="/", STATS=colSums(curCounts))
   plot(x = rowMeans(curCounts)+1,
        y = rowVars(curCounts)+1,
        pch = 16, cex=1/2,
        xlab = "Mean", ylab="Variance",
+       main = names(idList)[kk],
        log="xy")
   abline(0,1, col="red")
-  
+  lw1 <- loess((rowVars(curCounts)+1) ~ (rowMeans(curCounts)+1), span=1/4, lwd=3)
+  oo <- order(rowMeans(curCounts)+1)
+  lines(rowMeans(curCounts)[oo]+1, lw1$fitted[oo], col="orange")
+
   smoothScatter(x = log1p(rowMeans(curCounts)),
        y = log1p(rowVars(curCounts)),
        pch = 16, cex=1/2,
        xlab = "Mean", ylab="Variance")
   abline(0,1, col="red")
+  lines(log(rowMeans(curCounts)[oo]+1), log(lw1$fitted[oo]+1), col="orange")
 }
 ```
 
-
-```{r, eval=FALSE, echo=FALSE}
-# Ask students why I separate according to time and treatment, and not patient?
-# Relate to model definition of a GLM. (Note caveat of library size N_i)
-```
-
  - Having data on thousands of genes provides the opportunity to empirically assess the mean-variance relationship.
- - It is clear that the data is overdispersed with respect to the Poisson distribution. There also seems to be a quadratic trend of the variance as a function of the mean. This has motivated the **negative binomial distribution as the most popular choice to model (bulk) RNA-seq gene expression data**.
+ - It is clear that the data is overdispersed with respect to the Poisson distribution (red $y=x$ line). There also seems to be a quadratic trend of the variance as a function of the mean. This has motivated the **negative binomial distribution as the most popular choice to model (bulk) RNA-seq gene expression data**.
  
  ---
  
@@ -263,8 +271,7 @@ for(kk in 1:length(idList)){
  $$ Y \sim NB(\mu = \alpha / \beta, \phi = 1/\alpha). $$
  - This can be shown analytically, but is considered out of the scope of this course. Below, we show it empirically using simulation.
  - This theoretical result has got some practical consequences. The Gamma-Poisson formulation makes it clear why we can sum technical replicates as the sum of Poisson random variables is again a Poisson random variable. 
- - The Poisson statement can thus be considered as capturing technical variation, while the Gamma statement can be considered to capture biological variation, i.e., variation in the expression mean across biological replicates.
- 
+ - The Poisson statement can thus be considered as capturing technical variation, while the Gamma statement can be considered to capture biological variation, i.e., variation in the mean expression across biological replicates.
 
 ```{r}
 alpha <- 20
@@ -286,7 +293,7 @@ lines(density(y2), col="steelblue")
 Normalization is necessary to correct for several sources of technical variation:
 
  - **Differences in sequencing depth** between samples. Some samples get sequenced deeper in the sense that they consist of more (mapped) reads and therefore can be considered to contain a higher amount of information, which we should be taking into account. In addition, if a sample is sequenced deeper, it is natural that the counts for each gene will be higher, jeopardizing a direct comparison of the expression counts.
- - **Differences in RNA population composition** between samples. Suppose that two samples have been sequenced to the exact same depth. One sample is contaminated and has a very high concentration of the contaminant cDNA being sequenced, but otherwise the two samples are identical. Since the contaminant will be taking up a significant proportion of the reads being sequenced, the counts will not be directly comparable between the samples. Hence, we may also want to correct for differences in the composition of the RNA population of the samples.
+ - **Differences in RNA population composition** between samples. As an extreme example, suppose that two samples have been sequenced to the exact same depth. One sample is contaminated and has a very high concentration of the contaminant cDNA being sequenced, but otherwise the two samples are identical. Since the contaminant will be taking up a significant proportion of the reads being sequenced, the counts will not be directly comparable between the samples. Hence, we may also want to correct for differences in the composition of the RNA population of the samples.
  - **Other technical variation** such as sample-specific GC-content or transcript length effects may also be accounted for.
  
  ---
@@ -316,12 +323,12 @@ for(cc in 1:ncol(combs)){
  
 ## Count scaling versus GLM offsets
 
- - We have previously discussed count scaling transformations such as CPM and TPM as normalization methods that directly scale counts. However, these transformations ignore inherent information such as the sequencing depth. A measured gene expression of zero in a sample where only 1000 reads are sequenced is very different from a sample where 10 million reads are sequenced.
+ - We have previously discussed count scaling transformations such as CPM and TPM.
  - A more appropriate and natural way when working with GLMs is through the use of **offsets**. The general use of an offset is to account for the 'effort' performed in order to gather that observation of the response variable. Two examples:
    1. A biologist studying whale migration has one fixed spot where, in the migration season, she counts migrating whales day after day, over several years. For each day she records the number of spotted whales. Of course, the time spent whale-watching may differ from day to day and it is natural that you are more likely to spot more whales if you spend more time looking for them. The time spent spotting whales can then be used as an offset.
-   2. In our case, a sample being sequenced deeper contains more information, i.e., more 'effort' has been performed, as compared to a sample being sequenced relatively shallow. We have more confidence of a count from a deeply sequenced sample than from a shallowly sequenced sample. We can therefore use the sequencing depth $N_i = \sum_g Y_{gi}$ as off set in the model.
+   2. In our case, a sample being sequenced deeper contains more information, i.e., more 'effort' has been performed, as compared to a sample being sequenced relatively shallow. We have more confidence of a count from a deeply sequenced sample than from a shallowly sequenced sample. We can therefore use the sequencing depth $N_i = \sum_g Y_{gi}$ as offset in the model.
   - Adding an offset to the model is different from adding a new variable to the model. For each new variable we add, we will estimate its average effect $\beta$ on the response variable. When adding an offset, however, we are implicitly assuming that $\beta=1$.
-  - Offsets are typically added on the scale of the linear predictor. Suppose we have a gene $g$ and sample $i$ specific offset $O_{ij}$, then we can define a negative binomial GLM including the offset as
+  - Offsets are typically added on the scale of the linear predictor. Suppose we have a gene $g$ and sample $i$ specific offset $O_{gi}$, then we can define a negative binomial GLM including the offset as
   $$
   \left\{
   \begin{array}{ccc}
@@ -334,25 +341,25 @@ for(cc in 1:ncol(combs)){
   
 ## How to normalize?
 
-Many approaches are available for normalizing RNA-seq data. Most methods basically calculate an offset that is added to the GLM used to model gene expression. One notable method, full-quantile normalization, does not calculate an offset.
+Many approaches are available for normalizing RNA-seq data, and we will review a couple of these. Most methods basically calculate an offset that is added to the GLM used to model gene expression. One notable method, full-quantile normalization, does not calculate an offset.
  
 ### TMM method (default of `edgeR`)
 
-The trimmed mean of M-values (TMM) method introduced by [Robinson & Oshlack (2010)](https://genomebiology.biomedcentral.com/articles/10.1186/gb-2010-11-3-r25) is a global-scaling normalization procedure. As the name suggests, it is based on a trimmed mean of fold-changes ($M$-values) as the scaling factor. A trimmed mean is an average after removing a set of ``extreme'' values. 
+The trimmed mean of M-values (TMM) method introduced by [Robinson & Oshlack (2010)](https://genomebiology.biomedcentral.com/articles/10.1186/gb-2010-11-3-r25) is a normalization procedure that calculates a single normalization factor for each sample. As the name suggests, it is based on a trimmed mean of fold-changes ($M$-values) as the scaling factor. A trimmed mean is an average after removing a set of ``extreme'' values. 
 Specifically, TMM calculates a normalization factor $F_i^{(r)}$ across genes $g$ for each sample $i$ as compared to a reference sample $r$,
 $$
 \log_2(F_i^{(r)}) = \frac{\sum_{g \in {\cal G}^*} w_{gi}^r M_{gi}^r}{\sum_{g \in {\cal G}^*} w_{gi}^r},
 $$
 where $M_{gi}^r$ represents the $\log_2$-fold-change of the gene expression fraction as compared to a reference sample $r$, i.e.,
 \[ M_{gi}^r = \log_2\left( \frac{Y_{gi} / N_i}{ Y_{gr} / N_r} \right), \]
-$w_{gi}^r$ represents a weight calculated as
+and $w_{gi}^r$ represents a precision weight calculated as
 $$
  w_{gi}^r = \frac{N_i - Y_{gi}}{N_i Y_{gi}} + \frac{N_r - Y_{gr}}{N_r Y_{gr}},
 $$
-and ${\cal G}^*$ represents the set of peaks after trimming those with the most extreme values.
+and ${\cal G}^*$ represents the set of genes after trimming those with the most extreme average expression. The weights serve to account for the fact that fold-changes for genes with lower read counts are more variable.
 
-The procedure only takes peaks into account where both $Y_{gi}>0$ and $Y_{gr}>0$. By default, TMM trims peaks with the $30\%$ most extreme $M$-values and $5\%$ most extreme average gene expression, and chooses as reference $r$ the sample whose upper-quartile is closest to the across-sample average upper-quartile. The normalized counts are then given by $\tilde{Y}_{gi} = Y_{gi} / N_i^s$, where 
-$$N_i^s = \frac{N_i F_i^{(r)}}{\sum_i N_i F_i^{(r)}/n}.$$
+The procedure only takes genes into account where both $Y_{gi}>0$ and $Y_{gr}>0$. By default, TMM trims genes with the $30\%$ most extreme $M$-values and $5\%$ most extreme average gene expression, and chooses as reference $r$ the sample whose upper-quartile is closest to the across-sample average upper-quartile. The normalized counts are then given by $\tilde{Y}_{gi} = Y_{gi} / N_i^s$, where 
+$$N_i^s = \frac{N_i F_i^{(r)}}{\sum_{i=1}^n N_i F_i^{(r)}/n}.$$
 
 TMM normalization may be performed from the `calcNormFactors` function implemented in `edgeR`:
 
@@ -362,8 +369,8 @@ dge$samples #normalization factors added to colData
 ```
 
 Let's check how our MD-plots look like after normalization. Note that, we can rewrite the GLM as
-$$ \log\left( \frac{\mu_{gi}}{O_{gi}} \right) = \mathbf{X}_i^T \beta_g $$
-and so $\frac{\mu_{gi}}{O_{gi}}$ can be considered as an 'offset-corrected count'.
+$$ \log\left( \frac{\mu_{gi}}{N_i^s} \right) = \mathbf{X}_i^T \beta_g $$
+and so $\frac{\mu_{gi}}{N_i^s}$ can be considered as an 'offset-corrected count'.
 
 We see that all MD-plots are now nicely centered around a log-fold-change of zero!
 
@@ -400,7 +407,8 @@ s_i = \text{median}_{\{{g:Y^{*}_{gr} \ne 0}\}} \frac{Y_{gi}}{Y^{*}_{gr}},
 $$
 with 
 \[ Y^{*}_{gr} = \left( \prod_{i=1}^n Y_{gi} \right)^{1/n}. \]
-From this, we calculate the normalized count as $\tilde{Y}_{gi} = Y_{gi} / s_{i}$.
+
+We can then use the size factors $s_i$ as offsets to the GLM.
 
 Median-of-ratios normalization is implemented in the `DESeq2` package:
 
@@ -414,7 +422,7 @@ sizeFactors(dds)
 
 You may also want to check out the [StatQuest video on DESeq2 normalization](https://www.youtube.com/watch?v=UFB993xufUU).
 
-## Full quantile (FQ) normalization
+## Full-quantile (FQ) normalization
 
 In full-quantile normalization, originally introduced in the context of microarrays by [Bolstad *et al.* (2003)](https://academic.oup.com/bioinformatics/article/19/2/185/372664), the samples are forced to each have a distribution identical to the distribution of the median/average of the quantiles across samples.
 In practice, we implement full-quantile normalization using the following procedure
@@ -422,21 +430,27 @@ In practice, we implement full-quantile normalization using the following proced
  1. Given a data matrix $\mathbf{Y}_{G \times n}$ for $G$ genes (rows) and $n$ samples (columns),
  2. sort each column to get $\mathbf{Y}^S$,
  3. replace all elements of each row by the median (or average) for that row,
- 4. obtain the normalized counts $\tilde{\mathbf{Y}}$ by re-arranging (i.e., unsorting) each column. 
+ 4. obtain the normalized counts $\tilde{\mathbf{Y}}$ by re-arranging (i.e., unsorting) each column.
 
-## Conditional quantile normalization (`cqn`)
+## Uncertainty in normalization
 
-The `cqn` method, introduced by [Hansen *et al.* (2012)](https://academic.oup.com/biostatistics/article/13/2/204/1746212) and implemented in the `cqn` `R` package, starts by assuming a Poisson model for the gene expression counts $Y_{gi}$. Median regression is used to model, for each sample, the log-transformed accessibility count as a smooth function of GC-content as well as gene length, focusing on genes with high average count (above $50$ by default). Next, subset quantile normalization ([Wu *et al.* (2010)](https://www.liebertpub.com/doi/10.1089/cmb.2010.0049)) is performed on the residuals of that model (i.e., on the counts adjusted for GC-content) for between-sample normalization. The method could intuitively be thought of as full-quantile normalization after removing a smoothed sample-specific GC-content effect. Normalized counts are calculated as recommended in the `cqn` vignette, i.e.,
-$$
-\tilde{Y}_{gi} = \left(\frac{(Y_{gi}+1) 10^6}{\sum_g Y_{gi}}\right)  2^{O_{gi}},
-$$
-with $O_{gi}$ the normalization offset estimated by `cqn`, which is on the $\log_2$ scale. Note that `cqn` normalization works with a gene- and sample-specific offset, unlike TMM and median-of-ratios normalization which only work with a sample-specific offset.
+ - The offsets that are being cacluated for normalization purposes are estimates.
+ - The downstream analyses incorporates these estimates as if they are known.
+ - The analysis therefore **ignores the uncertainty** in their estimation.
+ 
+ 
+```{r, echo=FALSE, fig.cap=paste("Figure: Box 1 from Vallejos et al. (2017).")}
+# All defaults
+include_graphics("./images_sequencing/normalizationUncertainty.png")
+```
+
 
 # Challenge III: Parameter estimation (under limited information setting)
 
-There are two challenges to be overcome here. First, we need to get the structure of our mean model right, this is, which covariates to include, and how to include them, such that we are capable of capturing important sources of variation in our experiment, in order to derive a correct interpretation of the data in terms of our research question.
+There are two challenges to be overcome here:
 
-Second, we need to be able to estimate the parameters of our model in an efficient way, while having limited information (i.e., we only have a small number of replicates).
+ - First, we need to get the structure of our mean model right, this is, which covariates to include, and how to include them, such that we are capable of capturing important sources of variation in our experiment, in order to derive a correct interpretation of the data in terms of our research question.
+ - Second, we need to be able to estimate the parameters of our model in an efficient way, while having limited information (i.e., we often only have a small number of replicates).
 
 ## Defining the model for the mean
 
@@ -449,7 +463,7 @@ include_graphics("./images_sequencing/deAnalysis_para.png")
 
 The authors write that they are "employing treatment type, time point and sample ID as factors in the model". Concerning experimental variables, this suggests they have added covariates defining the treatment and time point for each sample. The sample ID in the text refers to the original tissue sample and therefore corresponds to the donor patient. While there is also a variable called `sample` in the `colData`, this is not what the authors refer to. Note the ambiguity here and since the authors didn't share their code, this is hard to check! But, more on reproducibility later.
 
-**Question**. What are the authors assuming using this structure for the mean model? Do you think that there are extensions or simplifications of the mean model that would be relevant?
+**Question**. What are the authors assuming when using this structure for the mean model? Do you think that there are extensions or simplifications of the mean model that would be relevant?
 
 <details><summary> Answer. </summary><p>
 The authors are acknowledging the relatedness of samples derived from the same donor patient by adding it as a fixed effect to the model, which is great. This blocking strategy has been extensively discussed in the proteomics part of this course.
@@ -459,21 +473,26 @@ We can make the model more flexible (but also more complex) by allowing for a `t
 
 ## Parameter estimation and empirical Bayes
 
-Even in limited sample sizes, the parameters $\beta$ of the mean model may be estimated reasonably efficiently. However, estimating parameters for the varaince (this is, the dispersion parameter $\phi$ from the negative binomial or the variance parameter $\sigma$ from the Gaussian) are typically quite a bit harder.
+ - Even in limited sample sizes, the parameters $\beta$ of the mean model may be estimated reasonably efficiently, and we have previously discussed the IRLS algorithm. 
+ - However, estimating parameters for the variance (this is, the dispersion parameter $\phi$ from the negative binomial or the variance parameter $\sigma$ from the Gaussian) is typically quite a bit harder.
+ - In genomics, we often take advantage of the parallel structure of the thousands of regression models (one for each gene) to **borrow information across genes** in a procedure called **empirical Bayes**, as also seen in the proteomics part of this course. 
+ - In empirical Bayes, we basically take a semi-Bayesian approach to parameter estimation, where we use the data but also a prior distribution to derive our parameter estimate. However, what makes it empirical is that we are using the data to estimate this prior distribution, unlike in a fully Bayesian analysis where the prior distribution must be specified independently of the data. 
+ - The basic assumption for this to make sense is that genes with similar means might have similar dispersion parameters (or variances), owing to the mean-variance trend. 
 
-In genomics, we often take advantage of the parallel structure of the thousands of regression models (one for each gene) to **borrow information across genes** in a procedure called **empirical Bayes**, as also seen in the proteomics part of this course. In empirical Bayes, we basically take a semi-Bayesian approach to parameter estimation, where we use the data but also a prior distribution to derive our parameter estimate. However, what makes it empirical is that we are using the data to estimate this prior distribution, unlike in a fully Bayesian analysis where the prior distribution must be specified independently of the data. The basic assumption for this to make sense is that genes with similar means might have similar dispersion parameters (or variances), owing to the mean-variance trend. 
-
-Once initial estimates ($\hat{\Phi}_g^{ML}$ in the figure) have been derived, we use a parametric model to estimate its distribution (typically as a function of the mean), which we're calling the prior distribution. Then, each initial estimate is shrunken towards that empirically estimated prior distribution. The amount of shrinkage being performed is data-driven, and depends on the data, taking into account the precision of our initial estimate (i.e., shape of the likelihood) and the width of the prior.
-
-These strategies result in impressive performance gains in terms of differential expression analysis and are implemented in all popular differential expression analysis software packages (though in slightly differing ways) like `limma`, `edgeR` and `DESeq2`.
+ ---
+ 
+ - Once initial estimates for the gene-wise dispersions have been derived ($\hat{\Phi}_g^{ML}$ in the figure), we use a parametric model to estimate its distribution (typically as a function of the mean) across genes. This distribution is the **prior distribution**.
+ - Then, each initial estimate is shrunken towards that empirically estimated prior distribution. The amount of shrinkage being performed is data-driven, and depends on the data, taking into account the precision of our initial estimate (i.e., shape of the likelihood) and the variability of the prior distribution.
+ - These strategies result in impressive performance gains in terms of differential expression analysis and are implemented in all popular differential expression analysis software packages (though in slightly differing ways) like `limma`, `edgeR` and `DESeq2`.
 
 ```{r, echo=FALSE, fig.cap=paste("Figure 8 from Van den Berge *et al.* (2019).")}
 # All defaults
 include_graphics("./images_sequencing/empiricalBayes.png")
 ```
 
-## In practice
+The blog post on [understanding empirical Bayes estimation using baseball statistics](http://varianceexplained.org/r/empirical_bayes_baseball/) is a great primer for further reading, as well as the [accompanying book](https://drob.gumroad.com/l/empirical-bayes) by David Robinson.
 
+## In practice
 
 Let's fit the model using `edgeR`.
 
@@ -498,7 +517,7 @@ head(fit$coefficients)
 We will first derive all contrasts that are also investigated in the original manuscript, using our extended model where we are allowing for an interaction effect between treatment and time.
 
 The mean model is
-$$ \log(\mu_{gi}) = \beta_{g0} + \beta_{g1} x_{DPN} + \beta_{g2} x_{OHT} + \beta_{g3} x_{48h} + \beta_{g4} x_{pat2} + \beta_{g5} x_{pat3} + \beta_{g6} x_{pat4} + \beta_{g7} x_{DPN:48h} + \beta_{g8} x_{OHT:48h}. $$
+$$ \log(\mu_{gi}) = \beta_{g0} + \beta_{g1} x_{DPN} + \beta_{g2} x_{OHT} + \beta_{g3} x_{48h} + \beta_{g4} x_{pat2} + \beta_{g5} x_{pat3} + \beta_{g6} x_{pat4} + \\ \beta_{g7} x_{DPN:48h} + \beta_{g8} x_{OHT:48h}. $$
 
 The intercept corresponds to the log average gene expression in the control group at 24h for patient 1.
 
@@ -647,7 +666,7 @@ deGenes
 orderedDEGenes <- deGenes[order(abs(lrtList[[2]]$table[deGenes, "logFC"]), decreasing = TRUE)]
 
 par(mfrow=c(3,3))
-for(kk in 1:length(orderedDEGenes)){
+for(kk in 1:9){
   boxplot(log1p(assays(se)$counts[orderedDEGenes[kk],]) ~ interaction(treatment, time))
   boxplot(fit$fitted.values[orderedDEGenes[kk],] ~ interaction(treatment, time))
 }
@@ -700,7 +719,8 @@ head(fit2$coefficients)
 ## for example: the estimate for the DPN24h vs control 24h is still the same,
 ## but requires a different combination of parameters
 plot(fit$coefficients[,"treatmentDPN"], 
-     fit2$coefficients[,"treatTimeDPN24h"] - fit2$coefficients[,"treatTimeControl24h"])
+     fit2$coefficients[,"treatTimeDPN24h"] - fit2$coefficients[,"treatTimeControl24h"],
+     xlab="Intercept model estimate", ylab="No intercept model estimate")
 
 # Let's implement the DPNvsCON48 contrast
 L2 <- matrix(0, nrow = ncol(fit2$coefficients), ncol = 1)
@@ -710,7 +730,9 @@ lrt2 <- glmLRT(fit2, contrast=L2[,1])
 hist(lrt2$table$PValue)
 
 
-plot(x=lrt2$table$PValue, y=lrtList[[2]]$table$PValue)
+plot(x=lrt2$table$PValue, y=lrtList[[2]]$table$PValue,
+     xlab="No intercept model p-value",
+     ylab="Intercept model p-value")
 ```
 
 
