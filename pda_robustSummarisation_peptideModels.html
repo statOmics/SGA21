@@ -430,25 +430,31 @@ div.tocify {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="./docs/intro.pdf">Position</a>
+      <a href="./docs/intro.pdf">1.1 Position</a>
     </li>
     <li>
-      <a href="recapGeneralLinearModel.html">Recap linear model</a>
+      <a href="recapGeneralLinearModel.html">1.2 Recap linear model</a>
     </li>
     <li>
-      <a href="./docs/martens_proteomics_bioinformatics.pdf">PDA - identification</a>
+      <a href="./docs/martens_proteomics_bioinformatics.pdf">2.1 PDA - identification</a>
     </li>
     <li>
-      <a href="pda_quantification_preprocessing.html">Quantification - Preprocessing</a>
+      <a href="pda_quantification_preprocessing.html">2.2 Quantification - Preprocessing</a>
     </li>
     <li>
-      <a href="pda_robustSummarisation_peptideModels.html">Wrap-up Preprocessing - Peptide-Level-Models</a>
+      <a href="pda_robustSummarisation_peptideModels.html">2.2 Wrap-up Preprocessing - Peptide-Level-Models</a>
     </li>
     <li>
-      <a href="pda_quantification_inference.html">Quantification - Differential Abundance Analysis</a>
+      <a href="pda_quantification_inference.html">2.3 Quantification - Differential Abundance Analysis</a>
     </li>
     <li>
-      <a href="pda_blocking_wrapup.html">Wrap-up DA - Blocking</a>
+      <a href="pda_blocking_wrapup.html">2.3 Wrap-up DA - Blocking</a>
+    </li>
+    <li>
+      <a href="technicalDetailsProteomics.html">2.4. DA Technical Details</a>
+    </li>
+    <li>
+      <a href="./docs/stagewiseTesting.pdf">2.5 Stage-wise testing</a>
     </li>
   </ul>
 </li>
@@ -462,16 +468,16 @@ div.tocify {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="multipleRegression_KPNA2.html">Intro KPNA2</a>
+      <a href="multipleRegression_KPNA2.html">1 Intro KPNA2</a>
     </li>
     <li>
-      <a href="https://www.compomics.com/bioinformatics-for-proteomics/">Identification</a>
+      <a href="https://www.compomics.com/bioinformatics-for-proteomics/">2.1 Identification</a>
     </li>
     <li>
-      <a href="pda_tutorialPreprocessing.html">DA - Preprocessing</a>
+      <a href="pda_tutorialPreprocessing.html">2.2 DA - Preprocessing</a>
     </li>
     <li>
-      <a href="pda_tutorialDesign.html">DA - Design</a>
+      <a href="pda_tutorialDesign.html">2.3 DA - Design</a>
     </li>
   </ul>
 </li>
@@ -1823,11 +1829,17 @@ div.tocify {
 <pre><code>## Your quantitative and row data contain missing values. Please read the
 ## relevant section(s) in the aggregateFeatures manual page regarding the
 ## effects of missing values on data aggregation.</code></pre>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>pe &lt;-<span class="st"> </span><span class="kw">aggregateFeatures</span>(pe,</span>
-<span id="cb12-2"><a href="#cb12-2"></a>  <span class="dt">i =</span> <span class="st">&quot;peptideNorm&quot;</span>,</span>
-<span id="cb12-3"><a href="#cb12-3"></a>  <span class="dt">fcol =</span> <span class="st">&quot;Proteins&quot;</span>,</span>
-<span id="cb12-4"><a href="#cb12-4"></a>  <span class="dt">na.rm =</span> <span class="ot">TRUE</span>,</span>
-<span id="cb12-5"><a href="#cb12-5"></a>  <span class="dt">name =</span> <span class="st">&quot;proteinRobust&quot;</span>)</span></code></pre></div>
+<pre><code>## Warning: The dim() method for DataFrameList objects is deprecated. Please use
+##   dims() on these objects instead.</code></pre>
+<pre><code>## Warning: The nrow() method for DataFrameList objects is deprecated. Please use
+##   nrows() on these objects instead.</code></pre>
+<pre><code>## Warning: The ncol() method for CompressedSplitDataFrameList objects is
+##   deprecated. Please use ncols() on these objects instead.</code></pre>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>pe &lt;-<span class="st"> </span><span class="kw">aggregateFeatures</span>(pe,</span>
+<span id="cb15-2"><a href="#cb15-2"></a>  <span class="dt">i =</span> <span class="st">&quot;peptideNorm&quot;</span>,</span>
+<span id="cb15-3"><a href="#cb15-3"></a>  <span class="dt">fcol =</span> <span class="st">&quot;Proteins&quot;</span>,</span>
+<span id="cb15-4"><a href="#cb15-4"></a>  <span class="dt">na.rm =</span> <span class="ot">TRUE</span>,</span>
+<span id="cb15-5"><a href="#cb15-5"></a>  <span class="dt">name =</span> <span class="st">&quot;proteinRobust&quot;</span>)</span></code></pre></div>
 <pre><code>## Your quantitative and row data contain missing values. Please read the
 ## relevant section(s) in the aggregateFeatures manual page regarding the
 ## effects of missing values on data aggregation.</code></pre>
@@ -3918,10 +3930,16 @@ div.tocify {
 ## Warning in rlm.default(X, expression, ...): some of ... do not match
 
 ## Warning in rlm.default(X, expression, ...): some of ... do not match</code></pre>
+<pre><code>## Warning: The dim() method for DataFrameList objects is deprecated. Please use
+##   dims() on these objects instead.</code></pre>
+<pre><code>## Warning: The nrow() method for DataFrameList objects is deprecated. Please use
+##   nrows() on these objects instead.</code></pre>
+<pre><code>## Warning: The ncol() method for CompressedSplitDataFrameList objects is
+##   deprecated. Please use ncols() on these objects instead.</code></pre>
 <ol start="3" style="list-style-type: decimal">
 <li>Modeling and inference</li>
 </ol>
-<div class="sourceCode" id="cb223"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb223-1"><a href="#cb223-1"></a>pe &lt;-<span class="st"> </span><span class="kw">msqrob</span>(<span class="dt">object =</span> pe, <span class="dt">i =</span> <span class="st">&quot;proteinMedian&quot;</span>, <span class="dt">formula =</span> <span class="op">~</span>condition)</span></code></pre></div>
+<div class="sourceCode" id="cb229"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb229-1"><a href="#cb229-1"></a>pe &lt;-<span class="st"> </span><span class="kw">msqrob</span>(<span class="dt">object =</span> pe, <span class="dt">i =</span> <span class="st">&quot;proteinMedian&quot;</span>, <span class="dt">formula =</span> <span class="op">~</span>condition)</span></code></pre></div>
 <pre><code>## Warning in rlm.default(X, y, method = &quot;M&quot;, maxit = maxitRob): &#39;rlm&#39; failed to
 ## converge in 1 steps
 
@@ -5667,10 +5685,10 @@ div.tocify {
 
 ## Warning in rlm.default(X, y, method = &quot;M&quot;, maxit = maxitRob): &#39;rlm&#39; failed to
 ## converge in 1 steps</code></pre>
-<div class="sourceCode" id="cb225"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb225-1"><a href="#cb225-1"></a>L &lt;-<span class="st"> </span><span class="kw">makeContrast</span>(<span class="st">&quot;conditionB=0&quot;</span>, <span class="dt">parameterNames =</span> <span class="kw">c</span>(<span class="st">&quot;conditionB&quot;</span>))</span>
-<span id="cb225-2"><a href="#cb225-2"></a>pe &lt;-<span class="st"> </span><span class="kw">hypothesisTest</span>(<span class="dt">object =</span> pe, <span class="dt">i =</span> <span class="st">&quot;proteinMedian&quot;</span>, <span class="dt">contrast =</span> L)</span>
-<span id="cb225-3"><a href="#cb225-3"></a></span>
-<span id="cb225-4"><a href="#cb225-4"></a>pe &lt;-<span class="st"> </span><span class="kw">msqrob</span>(<span class="dt">object =</span> pe, <span class="dt">i =</span> <span class="st">&quot;proteinRobust&quot;</span>, <span class="dt">formula =</span> <span class="op">~</span>condition)</span></code></pre></div>
+<div class="sourceCode" id="cb231"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb231-1"><a href="#cb231-1"></a>L &lt;-<span class="st"> </span><span class="kw">makeContrast</span>(<span class="st">&quot;conditionB=0&quot;</span>, <span class="dt">parameterNames =</span> <span class="kw">c</span>(<span class="st">&quot;conditionB&quot;</span>))</span>
+<span id="cb231-2"><a href="#cb231-2"></a>pe &lt;-<span class="st"> </span><span class="kw">hypothesisTest</span>(<span class="dt">object =</span> pe, <span class="dt">i =</span> <span class="st">&quot;proteinMedian&quot;</span>, <span class="dt">contrast =</span> L)</span>
+<span id="cb231-3"><a href="#cb231-3"></a></span>
+<span id="cb231-4"><a href="#cb231-4"></a>pe &lt;-<span class="st"> </span><span class="kw">msqrob</span>(<span class="dt">object =</span> pe, <span class="dt">i =</span> <span class="st">&quot;proteinRobust&quot;</span>, <span class="dt">formula =</span> <span class="op">~</span>condition)</span></code></pre></div>
 <pre><code>## Warning in rlm.default(X, y, method = &quot;M&quot;, maxit = maxitRob): &#39;rlm&#39; failed to
 ## converge in 1 steps
 
@@ -7419,49 +7437,49 @@ div.tocify {
 
 ## Warning in rlm.default(X, y, method = &quot;M&quot;, maxit = maxitRob): &#39;rlm&#39; failed to
 ## converge in 1 steps</code></pre>
-<div class="sourceCode" id="cb227"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb227-1"><a href="#cb227-1"></a>pe &lt;-<span class="st"> </span><span class="kw">hypothesisTest</span>(<span class="dt">object =</span> pe, <span class="dt">i =</span> <span class="st">&quot;proteinRobust&quot;</span>, <span class="dt">contrast =</span> L)</span>
-<span id="cb227-2"><a href="#cb227-2"></a></span>
-<span id="cb227-3"><a href="#cb227-3"></a>volcanoMedian &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinMedian&quot;</span>]])<span class="op">$</span>conditionB,</span>
-<span id="cb227-4"><a href="#cb227-4"></a>                  <span class="kw">aes</span>(<span class="dt">x =</span> logFC, <span class="dt">y =</span> <span class="op">-</span><span class="kw">log10</span>(pval), <span class="dt">color =</span> adjPval <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>)) <span class="op">+</span></span>
-<span id="cb227-5"><a href="#cb227-5"></a><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">cex =</span> <span class="fl">2.5</span>) <span class="op">+</span></span>
-<span id="cb227-6"><a href="#cb227-6"></a><span class="st">  </span><span class="kw">scale_color_manual</span>(<span class="dt">values =</span> <span class="kw">alpha</span>(<span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb227-7"><a href="#cb227-7"></a><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></span>
-<span id="cb227-8"><a href="#cb227-8"></a><span class="st">  </span><span class="kw">ggtitle</span>(<span class="kw">paste0</span>(<span class="st">&quot;Median: TP = &quot;</span>,<span class="kw">sum</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinMedian&quot;</span>]])<span class="op">$</span>conditionB<span class="op">$</span>adjPval<span class="op">&lt;</span><span class="fl">0.05</span><span class="op">&amp;</span><span class="kw">grepl</span>(<span class="kw">rownames</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinMedian&quot;</span>]])<span class="op">$</span>conditionB),<span class="dt">pattern =</span><span class="st">&quot;UPS&quot;</span>),<span class="dt">na.rm=</span><span class="ot">TRUE</span>), <span class="st">&quot; FP = &quot;</span>, <span class="kw">sum</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinMedian&quot;</span>]])<span class="op">$</span>conditionB<span class="op">$</span>adjPval<span class="op">&lt;</span><span class="fl">0.05</span><span class="op">&amp;!</span><span class="kw">grepl</span>(<span class="kw">rownames</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinMedian&quot;</span>]])<span class="op">$</span>conditionB),<span class="dt">pattern =</span><span class="st">&quot;UPS&quot;</span>),<span class="dt">na.rm=</span><span class="ot">TRUE</span>)))</span>
-<span id="cb227-9"><a href="#cb227-9"></a></span>
-<span id="cb227-10"><a href="#cb227-10"></a>volcanoRobust&lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>conditionB,</span>
-<span id="cb227-11"><a href="#cb227-11"></a>                  <span class="kw">aes</span>(<span class="dt">x =</span> logFC, <span class="dt">y =</span> <span class="op">-</span><span class="kw">log10</span>(pval), <span class="dt">color =</span> adjPval <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>)) <span class="op">+</span></span>
-<span id="cb227-12"><a href="#cb227-12"></a><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">cex =</span> <span class="fl">2.5</span>) <span class="op">+</span></span>
-<span id="cb227-13"><a href="#cb227-13"></a><span class="st">  </span><span class="kw">scale_color_manual</span>(<span class="dt">values =</span> <span class="kw">alpha</span>(<span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb227-14"><a href="#cb227-14"></a><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></span>
-<span id="cb227-15"><a href="#cb227-15"></a><span class="st">  </span><span class="kw">ggtitle</span>(<span class="kw">paste0</span>(<span class="st">&quot;Robust: TP = &quot;</span>,<span class="kw">sum</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>conditionB<span class="op">$</span>adjPval<span class="op">&lt;</span><span class="fl">0.05</span><span class="op">&amp;</span><span class="kw">grepl</span>(<span class="kw">rownames</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>conditionB),<span class="dt">pattern =</span><span class="st">&quot;UPS&quot;</span>),<span class="dt">na.rm=</span><span class="ot">TRUE</span>), <span class="st">&quot; FP = &quot;</span>, <span class="kw">sum</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>conditionB<span class="op">$</span>adjPval<span class="op">&lt;</span><span class="fl">0.05</span><span class="op">&amp;!</span><span class="kw">grepl</span>(<span class="kw">rownames</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>conditionB),<span class="dt">pattern =</span><span class="st">&quot;UPS&quot;</span>),<span class="dt">na.rm=</span><span class="ot">TRUE</span>)))</span></code></pre></div>
-<div class="sourceCode" id="cb228"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb228-1"><a href="#cb228-1"></a>ylims &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">0</span>, </span>
-<span id="cb228-2"><a href="#cb228-2"></a>           <span class="kw">ceiling</span>(<span class="kw">max</span>(<span class="kw">c</span>(<span class="op">-</span><span class="kw">log10</span>(<span class="kw">rowData</span>(peLFQ[[<span class="st">&quot;protein&quot;</span>]])<span class="op">$</span>conditionB<span class="op">$</span>pval),</span>
-<span id="cb228-3"><a href="#cb228-3"></a>               <span class="op">-</span><span class="kw">log10</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinMedian&quot;</span>]])<span class="op">$</span>conditionB<span class="op">$</span>pval),</span>
-<span id="cb228-4"><a href="#cb228-4"></a>               <span class="op">-</span><span class="kw">log10</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>conditionB<span class="op">$</span>pval)),</span>
-<span id="cb228-5"><a href="#cb228-5"></a>               <span class="dt">na.rm=</span><span class="ot">TRUE</span>))</span>
-<span id="cb228-6"><a href="#cb228-6"></a>)</span>
-<span id="cb228-7"><a href="#cb228-7"></a></span>
-<span id="cb228-8"><a href="#cb228-8"></a>xlims &lt;-<span class="st"> </span><span class="kw">max</span>(<span class="kw">abs</span>(<span class="kw">c</span>(<span class="kw">rowData</span>(peLFQ[[<span class="st">&quot;protein&quot;</span>]])<span class="op">$</span>conditionB<span class="op">$</span>logFC,</span>
-<span id="cb228-9"><a href="#cb228-9"></a>               <span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinMedian&quot;</span>]])<span class="op">$</span>conditionB<span class="op">$</span>logFC,</span>
-<span id="cb228-10"><a href="#cb228-10"></a>               <span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>conditionB<span class="op">$</span>logFC)),</span>
-<span id="cb228-11"><a href="#cb228-11"></a>               <span class="dt">na.rm=</span><span class="ot">TRUE</span>) <span class="op">*</span><span class="st"> </span><span class="kw">c</span>(<span class="op">-</span><span class="dv">1</span>,<span class="dv">1</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb229"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb229-1"><a href="#cb229-1"></a>compBoxPlot &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">rowData</span>(peLFQ[[<span class="st">&quot;protein&quot;</span>]])<span class="op">$</span>conditionB <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">method=</span><span class="st">&quot;maxLFQ&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">rownames_to_column</span>(<span class="dt">var=</span><span class="st">&quot;protein&quot;</span>),</span>
-<span id="cb229-2"><a href="#cb229-2"></a>      <span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinMedian&quot;</span>]])<span class="op">$</span>conditionB <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">method=</span><span class="st">&quot;median&quot;</span>)<span class="op">%&gt;%</span><span class="st"> </span><span class="kw">rownames_to_column</span>(<span class="dt">var=</span><span class="st">&quot;protein&quot;</span>),</span>
-<span id="cb229-3"><a href="#cb229-3"></a>      <span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>conditionB<span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">method=</span><span class="st">&quot;robust&quot;</span>)<span class="op">%&gt;%</span><span class="st"> </span><span class="kw">rownames_to_column</span>(<span class="dt">var=</span><span class="st">&quot;protein&quot;</span>)) <span class="op">%&gt;%</span></span>
-<span id="cb229-4"><a href="#cb229-4"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">ups=</span> <span class="kw">grepl</span>(protein,<span class="dt">pattern=</span><span class="st">&quot;UPS&quot;</span>)) <span class="op">%&gt;%</span></span>
-<span id="cb229-5"><a href="#cb229-5"></a><span class="st">    </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> method, <span class="dt">y =</span> logFC, <span class="dt">fill =</span> ups)) <span class="op">+</span></span>
-<span id="cb229-6"><a href="#cb229-6"></a><span class="st">    </span><span class="kw">geom_boxplot</span>() <span class="op">+</span></span>
-<span id="cb229-7"><a href="#cb229-7"></a><span class="st">    </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> <span class="kw">log2</span>(<span class="fl">0.74</span> <span class="op">/</span><span class="st"> </span><span class="fl">.25</span>), <span class="dt">color =</span> <span class="st">&quot;#00BFC4&quot;</span>) <span class="op">+</span></span>
-<span id="cb229-8"><a href="#cb229-8"></a><span class="st">    </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> <span class="dv">0</span>, <span class="dt">color =</span> <span class="st">&quot;#F8766D&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb233"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb233-1"><a href="#cb233-1"></a>pe &lt;-<span class="st"> </span><span class="kw">hypothesisTest</span>(<span class="dt">object =</span> pe, <span class="dt">i =</span> <span class="st">&quot;proteinRobust&quot;</span>, <span class="dt">contrast =</span> L)</span>
+<span id="cb233-2"><a href="#cb233-2"></a></span>
+<span id="cb233-3"><a href="#cb233-3"></a>volcanoMedian &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinMedian&quot;</span>]])<span class="op">$</span>conditionB,</span>
+<span id="cb233-4"><a href="#cb233-4"></a>                  <span class="kw">aes</span>(<span class="dt">x =</span> logFC, <span class="dt">y =</span> <span class="op">-</span><span class="kw">log10</span>(pval), <span class="dt">color =</span> adjPval <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>)) <span class="op">+</span></span>
+<span id="cb233-5"><a href="#cb233-5"></a><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">cex =</span> <span class="fl">2.5</span>) <span class="op">+</span></span>
+<span id="cb233-6"><a href="#cb233-6"></a><span class="st">  </span><span class="kw">scale_color_manual</span>(<span class="dt">values =</span> <span class="kw">alpha</span>(<span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb233-7"><a href="#cb233-7"></a><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></span>
+<span id="cb233-8"><a href="#cb233-8"></a><span class="st">  </span><span class="kw">ggtitle</span>(<span class="kw">paste0</span>(<span class="st">&quot;Median: TP = &quot;</span>,<span class="kw">sum</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinMedian&quot;</span>]])<span class="op">$</span>conditionB<span class="op">$</span>adjPval<span class="op">&lt;</span><span class="fl">0.05</span><span class="op">&amp;</span><span class="kw">grepl</span>(<span class="kw">rownames</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinMedian&quot;</span>]])<span class="op">$</span>conditionB),<span class="dt">pattern =</span><span class="st">&quot;UPS&quot;</span>),<span class="dt">na.rm=</span><span class="ot">TRUE</span>), <span class="st">&quot; FP = &quot;</span>, <span class="kw">sum</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinMedian&quot;</span>]])<span class="op">$</span>conditionB<span class="op">$</span>adjPval<span class="op">&lt;</span><span class="fl">0.05</span><span class="op">&amp;!</span><span class="kw">grepl</span>(<span class="kw">rownames</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinMedian&quot;</span>]])<span class="op">$</span>conditionB),<span class="dt">pattern =</span><span class="st">&quot;UPS&quot;</span>),<span class="dt">na.rm=</span><span class="ot">TRUE</span>)))</span>
+<span id="cb233-9"><a href="#cb233-9"></a></span>
+<span id="cb233-10"><a href="#cb233-10"></a>volcanoRobust&lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>conditionB,</span>
+<span id="cb233-11"><a href="#cb233-11"></a>                  <span class="kw">aes</span>(<span class="dt">x =</span> logFC, <span class="dt">y =</span> <span class="op">-</span><span class="kw">log10</span>(pval), <span class="dt">color =</span> adjPval <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>)) <span class="op">+</span></span>
+<span id="cb233-12"><a href="#cb233-12"></a><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">cex =</span> <span class="fl">2.5</span>) <span class="op">+</span></span>
+<span id="cb233-13"><a href="#cb233-13"></a><span class="st">  </span><span class="kw">scale_color_manual</span>(<span class="dt">values =</span> <span class="kw">alpha</span>(<span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb233-14"><a href="#cb233-14"></a><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></span>
+<span id="cb233-15"><a href="#cb233-15"></a><span class="st">  </span><span class="kw">ggtitle</span>(<span class="kw">paste0</span>(<span class="st">&quot;Robust: TP = &quot;</span>,<span class="kw">sum</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>conditionB<span class="op">$</span>adjPval<span class="op">&lt;</span><span class="fl">0.05</span><span class="op">&amp;</span><span class="kw">grepl</span>(<span class="kw">rownames</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>conditionB),<span class="dt">pattern =</span><span class="st">&quot;UPS&quot;</span>),<span class="dt">na.rm=</span><span class="ot">TRUE</span>), <span class="st">&quot; FP = &quot;</span>, <span class="kw">sum</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>conditionB<span class="op">$</span>adjPval<span class="op">&lt;</span><span class="fl">0.05</span><span class="op">&amp;!</span><span class="kw">grepl</span>(<span class="kw">rownames</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>conditionB),<span class="dt">pattern =</span><span class="st">&quot;UPS&quot;</span>),<span class="dt">na.rm=</span><span class="ot">TRUE</span>)))</span></code></pre></div>
+<div class="sourceCode" id="cb234"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb234-1"><a href="#cb234-1"></a>ylims &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">0</span>, </span>
+<span id="cb234-2"><a href="#cb234-2"></a>           <span class="kw">ceiling</span>(<span class="kw">max</span>(<span class="kw">c</span>(<span class="op">-</span><span class="kw">log10</span>(<span class="kw">rowData</span>(peLFQ[[<span class="st">&quot;protein&quot;</span>]])<span class="op">$</span>conditionB<span class="op">$</span>pval),</span>
+<span id="cb234-3"><a href="#cb234-3"></a>               <span class="op">-</span><span class="kw">log10</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinMedian&quot;</span>]])<span class="op">$</span>conditionB<span class="op">$</span>pval),</span>
+<span id="cb234-4"><a href="#cb234-4"></a>               <span class="op">-</span><span class="kw">log10</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>conditionB<span class="op">$</span>pval)),</span>
+<span id="cb234-5"><a href="#cb234-5"></a>               <span class="dt">na.rm=</span><span class="ot">TRUE</span>))</span>
+<span id="cb234-6"><a href="#cb234-6"></a>)</span>
+<span id="cb234-7"><a href="#cb234-7"></a></span>
+<span id="cb234-8"><a href="#cb234-8"></a>xlims &lt;-<span class="st"> </span><span class="kw">max</span>(<span class="kw">abs</span>(<span class="kw">c</span>(<span class="kw">rowData</span>(peLFQ[[<span class="st">&quot;protein&quot;</span>]])<span class="op">$</span>conditionB<span class="op">$</span>logFC,</span>
+<span id="cb234-9"><a href="#cb234-9"></a>               <span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinMedian&quot;</span>]])<span class="op">$</span>conditionB<span class="op">$</span>logFC,</span>
+<span id="cb234-10"><a href="#cb234-10"></a>               <span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>conditionB<span class="op">$</span>logFC)),</span>
+<span id="cb234-11"><a href="#cb234-11"></a>               <span class="dt">na.rm=</span><span class="ot">TRUE</span>) <span class="op">*</span><span class="st"> </span><span class="kw">c</span>(<span class="op">-</span><span class="dv">1</span>,<span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb235"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb235-1"><a href="#cb235-1"></a>compBoxPlot &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">rowData</span>(peLFQ[[<span class="st">&quot;protein&quot;</span>]])<span class="op">$</span>conditionB <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">method=</span><span class="st">&quot;maxLFQ&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">rownames_to_column</span>(<span class="dt">var=</span><span class="st">&quot;protein&quot;</span>),</span>
+<span id="cb235-2"><a href="#cb235-2"></a>      <span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinMedian&quot;</span>]])<span class="op">$</span>conditionB <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">method=</span><span class="st">&quot;median&quot;</span>)<span class="op">%&gt;%</span><span class="st"> </span><span class="kw">rownames_to_column</span>(<span class="dt">var=</span><span class="st">&quot;protein&quot;</span>),</span>
+<span id="cb235-3"><a href="#cb235-3"></a>      <span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>conditionB<span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">method=</span><span class="st">&quot;robust&quot;</span>)<span class="op">%&gt;%</span><span class="st"> </span><span class="kw">rownames_to_column</span>(<span class="dt">var=</span><span class="st">&quot;protein&quot;</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb235-4"><a href="#cb235-4"></a><span class="st">      </span><span class="kw">mutate</span>(<span class="dt">ups=</span> <span class="kw">grepl</span>(protein,<span class="dt">pattern=</span><span class="st">&quot;UPS&quot;</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb235-5"><a href="#cb235-5"></a><span class="st">    </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> method, <span class="dt">y =</span> logFC, <span class="dt">fill =</span> ups)) <span class="op">+</span></span>
+<span id="cb235-6"><a href="#cb235-6"></a><span class="st">    </span><span class="kw">geom_boxplot</span>() <span class="op">+</span></span>
+<span id="cb235-7"><a href="#cb235-7"></a><span class="st">    </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> <span class="kw">log2</span>(<span class="fl">0.74</span> <span class="op">/</span><span class="st"> </span><span class="fl">.25</span>), <span class="dt">color =</span> <span class="st">&quot;#00BFC4&quot;</span>) <span class="op">+</span></span>
+<span id="cb235-8"><a href="#cb235-8"></a><span class="st">    </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> <span class="dv">0</span>, <span class="dt">color =</span> <span class="st">&quot;#F8766D&quot;</span>)</span></code></pre></div>
 </p>
 </details>
 </div>
 <div id="comparison-summarization-methods" class="section level2">
 <h2><span class="header-section-number">1.3</span> Comparison summarization methods</h2>
-<div class="sourceCode" id="cb230"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb230-1"><a href="#cb230-1"></a><span class="kw">grid.arrange</span>(volcanoLFQ <span class="op">+</span><span class="st"> </span><span class="kw">xlim</span>(xlims) <span class="op">+</span><span class="st"> </span><span class="kw">ylim</span>(ylims), </span>
-<span id="cb230-2"><a href="#cb230-2"></a>             volcanoMedian <span class="op">+</span><span class="st"> </span><span class="kw">xlim</span>(xlims) <span class="op">+</span><span class="st"> </span><span class="kw">ylim</span>(ylims), </span>
-<span id="cb230-3"><a href="#cb230-3"></a>             volcanoRobust <span class="op">+</span><span class="st"> </span><span class="kw">xlim</span>(xlims) <span class="op">+</span><span class="st"> </span><span class="kw">ylim</span>(ylims),</span>
-<span id="cb230-4"><a href="#cb230-4"></a>             <span class="dt">ncol=</span><span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb236"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb236-1"><a href="#cb236-1"></a><span class="kw">grid.arrange</span>(volcanoLFQ <span class="op">+</span><span class="st"> </span><span class="kw">xlim</span>(xlims) <span class="op">+</span><span class="st"> </span><span class="kw">ylim</span>(ylims), </span>
+<span id="cb236-2"><a href="#cb236-2"></a>             volcanoMedian <span class="op">+</span><span class="st"> </span><span class="kw">xlim</span>(xlims) <span class="op">+</span><span class="st"> </span><span class="kw">ylim</span>(ylims), </span>
+<span id="cb236-3"><a href="#cb236-3"></a>             volcanoRobust <span class="op">+</span><span class="st"> </span><span class="kw">xlim</span>(xlims) <span class="op">+</span><span class="st"> </span><span class="kw">ylim</span>(ylims),</span>
+<span id="cb236-4"><a href="#cb236-4"></a>             <span class="dt">ncol=</span><span class="dv">1</span>)</span></code></pre></div>
 <pre><code>## Warning: Removed 746 rows containing missing values (geom_point).</code></pre>
 <pre><code>## Warning: Removed 166 rows containing missing values (geom_point).</code></pre>
 <pre><code>## Warning: Removed 167 rows containing missing values (geom_point).</code></pre>
@@ -7469,7 +7487,7 @@ div.tocify {
 <ul>
 <li>Robust summarization: highest power and still good FDR control: <span class="math inline">\(FDP = \frac{1}{20} = 0.05\)</span>.</li>
 </ul>
-<div class="sourceCode" id="cb234"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb234-1"><a href="#cb234-1"></a>compBoxPlot</span></code></pre></div>
+<div class="sourceCode" id="cb240"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb240-1"><a href="#cb240-1"></a>compBoxPlot</span></code></pre></div>
 <pre><code>## Warning: Removed 1079 rows containing non-finite values (stat_boxplot).</code></pre>
 <p><img src="pda_robustSummarisation_peptideModels_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <ul>
@@ -7488,19 +7506,19 @@ div.tocify {
 <ol style="list-style-type: decimal">
 <li>We use a peptides.txt file from MS-data quantified with maxquant that contains MS1 intensities summarized at the peptide level.</li>
 </ol>
-<div class="sourceCode" id="cb236"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb236-1"><a href="#cb236-1"></a>peptidesFile &lt;-<span class="st"> &quot;https://raw.githubusercontent.com/statOmics/PDA21/data/quantification/fullCptacDatasSetNotForTutorial/peptides.txt&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb242"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb242-1"><a href="#cb242-1"></a>peptidesFile &lt;-<span class="st"> &quot;https://raw.githubusercontent.com/statOmics/PDA21/data/quantification/fullCptacDatasSetNotForTutorial/peptides.txt&quot;</span></span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>Maxquant stores the intensity data for the different samples in columnns that start with Intensity. We can retreive the column names with the intensity data with the code below:</li>
 </ol>
-<div class="sourceCode" id="cb237"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb237-1"><a href="#cb237-1"></a>ecols &lt;-<span class="st"> </span><span class="kw">grep</span>(<span class="st">&quot;Intensity</span><span class="ch">\\</span><span class="st">.&quot;</span>, <span class="kw">names</span>(<span class="kw">read.delim</span>(peptidesFile)))</span></code></pre></div>
+<div class="sourceCode" id="cb243"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb243-1"><a href="#cb243-1"></a>ecols &lt;-<span class="st"> </span><span class="kw">grep</span>(<span class="st">&quot;Intensity</span><span class="ch">\\</span><span class="st">.&quot;</span>, <span class="kw">names</span>(<span class="kw">read.delim</span>(peptidesFile)))</span></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li>Read the data and store it in QFeatures object</li>
 </ol>
-<div class="sourceCode" id="cb238"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb238-1"><a href="#cb238-1"></a>pe &lt;-<span class="st"> </span><span class="kw">readQFeatures</span>(</span>
-<span id="cb238-2"><a href="#cb238-2"></a>  <span class="dt">table =</span> peptidesFile,</span>
-<span id="cb238-3"><a href="#cb238-3"></a>  <span class="dt">fnames =</span> <span class="dv">1</span>,</span>
-<span id="cb238-4"><a href="#cb238-4"></a>  <span class="dt">ecol =</span> ecols,</span>
-<span id="cb238-5"><a href="#cb238-5"></a>  <span class="dt">name =</span> <span class="st">&quot;peptideRaw&quot;</span>, <span class="dt">sep=</span><span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb244"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb244-1"><a href="#cb244-1"></a>pe &lt;-<span class="st"> </span><span class="kw">readQFeatures</span>(</span>
+<span id="cb244-2"><a href="#cb244-2"></a>  <span class="dt">table =</span> peptidesFile,</span>
+<span id="cb244-3"><a href="#cb244-3"></a>  <span class="dt">fnames =</span> <span class="dv">1</span>,</span>
+<span id="cb244-4"><a href="#cb244-4"></a>  <span class="dt">ecol =</span> ecols,</span>
+<span id="cb244-5"><a href="#cb244-5"></a>  <span class="dt">name =</span> <span class="st">&quot;peptideRaw&quot;</span>, <span class="dt">sep=</span><span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>)</span></code></pre></div>
 </p>
 </details>
 </div>
@@ -7509,7 +7527,7 @@ div.tocify {
 <details>
 <summary> Click to see background and code </summary>
 <p>
-<div class="sourceCode" id="cb239"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb239-1"><a href="#cb239-1"></a>pe <span class="op">%&gt;%</span><span class="st"> </span>colnames</span></code></pre></div>
+<div class="sourceCode" id="cb245"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb245-1"><a href="#cb245-1"></a>pe <span class="op">%&gt;%</span><span class="st"> </span>colnames</span></code></pre></div>
 <pre><code>## CharacterList of length 1
 ## [[&quot;peptideRaw&quot;]] Intensity.6A_1 Intensity.6A_2 ... Intensity.6E_9</code></pre>
 <ul>
@@ -7522,13 +7540,13 @@ div.tocify {
 </ul></li>
 <li><p>We update the colData with information on the design</p></li>
 </ul>
-<div class="sourceCode" id="cb241"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb241-1"><a href="#cb241-1"></a><span class="kw">colData</span>(pe)<span class="op">$</span>lab &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">rep</span>(<span class="kw">paste0</span>(<span class="st">&quot;lab&quot;</span>,<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>),<span class="dt">each=</span><span class="dv">3</span>),<span class="dv">5</span>) <span class="op">%&gt;%</span><span class="st"> </span>as.factor</span>
-<span id="cb241-2"><a href="#cb241-2"></a><span class="kw">colData</span>(pe)<span class="op">$</span>condition &lt;-<span class="st"> </span>pe[[<span class="st">&quot;peptideRaw&quot;</span>]] <span class="op">%&gt;%</span><span class="st"> </span>colnames <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">substr</span>(<span class="dv">12</span>,<span class="dv">12</span>) <span class="op">%&gt;%</span><span class="st"> </span>as.factor</span>
-<span id="cb241-3"><a href="#cb241-3"></a><span class="kw">colData</span>(pe)<span class="op">$</span>spikeConcentration &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="dt">A =</span> <span class="fl">0.25</span>, <span class="dt">B =</span> <span class="fl">0.74</span>, <span class="dt">C =</span> <span class="fl">2.22</span>, <span class="dt">D =</span> <span class="fl">6.67</span>, <span class="dt">E =</span> <span class="dv">20</span>),<span class="dt">each =</span> <span class="dv">9</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb247"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb247-1"><a href="#cb247-1"></a><span class="kw">colData</span>(pe)<span class="op">$</span>lab &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">rep</span>(<span class="kw">paste0</span>(<span class="st">&quot;lab&quot;</span>,<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>),<span class="dt">each=</span><span class="dv">3</span>),<span class="dv">5</span>) <span class="op">%&gt;%</span><span class="st"> </span>as.factor</span>
+<span id="cb247-2"><a href="#cb247-2"></a><span class="kw">colData</span>(pe)<span class="op">$</span>condition &lt;-<span class="st"> </span>pe[[<span class="st">&quot;peptideRaw&quot;</span>]] <span class="op">%&gt;%</span><span class="st"> </span>colnames <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">substr</span>(<span class="dv">12</span>,<span class="dv">12</span>) <span class="op">%&gt;%</span><span class="st"> </span>as.factor</span>
+<span id="cb247-3"><a href="#cb247-3"></a><span class="kw">colData</span>(pe)<span class="op">$</span>spikeConcentration &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="dt">A =</span> <span class="fl">0.25</span>, <span class="dt">B =</span> <span class="fl">0.74</span>, <span class="dt">C =</span> <span class="fl">2.22</span>, <span class="dt">D =</span> <span class="fl">6.67</span>, <span class="dt">E =</span> <span class="dv">20</span>),<span class="dt">each =</span> <span class="dv">9</span>)</span></code></pre></div>
 <ul>
 <li>We explore the colData</li>
 </ul>
-<div class="sourceCode" id="cb242"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb242-1"><a href="#cb242-1"></a><span class="kw">colData</span>(pe)</span></code></pre></div>
+<div class="sourceCode" id="cb248"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb248-1"><a href="#cb248-1"></a><span class="kw">colData</span>(pe)</span></code></pre></div>
 <pre><code>## DataFrame with 45 rows and 3 columns
 ##                     lab condition spikeConcentration
 ##                &lt;factor&gt;  &lt;factor&gt;          &lt;numeric&gt;
@@ -7556,15 +7574,15 @@ div.tocify {
 <ul>
 <li>We calculate how many non zero intensities we have for each peptide and this can be useful for filtering.</li>
 </ul>
-<div class="sourceCode" id="cb244"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb244-1"><a href="#cb244-1"></a><span class="kw">rowData</span>(pe[[<span class="st">&quot;peptideRaw&quot;</span>]])<span class="op">$</span>nNonZero &lt;-<span class="st"> </span><span class="kw">rowSums</span>(<span class="kw">assay</span>(pe[[<span class="st">&quot;peptideRaw&quot;</span>]]) <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb250"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb250-1"><a href="#cb250-1"></a><span class="kw">rowData</span>(pe[[<span class="st">&quot;peptideRaw&quot;</span>]])<span class="op">$</span>nNonZero &lt;-<span class="st"> </span><span class="kw">rowSums</span>(<span class="kw">assay</span>(pe[[<span class="st">&quot;peptideRaw&quot;</span>]]) <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>)</span></code></pre></div>
 <ul>
 <li>Peptides with zero intensities are missing peptides and should be represent with a <code>NA</code> value rather than <code>0</code>.</li>
 </ul>
-<div class="sourceCode" id="cb245"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb245-1"><a href="#cb245-1"></a>pe &lt;-<span class="st"> </span><span class="kw">zeroIsNA</span>(pe, <span class="st">&quot;peptideRaw&quot;</span>) <span class="co"># convert 0 to NA</span></span></code></pre></div>
+<div class="sourceCode" id="cb251"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb251-1"><a href="#cb251-1"></a>pe &lt;-<span class="st"> </span><span class="kw">zeroIsNA</span>(pe, <span class="st">&quot;peptideRaw&quot;</span>) <span class="co"># convert 0 to NA</span></span></code></pre></div>
 <ul>
 <li>Logtransform data with base 2</li>
 </ul>
-<div class="sourceCode" id="cb246"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb246-1"><a href="#cb246-1"></a>pe &lt;-<span class="st"> </span><span class="kw">logTransform</span>(pe, <span class="dt">base =</span> <span class="dv">2</span>, <span class="dt">i =</span> <span class="st">&quot;peptideRaw&quot;</span>, <span class="dt">name =</span> <span class="st">&quot;peptideLog&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb252"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb252-1"><a href="#cb252-1"></a>pe &lt;-<span class="st"> </span><span class="kw">logTransform</span>(pe, <span class="dt">base =</span> <span class="dv">2</span>, <span class="dt">i =</span> <span class="st">&quot;peptideRaw&quot;</span>, <span class="dt">name =</span> <span class="st">&quot;peptideLog&quot;</span>)</span></code></pre></div>
 </p>
 </details>
 </div>
@@ -7577,19 +7595,19 @@ div.tocify {
 <li>Handling overlapping protein groups</li>
 </ol>
 <p>In our approach a peptide can map to multiple proteins, as long as there is none of these proteins present in a smaller subgroup.</p>
-<div class="sourceCode" id="cb247"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb247-1"><a href="#cb247-1"></a>pe &lt;-<span class="st"> </span><span class="kw">filterFeatures</span>(pe, <span class="op">~</span><span class="st"> </span>Proteins <span class="op">%in%</span><span class="st"> </span><span class="kw">smallestUniqueGroups</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;peptideLog&quot;</span>]])<span class="op">$</span>Proteins))</span></code></pre></div>
+<div class="sourceCode" id="cb253"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb253-1"><a href="#cb253-1"></a>pe &lt;-<span class="st"> </span><span class="kw">filterFeatures</span>(pe, <span class="op">~</span><span class="st"> </span>Proteins <span class="op">%in%</span><span class="st"> </span><span class="kw">smallestUniqueGroups</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;peptideLog&quot;</span>]])<span class="op">$</span>Proteins))</span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>Remove reverse sequences (decoys) and contaminants</li>
 </ol>
 <p>We now remove the contaminants, peptides that map to decoy sequences, and proteins which were only identified by peptides with modifications.</p>
-<div class="sourceCode" id="cb248"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb248-1"><a href="#cb248-1"></a>pe &lt;-<span class="st"> </span><span class="kw">filterFeatures</span>(pe,<span class="op">~</span>Reverse <span class="op">!=</span><span class="st"> &quot;+&quot;</span>)</span>
-<span id="cb248-2"><a href="#cb248-2"></a>pe &lt;-<span class="st"> </span><span class="kw">filterFeatures</span>(pe,<span class="op">~</span><span class="st"> </span>Potential.contaminant <span class="op">!=</span><span class="st"> &quot;+&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb254"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb254-1"><a href="#cb254-1"></a>pe &lt;-<span class="st"> </span><span class="kw">filterFeatures</span>(pe,<span class="op">~</span>Reverse <span class="op">!=</span><span class="st"> &quot;+&quot;</span>)</span>
+<span id="cb254-2"><a href="#cb254-2"></a>pe &lt;-<span class="st"> </span><span class="kw">filterFeatures</span>(pe,<span class="op">~</span><span class="st"> </span>Potential.contaminant <span class="op">!=</span><span class="st"> &quot;+&quot;</span>)</span></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li>Drop peptides that were only identified in one sample</li>
 </ol>
 <p>We keep peptides that were observed at last twice.</p>
-<div class="sourceCode" id="cb249"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb249-1"><a href="#cb249-1"></a>pe &lt;-<span class="st"> </span><span class="kw">filterFeatures</span>(pe,<span class="op">~</span><span class="st"> </span>nNonZero <span class="op">&gt;=</span><span class="dv">2</span>)</span>
-<span id="cb249-2"><a href="#cb249-2"></a><span class="kw">nrow</span>(pe[[<span class="st">&quot;peptideLog&quot;</span>]])</span></code></pre></div>
+<div class="sourceCode" id="cb255"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb255-1"><a href="#cb255-1"></a>pe &lt;-<span class="st"> </span><span class="kw">filterFeatures</span>(pe,<span class="op">~</span><span class="st"> </span>nNonZero <span class="op">&gt;=</span><span class="dv">2</span>)</span>
+<span id="cb255-2"><a href="#cb255-2"></a><span class="kw">nrow</span>(pe[[<span class="st">&quot;peptideLog&quot;</span>]])</span></code></pre></div>
 <pre><code>## [1] 10478</code></pre>
 We keep 10478 peptides upon filtering.
 </p>
@@ -7601,10 +7619,10 @@ We keep 10478 peptides upon filtering.
 <details>
 <summary> Click to see R-code to normalize the data </summary>
 <p>
-<div class="sourceCode" id="cb251"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb251-1"><a href="#cb251-1"></a>pe &lt;-<span class="st"> </span><span class="kw">normalize</span>(pe, </span>
-<span id="cb251-2"><a href="#cb251-2"></a>                <span class="dt">i =</span> <span class="st">&quot;peptideLog&quot;</span>, </span>
-<span id="cb251-3"><a href="#cb251-3"></a>                <span class="dt">name =</span> <span class="st">&quot;peptideNorm&quot;</span>, </span>
-<span id="cb251-4"><a href="#cb251-4"></a>                <span class="dt">method =</span> <span class="st">&quot;center.median&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb257"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb257-1"><a href="#cb257-1"></a>pe &lt;-<span class="st"> </span><span class="kw">normalize</span>(pe, </span>
+<span id="cb257-2"><a href="#cb257-2"></a>                <span class="dt">i =</span> <span class="st">&quot;peptideLog&quot;</span>, </span>
+<span id="cb257-3"><a href="#cb257-3"></a>                <span class="dt">name =</span> <span class="st">&quot;peptideNorm&quot;</span>, </span>
+<span id="cb257-4"><a href="#cb257-4"></a>                <span class="dt">method =</span> <span class="st">&quot;center.median&quot;</span>)</span></code></pre></div>
 </p>
 </details>
 <hr />
@@ -7617,29 +7635,29 @@ We keep 10478 peptides upon filtering.
 <details>
 <summary> Click to see code to make plot </summary>
 <p>
-<div class="sourceCode" id="cb252"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb252-1"><a href="#cb252-1"></a>prot &lt;-<span class="st"> &quot;P01031ups|CO5_HUMAN_UPS&quot;</span></span>
-<span id="cb252-2"><a href="#cb252-2"></a>data &lt;-<span class="st"> </span>pe[[<span class="st">&quot;peptideNorm&quot;</span>]][</span>
-<span id="cb252-3"><a href="#cb252-3"></a>  <span class="kw">rowData</span>(pe[[<span class="st">&quot;peptideNorm&quot;</span>]])<span class="op">$</span>Proteins <span class="op">==</span><span class="st"> </span>prot,</span>
-<span id="cb252-4"><a href="#cb252-4"></a>  <span class="kw">colData</span>(pe)<span class="op">$</span>lab<span class="op">==</span><span class="st">&quot;lab3&quot;</span>] <span class="op">%&gt;%</span></span>
-<span id="cb252-5"><a href="#cb252-5"></a><span class="st">  </span>assay <span class="op">%&gt;%</span></span>
-<span id="cb252-6"><a href="#cb252-6"></a><span class="st">  </span>as.data.frame <span class="op">%&gt;%</span></span>
-<span id="cb252-7"><a href="#cb252-7"></a><span class="st">  </span><span class="kw">rownames_to_column</span>(<span class="dt">var =</span> <span class="st">&quot;peptide&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb252-8"><a href="#cb252-8"></a><span class="st">  </span><span class="kw">gather</span>(sample, intensity, <span class="op">-</span>peptide) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb252-9"><a href="#cb252-9"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">condition =</span> <span class="kw">colData</span>(pe)[sample,<span class="st">&quot;condition&quot;</span>]) <span class="op">%&gt;%</span></span>
-<span id="cb252-10"><a href="#cb252-10"></a><span class="st">  </span>na.exclude</span>
-<span id="cb252-11"><a href="#cb252-11"></a>sumPlot &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span></span>
-<span id="cb252-12"><a href="#cb252-12"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> peptide, <span class="dt">y =</span> intensity, <span class="dt">color =</span> condition, <span class="dt">group =</span> sample, <span class="dt">label =</span> condition), <span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span></span>
-<span id="cb252-13"><a href="#cb252-13"></a><span class="st">  </span><span class="kw">geom_text</span>(<span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span></span>
-<span id="cb252-14"><a href="#cb252-14"></a><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></span>
-<span id="cb252-15"><a href="#cb252-15"></a><span class="st">  </span><span class="kw">theme</span>(<span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">90</span>, <span class="dt">vjust =</span> <span class="fl">0.5</span>, <span class="dt">hjust =</span> <span class="dv">1</span>)) <span class="op">+</span></span>
-<span id="cb252-16"><a href="#cb252-16"></a><span class="st">  </span><span class="kw">xlab</span>(<span class="st">&quot;Peptide&quot;</span>) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb252-17"><a href="#cb252-17"></a><span class="st">  </span><span class="kw">ylab</span>(<span class="st">&quot;Intensity (log2)&quot;</span>) <span class="op">+</span></span>
-<span id="cb252-18"><a href="#cb252-18"></a><span class="st">  </span><span class="kw">ggtitle</span>(<span class="kw">paste0</span>(<span class="st">&quot;protein: &quot;</span>,prot))</span></code></pre></div>
+<div class="sourceCode" id="cb258"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb258-1"><a href="#cb258-1"></a>prot &lt;-<span class="st"> &quot;P01031ups|CO5_HUMAN_UPS&quot;</span></span>
+<span id="cb258-2"><a href="#cb258-2"></a>data &lt;-<span class="st"> </span>pe[[<span class="st">&quot;peptideNorm&quot;</span>]][</span>
+<span id="cb258-3"><a href="#cb258-3"></a>  <span class="kw">rowData</span>(pe[[<span class="st">&quot;peptideNorm&quot;</span>]])<span class="op">$</span>Proteins <span class="op">==</span><span class="st"> </span>prot,</span>
+<span id="cb258-4"><a href="#cb258-4"></a>  <span class="kw">colData</span>(pe)<span class="op">$</span>lab<span class="op">==</span><span class="st">&quot;lab3&quot;</span>] <span class="op">%&gt;%</span></span>
+<span id="cb258-5"><a href="#cb258-5"></a><span class="st">  </span>assay <span class="op">%&gt;%</span></span>
+<span id="cb258-6"><a href="#cb258-6"></a><span class="st">  </span>as.data.frame <span class="op">%&gt;%</span></span>
+<span id="cb258-7"><a href="#cb258-7"></a><span class="st">  </span><span class="kw">rownames_to_column</span>(<span class="dt">var =</span> <span class="st">&quot;peptide&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb258-8"><a href="#cb258-8"></a><span class="st">  </span><span class="kw">gather</span>(sample, intensity, <span class="op">-</span>peptide) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb258-9"><a href="#cb258-9"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">condition =</span> <span class="kw">colData</span>(pe)[sample,<span class="st">&quot;condition&quot;</span>]) <span class="op">%&gt;%</span></span>
+<span id="cb258-10"><a href="#cb258-10"></a><span class="st">  </span>na.exclude</span>
+<span id="cb258-11"><a href="#cb258-11"></a>sumPlot &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span></span>
+<span id="cb258-12"><a href="#cb258-12"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> peptide, <span class="dt">y =</span> intensity, <span class="dt">color =</span> condition, <span class="dt">group =</span> sample, <span class="dt">label =</span> condition), <span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span></span>
+<span id="cb258-13"><a href="#cb258-13"></a><span class="st">  </span><span class="kw">geom_text</span>(<span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span></span>
+<span id="cb258-14"><a href="#cb258-14"></a><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></span>
+<span id="cb258-15"><a href="#cb258-15"></a><span class="st">  </span><span class="kw">theme</span>(<span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">90</span>, <span class="dt">vjust =</span> <span class="fl">0.5</span>, <span class="dt">hjust =</span> <span class="dv">1</span>)) <span class="op">+</span></span>
+<span id="cb258-16"><a href="#cb258-16"></a><span class="st">  </span><span class="kw">xlab</span>(<span class="st">&quot;Peptide&quot;</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb258-17"><a href="#cb258-17"></a><span class="st">  </span><span class="kw">ylab</span>(<span class="st">&quot;Intensity (log2)&quot;</span>) <span class="op">+</span></span>
+<span id="cb258-18"><a href="#cb258-18"></a><span class="st">  </span><span class="kw">ggtitle</span>(<span class="kw">paste0</span>(<span class="st">&quot;protein: &quot;</span>,prot))</span></code></pre></div>
 </p>
 </details>
 <p>Here, we will focus on the summarization of the intensities for protein P01031ups|CO5_HUMAN_UPS.</p>
-<div class="sourceCode" id="cb253"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb253-1"><a href="#cb253-1"></a>sumPlot <span class="op">+</span></span>
-<span id="cb253-2"><a href="#cb253-2"></a><span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">linetype=</span><span class="st">&quot;dashed&quot;</span>,<span class="dt">alpha=</span>.<span class="dv">4</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb259"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb259-1"><a href="#cb259-1"></a>sumPlot <span class="op">+</span></span>
+<span id="cb259-2"><a href="#cb259-2"></a><span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">linetype=</span><span class="st">&quot;dashed&quot;</span>,<span class="dt">alpha=</span>.<span class="dv">4</span>)</span></code></pre></div>
 <p><img src="pda_robustSummarisation_peptideModels_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
 <div id="median-summarization" class="section level3">
 <h3><span class="header-section-number">3.1.1</span> Median summarization</h3>
@@ -7647,24 +7665,24 @@ We keep 10478 peptides upon filtering.
 <details>
 <summary> Click to see code to make plot </summary>
 <p>
-<div class="sourceCode" id="cb254"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb254-1"><a href="#cb254-1"></a>dataHlp &lt;-<span class="st"> </span>pe[[<span class="st">&quot;peptideNorm&quot;</span>]][</span>
-<span id="cb254-2"><a href="#cb254-2"></a>    <span class="kw">rowData</span>(pe[[<span class="st">&quot;peptideNorm&quot;</span>]])<span class="op">$</span>Proteins <span class="op">==</span><span class="st"> </span>prot,</span>
-<span id="cb254-3"><a href="#cb254-3"></a>    <span class="kw">colData</span>(pe)<span class="op">$</span>lab<span class="op">==</span><span class="st">&quot;lab3&quot;</span>] <span class="op">%&gt;%</span><span class="st"> </span>assay </span>
-<span id="cb254-4"><a href="#cb254-4"></a></span>
-<span id="cb254-5"><a href="#cb254-5"></a>sumMedian &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</span>
-<span id="cb254-6"><a href="#cb254-6"></a>  <span class="dt">intensity=</span> dataHlp</span>
-<span id="cb254-7"><a href="#cb254-7"></a>    <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">colMedians</span>(<span class="dt">na.rm=</span><span class="ot">TRUE</span>)</span>
-<span id="cb254-8"><a href="#cb254-8"></a>  ,</span>
-<span id="cb254-9"><a href="#cb254-9"></a>  <span class="dt">condition=</span> <span class="kw">colnames</span>(dataHlp) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">substr</span>(<span class="dv">12</span>,<span class="dv">12</span>) <span class="op">%&gt;%</span><span class="st"> </span>as.factor )</span>
-<span id="cb254-10"><a href="#cb254-10"></a></span>
-<span id="cb254-11"><a href="#cb254-11"></a>sumMedianPlot &lt;-<span class="st"> </span>sumPlot <span class="op">+</span><span class="st"> </span></span>
-<span id="cb254-12"><a href="#cb254-12"></a><span class="st">  </span><span class="kw">geom_hline</span>(</span>
-<span id="cb254-13"><a href="#cb254-13"></a>    <span class="dt">data =</span> sumMedian,</span>
-<span id="cb254-14"><a href="#cb254-14"></a>    <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">yintercept=</span>intensity,<span class="dt">color=</span>condition)) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb254-15"><a href="#cb254-15"></a><span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">&quot;Median summarization&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb260"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb260-1"><a href="#cb260-1"></a>dataHlp &lt;-<span class="st"> </span>pe[[<span class="st">&quot;peptideNorm&quot;</span>]][</span>
+<span id="cb260-2"><a href="#cb260-2"></a>    <span class="kw">rowData</span>(pe[[<span class="st">&quot;peptideNorm&quot;</span>]])<span class="op">$</span>Proteins <span class="op">==</span><span class="st"> </span>prot,</span>
+<span id="cb260-3"><a href="#cb260-3"></a>    <span class="kw">colData</span>(pe)<span class="op">$</span>lab<span class="op">==</span><span class="st">&quot;lab3&quot;</span>] <span class="op">%&gt;%</span><span class="st"> </span>assay </span>
+<span id="cb260-4"><a href="#cb260-4"></a></span>
+<span id="cb260-5"><a href="#cb260-5"></a>sumMedian &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</span>
+<span id="cb260-6"><a href="#cb260-6"></a>  <span class="dt">intensity=</span> dataHlp</span>
+<span id="cb260-7"><a href="#cb260-7"></a>    <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">colMedians</span>(<span class="dt">na.rm=</span><span class="ot">TRUE</span>)</span>
+<span id="cb260-8"><a href="#cb260-8"></a>  ,</span>
+<span id="cb260-9"><a href="#cb260-9"></a>  <span class="dt">condition=</span> <span class="kw">colnames</span>(dataHlp) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">substr</span>(<span class="dv">12</span>,<span class="dv">12</span>) <span class="op">%&gt;%</span><span class="st"> </span>as.factor )</span>
+<span id="cb260-10"><a href="#cb260-10"></a></span>
+<span id="cb260-11"><a href="#cb260-11"></a>sumMedianPlot &lt;-<span class="st"> </span>sumPlot <span class="op">+</span><span class="st"> </span></span>
+<span id="cb260-12"><a href="#cb260-12"></a><span class="st">  </span><span class="kw">geom_hline</span>(</span>
+<span id="cb260-13"><a href="#cb260-13"></a>    <span class="dt">data =</span> sumMedian,</span>
+<span id="cb260-14"><a href="#cb260-14"></a>    <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">yintercept=</span>intensity,<span class="dt">color=</span>condition)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb260-15"><a href="#cb260-15"></a><span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">&quot;Median summarization&quot;</span>)</span></code></pre></div>
 </p>
 </details>
-<div class="sourceCode" id="cb255"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb255-1"><a href="#cb255-1"></a>sumMedianPlot</span></code></pre></div>
+<div class="sourceCode" id="cb261"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb261-1"><a href="#cb261-1"></a>sumMedianPlot</span></code></pre></div>
 <pre><code>## Warning: Removed 1 rows containing missing values (geom_hline).</code></pre>
 <p><img src="pda_robustSummarisation_peptideModels_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
 <ul>
@@ -7682,21 +7700,21 @@ y_{ip} = \beta_i^\text{sample} + \epsilon_{ip}
 <details>
 <summary> Click to see code to make plot </summary>
 <p>
-<div class="sourceCode" id="cb257"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb257-1"><a href="#cb257-1"></a>sumMeanMod &lt;-<span class="st"> </span><span class="kw">lm</span>(intensity <span class="op">~</span><span class="st"> </span><span class="dv">-1</span> <span class="op">+</span><span class="st"> </span>sample,data)</span>
-<span id="cb257-2"><a href="#cb257-2"></a></span>
-<span id="cb257-3"><a href="#cb257-3"></a>sumMean &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</span>
-<span id="cb257-4"><a href="#cb257-4"></a>  <span class="dt">intensity=</span>sumMeanMod<span class="op">$</span>coef[<span class="kw">grep</span>(<span class="st">&quot;sample&quot;</span>,<span class="kw">names</span>(sumMeanMod<span class="op">$</span>coef))],</span>
-<span id="cb257-5"><a href="#cb257-5"></a>  <span class="dt">condition=</span> <span class="kw">names</span>(sumMeanMod<span class="op">$</span>coef)[<span class="kw">grep</span>(<span class="st">&quot;sample&quot;</span>,<span class="kw">names</span>(sumMeanMod<span class="op">$</span>coef))] <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">substr</span>(<span class="dv">18</span>,<span class="dv">18</span>) <span class="op">%&gt;%</span><span class="st"> </span>as.factor )</span>
-<span id="cb257-6"><a href="#cb257-6"></a></span>
-<span id="cb257-7"><a href="#cb257-7"></a></span>
-<span id="cb257-8"><a href="#cb257-8"></a></span>
-<span id="cb257-9"><a href="#cb257-9"></a>sumMeanPlot &lt;-<span class="st"> </span>sumPlot <span class="op">+</span><span class="st"> </span><span class="kw">geom_hline</span>(</span>
-<span id="cb257-10"><a href="#cb257-10"></a>    <span class="dt">data =</span> sumMean,</span>
-<span id="cb257-11"><a href="#cb257-11"></a>    <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">yintercept=</span>intensity,<span class="dt">color=</span>condition)) <span class="op">+</span></span>
-<span id="cb257-12"><a href="#cb257-12"></a><span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;Mean summarization&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb263"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb263-1"><a href="#cb263-1"></a>sumMeanMod &lt;-<span class="st"> </span><span class="kw">lm</span>(intensity <span class="op">~</span><span class="st"> </span><span class="dv">-1</span> <span class="op">+</span><span class="st"> </span>sample,data)</span>
+<span id="cb263-2"><a href="#cb263-2"></a></span>
+<span id="cb263-3"><a href="#cb263-3"></a>sumMean &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</span>
+<span id="cb263-4"><a href="#cb263-4"></a>  <span class="dt">intensity=</span>sumMeanMod<span class="op">$</span>coef[<span class="kw">grep</span>(<span class="st">&quot;sample&quot;</span>,<span class="kw">names</span>(sumMeanMod<span class="op">$</span>coef))],</span>
+<span id="cb263-5"><a href="#cb263-5"></a>  <span class="dt">condition=</span> <span class="kw">names</span>(sumMeanMod<span class="op">$</span>coef)[<span class="kw">grep</span>(<span class="st">&quot;sample&quot;</span>,<span class="kw">names</span>(sumMeanMod<span class="op">$</span>coef))] <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">substr</span>(<span class="dv">18</span>,<span class="dv">18</span>) <span class="op">%&gt;%</span><span class="st"> </span>as.factor )</span>
+<span id="cb263-6"><a href="#cb263-6"></a></span>
+<span id="cb263-7"><a href="#cb263-7"></a></span>
+<span id="cb263-8"><a href="#cb263-8"></a></span>
+<span id="cb263-9"><a href="#cb263-9"></a>sumMeanPlot &lt;-<span class="st"> </span>sumPlot <span class="op">+</span><span class="st"> </span><span class="kw">geom_hline</span>(</span>
+<span id="cb263-10"><a href="#cb263-10"></a>    <span class="dt">data =</span> sumMean,</span>
+<span id="cb263-11"><a href="#cb263-11"></a>    <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">yintercept=</span>intensity,<span class="dt">color=</span>condition)) <span class="op">+</span></span>
+<span id="cb263-12"><a href="#cb263-12"></a><span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;Mean summarization&quot;</span>)</span></code></pre></div>
 </p>
 </details>
-<div class="sourceCode" id="cb258"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb258-1"><a href="#cb258-1"></a><span class="kw">grid.arrange</span>(sumMedianPlot, sumMeanPlot, <span class="dt">ncol=</span><span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb264"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb264-1"><a href="#cb264-1"></a><span class="kw">grid.arrange</span>(sumMedianPlot, sumMeanPlot, <span class="dt">ncol=</span><span class="dv">2</span>)</span></code></pre></div>
 <pre><code>## Warning: Removed 1 rows containing missing values (geom_hline).</code></pre>
 <p><img src="pda_robustSummarisation_peptideModels_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
 </div>
@@ -7709,24 +7727,24 @@ y_{ip} = \beta_i^\text{sample}+\beta^{peptide}_{p} + \epsilon_{ip}
 <details>
 <summary> Click to see code to make plot </summary>
 <p>
-<div class="sourceCode" id="cb260"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb260-1"><a href="#cb260-1"></a>sumMeanPepMod &lt;-<span class="st"> </span><span class="kw">lm</span>(intensity <span class="op">~</span><span class="st"> </span><span class="dv">-1</span> <span class="op">+</span><span class="st"> </span>sample <span class="op">+</span><span class="st"> </span>peptide,data)</span>
-<span id="cb260-2"><a href="#cb260-2"></a></span>
-<span id="cb260-3"><a href="#cb260-3"></a>sumMeanPep &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</span>
-<span id="cb260-4"><a href="#cb260-4"></a>  <span class="dt">intensity=</span>sumMeanPepMod<span class="op">$</span>coef[<span class="kw">grep</span>(<span class="st">&quot;sample&quot;</span>,<span class="kw">names</span>(sumMeanPepMod<span class="op">$</span>coef))] <span class="op">+</span><span class="st"> </span><span class="kw">mean</span>(data<span class="op">$</span>intensity) <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(sumMeanPepMod<span class="op">$</span>coef[<span class="kw">grep</span>(<span class="st">&quot;sample&quot;</span>,<span class="kw">names</span>(sumMeanPepMod<span class="op">$</span>coef))]),</span>
-<span id="cb260-5"><a href="#cb260-5"></a>  <span class="dt">condition=</span> <span class="kw">names</span>(sumMeanPepMod<span class="op">$</span>coef)[<span class="kw">grep</span>(<span class="st">&quot;sample&quot;</span>,<span class="kw">names</span>(sumMeanPepMod<span class="op">$</span>coef))] <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">substr</span>(<span class="dv">18</span>,<span class="dv">18</span>) <span class="op">%&gt;%</span><span class="st"> </span>as.factor )</span>
-<span id="cb260-6"><a href="#cb260-6"></a></span>
-<span id="cb260-7"><a href="#cb260-7"></a></span>
-<span id="cb260-8"><a href="#cb260-8"></a>fitLmPlot &lt;-<span class="st">  </span>sumPlot <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(</span>
-<span id="cb260-9"><a href="#cb260-9"></a>    <span class="dt">data =</span> data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">fit=</span>sumMeanPepMod<span class="op">$</span>fitted.values),</span>
-<span id="cb260-10"><a href="#cb260-10"></a>    <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x=</span>peptide, <span class="dt">y=</span>fit,<span class="dt">color=</span>condition, <span class="dt">group=</span>sample)) <span class="op">+</span></span>
-<span id="cb260-11"><a href="#cb260-11"></a><span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;fit: ~ sample + peptide&quot;</span>)</span>
-<span id="cb260-12"><a href="#cb260-12"></a>sumLmPlot &lt;-<span class="st"> </span>sumPlot <span class="op">+</span><span class="st"> </span><span class="kw">geom_hline</span>(</span>
-<span id="cb260-13"><a href="#cb260-13"></a>    <span class="dt">data =</span> sumMeanPep,</span>
-<span id="cb260-14"><a href="#cb260-14"></a>    <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">yintercept=</span>intensity,<span class="dt">color=</span>condition)) <span class="op">+</span></span>
-<span id="cb260-15"><a href="#cb260-15"></a><span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;Summarization: sample effect&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb266"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb266-1"><a href="#cb266-1"></a>sumMeanPepMod &lt;-<span class="st"> </span><span class="kw">lm</span>(intensity <span class="op">~</span><span class="st"> </span><span class="dv">-1</span> <span class="op">+</span><span class="st"> </span>sample <span class="op">+</span><span class="st"> </span>peptide,data)</span>
+<span id="cb266-2"><a href="#cb266-2"></a></span>
+<span id="cb266-3"><a href="#cb266-3"></a>sumMeanPep &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</span>
+<span id="cb266-4"><a href="#cb266-4"></a>  <span class="dt">intensity=</span>sumMeanPepMod<span class="op">$</span>coef[<span class="kw">grep</span>(<span class="st">&quot;sample&quot;</span>,<span class="kw">names</span>(sumMeanPepMod<span class="op">$</span>coef))] <span class="op">+</span><span class="st"> </span><span class="kw">mean</span>(data<span class="op">$</span>intensity) <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(sumMeanPepMod<span class="op">$</span>coef[<span class="kw">grep</span>(<span class="st">&quot;sample&quot;</span>,<span class="kw">names</span>(sumMeanPepMod<span class="op">$</span>coef))]),</span>
+<span id="cb266-5"><a href="#cb266-5"></a>  <span class="dt">condition=</span> <span class="kw">names</span>(sumMeanPepMod<span class="op">$</span>coef)[<span class="kw">grep</span>(<span class="st">&quot;sample&quot;</span>,<span class="kw">names</span>(sumMeanPepMod<span class="op">$</span>coef))] <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">substr</span>(<span class="dv">18</span>,<span class="dv">18</span>) <span class="op">%&gt;%</span><span class="st"> </span>as.factor )</span>
+<span id="cb266-6"><a href="#cb266-6"></a></span>
+<span id="cb266-7"><a href="#cb266-7"></a></span>
+<span id="cb266-8"><a href="#cb266-8"></a>fitLmPlot &lt;-<span class="st">  </span>sumPlot <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(</span>
+<span id="cb266-9"><a href="#cb266-9"></a>    <span class="dt">data =</span> data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">fit=</span>sumMeanPepMod<span class="op">$</span>fitted.values),</span>
+<span id="cb266-10"><a href="#cb266-10"></a>    <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x=</span>peptide, <span class="dt">y=</span>fit,<span class="dt">color=</span>condition, <span class="dt">group=</span>sample)) <span class="op">+</span></span>
+<span id="cb266-11"><a href="#cb266-11"></a><span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;fit: ~ sample + peptide&quot;</span>)</span>
+<span id="cb266-12"><a href="#cb266-12"></a>sumLmPlot &lt;-<span class="st"> </span>sumPlot <span class="op">+</span><span class="st"> </span><span class="kw">geom_hline</span>(</span>
+<span id="cb266-13"><a href="#cb266-13"></a>    <span class="dt">data =</span> sumMeanPep,</span>
+<span id="cb266-14"><a href="#cb266-14"></a>    <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">yintercept=</span>intensity,<span class="dt">color=</span>condition)) <span class="op">+</span></span>
+<span id="cb266-15"><a href="#cb266-15"></a><span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;Summarization: sample effect&quot;</span>)</span></code></pre></div>
 </p>
 </details>
-<div class="sourceCode" id="cb261"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb261-1"><a href="#cb261-1"></a><span class="kw">grid.arrange</span>(sumMedianPlot, sumMeanPlot, sumLmPlot, <span class="dt">nrow=</span><span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb267"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb267-1"><a href="#cb267-1"></a><span class="kw">grid.arrange</span>(sumMedianPlot, sumMeanPlot, sumLmPlot, <span class="dt">nrow=</span><span class="dv">1</span>)</span></code></pre></div>
 <pre><code>## Warning: Removed 1 rows containing missing values (geom_hline).</code></pre>
 <p><img src="pda_robustSummarisation_peptideModels_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
 <ul>
@@ -7738,20 +7756,20 @@ y_{ip} = \beta_i^\text{sample}+\beta^{peptide}_{p} + \epsilon_{ip}
 <details>
 <summary> Click to see code to make plot </summary>
 <p>
-<div class="sourceCode" id="cb263"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb263-1"><a href="#cb263-1"></a>resPlot &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb263-2"><a href="#cb263-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">res=</span>sumMeanPepMod<span class="op">$</span>residuals) <span class="op">%&gt;%</span></span>
-<span id="cb263-3"><a href="#cb263-3"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> peptide, <span class="dt">y =</span> res, <span class="dt">color =</span> condition, <span class="dt">label =</span> condition), <span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span></span>
-<span id="cb263-4"><a href="#cb263-4"></a><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">shape=</span><span class="dv">21</span>) <span class="op">+</span></span>
-<span id="cb263-5"><a href="#cb263-5"></a><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></span>
-<span id="cb263-6"><a href="#cb263-6"></a><span class="st">  </span><span class="kw">theme</span>(<span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">90</span>, <span class="dt">vjust =</span> <span class="fl">0.5</span>, <span class="dt">hjust =</span> <span class="dv">1</span>)) <span class="op">+</span></span>
-<span id="cb263-7"><a href="#cb263-7"></a><span class="st">  </span><span class="kw">xlab</span>(<span class="st">&quot;Peptide&quot;</span>) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb263-8"><a href="#cb263-8"></a><span class="st">  </span><span class="kw">ylab</span>(<span class="st">&quot;residual&quot;</span>) <span class="op">+</span></span>
-<span id="cb263-9"><a href="#cb263-9"></a><span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">&quot;residuals: ~ sample + peptide&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb269"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb269-1"><a href="#cb269-1"></a>resPlot &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb269-2"><a href="#cb269-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">res=</span>sumMeanPepMod<span class="op">$</span>residuals) <span class="op">%&gt;%</span></span>
+<span id="cb269-3"><a href="#cb269-3"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> peptide, <span class="dt">y =</span> res, <span class="dt">color =</span> condition, <span class="dt">label =</span> condition), <span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span></span>
+<span id="cb269-4"><a href="#cb269-4"></a><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">shape=</span><span class="dv">21</span>) <span class="op">+</span></span>
+<span id="cb269-5"><a href="#cb269-5"></a><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></span>
+<span id="cb269-6"><a href="#cb269-6"></a><span class="st">  </span><span class="kw">theme</span>(<span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">90</span>, <span class="dt">vjust =</span> <span class="fl">0.5</span>, <span class="dt">hjust =</span> <span class="dv">1</span>)) <span class="op">+</span></span>
+<span id="cb269-7"><a href="#cb269-7"></a><span class="st">  </span><span class="kw">xlab</span>(<span class="st">&quot;Peptide&quot;</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb269-8"><a href="#cb269-8"></a><span class="st">  </span><span class="kw">ylab</span>(<span class="st">&quot;residual&quot;</span>) <span class="op">+</span></span>
+<span id="cb269-9"><a href="#cb269-9"></a><span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">&quot;residuals: ~ sample + peptide&quot;</span>)</span></code></pre></div>
 </p>
 </details>
-<div class="sourceCode" id="cb264"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb264-1"><a href="#cb264-1"></a><span class="kw">grid.arrange</span>(fitLmPlot, resPlot, <span class="dt">nrow =</span> <span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb270"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb270-1"><a href="#cb270-1"></a><span class="kw">grid.arrange</span>(fitLmPlot, resPlot, <span class="dt">nrow =</span> <span class="dv">1</span>)</span></code></pre></div>
 <p><img src="pda_robustSummarisation_peptideModels_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
-<div class="sourceCode" id="cb265"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb265-1"><a href="#cb265-1"></a><span class="kw">grid.arrange</span>(fitLmPlot, sumLmPlot, <span class="dt">nrow =</span> <span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb271"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb271-1"><a href="#cb271-1"></a><span class="kw">grid.arrange</span>(fitLmPlot, sumLmPlot, <span class="dt">nrow =</span> <span class="dv">1</span>)</span></code></pre></div>
 <p><img src="pda_robustSummarisation_peptideModels_files/figure-html/unnamed-chunk-34-2.png" width="672" /></p>
 <ul>
 <li>The residual plot shows some large outliers for peptide KIEEIAAK.</li>
@@ -7779,27 +7797,27 @@ y_{ip} = \beta_i^\text{sample}+\beta^{peptide}_{p} + \epsilon_{ip}
 <details>
 <summary> Click to see code to make plot </summary>
 <p>
-<div class="sourceCode" id="cb266"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb266-1"><a href="#cb266-1"></a>sumMeanPepRobMod &lt;-<span class="st"> </span>MASS<span class="op">::</span><span class="kw">rlm</span>(intensity <span class="op">~</span><span class="st"> </span><span class="dv">-1</span> <span class="op">+</span><span class="st"> </span>sample <span class="op">+</span><span class="st"> </span>peptide,data)</span>
-<span id="cb266-2"><a href="#cb266-2"></a>resRobPlot &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span></span>
-<span id="cb266-3"><a href="#cb266-3"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">res =</span> sumMeanPepRobMod<span class="op">$</span>residuals,</span>
-<span id="cb266-4"><a href="#cb266-4"></a>         <span class="dt">w =</span> sumMeanPepRobMod<span class="op">$</span>w) <span class="op">%&gt;%</span></span>
-<span id="cb266-5"><a href="#cb266-5"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> peptide, <span class="dt">y =</span> res, <span class="dt">color =</span> condition, <span class="dt">label =</span> condition,<span class="dt">size=</span>w), <span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span></span>
-<span id="cb266-6"><a href="#cb266-6"></a><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">shape=</span><span class="dv">21</span>,<span class="dt">size=</span>.<span class="dv">2</span>) <span class="op">+</span></span>
-<span id="cb266-7"><a href="#cb266-7"></a><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">shape=</span><span class="dv">21</span>) <span class="op">+</span></span>
-<span id="cb266-8"><a href="#cb266-8"></a><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></span>
-<span id="cb266-9"><a href="#cb266-9"></a><span class="st">  </span><span class="kw">theme</span>(<span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">90</span>, <span class="dt">vjust =</span> <span class="fl">0.5</span>, <span class="dt">hjust =</span> <span class="dv">1</span>)) <span class="op">+</span></span>
-<span id="cb266-10"><a href="#cb266-10"></a><span class="st">  </span><span class="kw">xlab</span>(<span class="st">&quot;Peptide&quot;</span>) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb266-11"><a href="#cb266-11"></a><span class="st">  </span><span class="kw">ylab</span>(<span class="st">&quot;residual&quot;</span>) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb266-12"><a href="#cb266-12"></a><span class="st">  </span><span class="kw">ylim</span>(<span class="kw">c</span>(<span class="op">-</span><span class="dv">1</span>,<span class="dv">1</span>)<span class="op">*</span><span class="kw">max</span>(<span class="kw">abs</span>(sumMeanPepRobMod<span class="op">$</span>residuals)))</span>
-<span id="cb266-13"><a href="#cb266-13"></a>weightPlot &lt;-<span class="st"> </span><span class="kw">qplot</span>(</span>
-<span id="cb266-14"><a href="#cb266-14"></a>  <span class="kw">seq</span>(<span class="op">-</span><span class="dv">5</span>,<span class="dv">5</span>,.<span class="dv">01</span>), </span>
-<span id="cb266-15"><a href="#cb266-15"></a>  MASS<span class="op">::</span><span class="kw">psi.huber</span>(<span class="kw">seq</span>(<span class="op">-</span><span class="dv">5</span>,<span class="dv">5</span>,.<span class="dv">01</span>)),</span>
-<span id="cb266-16"><a href="#cb266-16"></a>  <span class="dt">geom=</span><span class="st">&quot;path&quot;</span>) <span class="op">+</span></span>
-<span id="cb266-17"><a href="#cb266-17"></a><span class="st">  </span><span class="kw">xlab</span>(<span class="st">&quot;standardized residual&quot;</span>) <span class="op">+</span></span>
-<span id="cb266-18"><a href="#cb266-18"></a><span class="st">  </span><span class="kw">ylab</span>(<span class="st">&quot;weight&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb272"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb272-1"><a href="#cb272-1"></a>sumMeanPepRobMod &lt;-<span class="st"> </span>MASS<span class="op">::</span><span class="kw">rlm</span>(intensity <span class="op">~</span><span class="st"> </span><span class="dv">-1</span> <span class="op">+</span><span class="st"> </span>sample <span class="op">+</span><span class="st"> </span>peptide,data)</span>
+<span id="cb272-2"><a href="#cb272-2"></a>resRobPlot &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span></span>
+<span id="cb272-3"><a href="#cb272-3"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">res =</span> sumMeanPepRobMod<span class="op">$</span>residuals,</span>
+<span id="cb272-4"><a href="#cb272-4"></a>         <span class="dt">w =</span> sumMeanPepRobMod<span class="op">$</span>w) <span class="op">%&gt;%</span></span>
+<span id="cb272-5"><a href="#cb272-5"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> peptide, <span class="dt">y =</span> res, <span class="dt">color =</span> condition, <span class="dt">label =</span> condition,<span class="dt">size=</span>w), <span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span></span>
+<span id="cb272-6"><a href="#cb272-6"></a><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">shape=</span><span class="dv">21</span>,<span class="dt">size=</span>.<span class="dv">2</span>) <span class="op">+</span></span>
+<span id="cb272-7"><a href="#cb272-7"></a><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">shape=</span><span class="dv">21</span>) <span class="op">+</span></span>
+<span id="cb272-8"><a href="#cb272-8"></a><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></span>
+<span id="cb272-9"><a href="#cb272-9"></a><span class="st">  </span><span class="kw">theme</span>(<span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">90</span>, <span class="dt">vjust =</span> <span class="fl">0.5</span>, <span class="dt">hjust =</span> <span class="dv">1</span>)) <span class="op">+</span></span>
+<span id="cb272-10"><a href="#cb272-10"></a><span class="st">  </span><span class="kw">xlab</span>(<span class="st">&quot;Peptide&quot;</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb272-11"><a href="#cb272-11"></a><span class="st">  </span><span class="kw">ylab</span>(<span class="st">&quot;residual&quot;</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb272-12"><a href="#cb272-12"></a><span class="st">  </span><span class="kw">ylim</span>(<span class="kw">c</span>(<span class="op">-</span><span class="dv">1</span>,<span class="dv">1</span>)<span class="op">*</span><span class="kw">max</span>(<span class="kw">abs</span>(sumMeanPepRobMod<span class="op">$</span>residuals)))</span>
+<span id="cb272-13"><a href="#cb272-13"></a>weightPlot &lt;-<span class="st"> </span><span class="kw">qplot</span>(</span>
+<span id="cb272-14"><a href="#cb272-14"></a>  <span class="kw">seq</span>(<span class="op">-</span><span class="dv">5</span>,<span class="dv">5</span>,.<span class="dv">01</span>), </span>
+<span id="cb272-15"><a href="#cb272-15"></a>  MASS<span class="op">::</span><span class="kw">psi.huber</span>(<span class="kw">seq</span>(<span class="op">-</span><span class="dv">5</span>,<span class="dv">5</span>,.<span class="dv">01</span>)),</span>
+<span id="cb272-16"><a href="#cb272-16"></a>  <span class="dt">geom=</span><span class="st">&quot;path&quot;</span>) <span class="op">+</span></span>
+<span id="cb272-17"><a href="#cb272-17"></a><span class="st">  </span><span class="kw">xlab</span>(<span class="st">&quot;standardized residual&quot;</span>) <span class="op">+</span></span>
+<span id="cb272-18"><a href="#cb272-18"></a><span class="st">  </span><span class="kw">ylab</span>(<span class="st">&quot;weight&quot;</span>)</span></code></pre></div>
 </p>
 </details>
-<div class="sourceCode" id="cb267"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb267-1"><a href="#cb267-1"></a><span class="kw">grid.arrange</span>(weightPlot,resRobPlot,<span class="dt">nrow=</span><span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb273"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb273-1"><a href="#cb273-1"></a><span class="kw">grid.arrange</span>(weightPlot,resRobPlot,<span class="dt">nrow=</span><span class="dv">1</span>)</span></code></pre></div>
 <p><img src="pda_robustSummarisation_peptideModels_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
 <ul>
 <li>We clearly see that the weights in the M-estimation procedure will down-weight errors associated with outliers for peptide KIEEIAAK.</li>
@@ -7807,17 +7825,17 @@ y_{ip} = \beta_i^\text{sample}+\beta^{peptide}_{p} + \epsilon_{ip}
 <details>
 <summary> Click to see code to make plot </summary>
 <p>
-<div class="sourceCode" id="cb268"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb268-1"><a href="#cb268-1"></a>sumMeanPepRob &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</span>
-<span id="cb268-2"><a href="#cb268-2"></a>  <span class="dt">intensity=</span>sumMeanPepRobMod<span class="op">$</span>coef[<span class="kw">grep</span>(<span class="st">&quot;sample&quot;</span>,<span class="kw">names</span>(sumMeanPepRobMod<span class="op">$</span>coef))] <span class="op">+</span><span class="st"> </span><span class="kw">mean</span>(data<span class="op">$</span>intensity) <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(sumMeanPepRobMod<span class="op">$</span>coef[<span class="kw">grep</span>(<span class="st">&quot;sample&quot;</span>,<span class="kw">names</span>(sumMeanPepRobMod<span class="op">$</span>coef))]),</span>
-<span id="cb268-3"><a href="#cb268-3"></a>  <span class="dt">condition=</span> <span class="kw">names</span>(sumMeanPepRobMod<span class="op">$</span>coef)[<span class="kw">grep</span>(<span class="st">&quot;sample&quot;</span>,<span class="kw">names</span>(sumMeanPepRobMod<span class="op">$</span>coef))] <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">substr</span>(<span class="dv">18</span>,<span class="dv">18</span>) <span class="op">%&gt;%</span><span class="st"> </span>as.factor )</span>
-<span id="cb268-4"><a href="#cb268-4"></a></span>
-<span id="cb268-5"><a href="#cb268-5"></a>sumRlmPlot &lt;-<span class="st"> </span>sumPlot <span class="op">+</span><span class="st"> </span><span class="kw">geom_hline</span>(</span>
-<span id="cb268-6"><a href="#cb268-6"></a>    <span class="dt">data=</span>sumMeanPepRob,</span>
-<span id="cb268-7"><a href="#cb268-7"></a>    <span class="dt">mapping=</span><span class="kw">aes</span>(<span class="dt">yintercept=</span>intensity,<span class="dt">color=</span>condition)) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb268-8"><a href="#cb268-8"></a><span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;Robust&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb274"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb274-1"><a href="#cb274-1"></a>sumMeanPepRob &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</span>
+<span id="cb274-2"><a href="#cb274-2"></a>  <span class="dt">intensity=</span>sumMeanPepRobMod<span class="op">$</span>coef[<span class="kw">grep</span>(<span class="st">&quot;sample&quot;</span>,<span class="kw">names</span>(sumMeanPepRobMod<span class="op">$</span>coef))] <span class="op">+</span><span class="st"> </span><span class="kw">mean</span>(data<span class="op">$</span>intensity) <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(sumMeanPepRobMod<span class="op">$</span>coef[<span class="kw">grep</span>(<span class="st">&quot;sample&quot;</span>,<span class="kw">names</span>(sumMeanPepRobMod<span class="op">$</span>coef))]),</span>
+<span id="cb274-3"><a href="#cb274-3"></a>  <span class="dt">condition=</span> <span class="kw">names</span>(sumMeanPepRobMod<span class="op">$</span>coef)[<span class="kw">grep</span>(<span class="st">&quot;sample&quot;</span>,<span class="kw">names</span>(sumMeanPepRobMod<span class="op">$</span>coef))] <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">substr</span>(<span class="dv">18</span>,<span class="dv">18</span>) <span class="op">%&gt;%</span><span class="st"> </span>as.factor )</span>
+<span id="cb274-4"><a href="#cb274-4"></a></span>
+<span id="cb274-5"><a href="#cb274-5"></a>sumRlmPlot &lt;-<span class="st"> </span>sumPlot <span class="op">+</span><span class="st"> </span><span class="kw">geom_hline</span>(</span>
+<span id="cb274-6"><a href="#cb274-6"></a>    <span class="dt">data=</span>sumMeanPepRob,</span>
+<span id="cb274-7"><a href="#cb274-7"></a>    <span class="dt">mapping=</span><span class="kw">aes</span>(<span class="dt">yintercept=</span>intensity,<span class="dt">color=</span>condition)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb274-8"><a href="#cb274-8"></a><span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;Robust&quot;</span>)</span></code></pre></div>
 </p>
 </details>
-<div class="sourceCode" id="cb269"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb269-1"><a href="#cb269-1"></a> <span class="kw">grid.arrange</span>(sumLmPlot <span class="op">+</span><span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;OLS&quot;</span>), sumRlmPlot, <span class="dt">nrow =</span> <span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb275"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb275-1"><a href="#cb275-1"></a> <span class="kw">grid.arrange</span>(sumLmPlot <span class="op">+</span><span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;OLS&quot;</span>), sumRlmPlot, <span class="dt">nrow =</span> <span class="dv">1</span>)</span></code></pre></div>
 <p><img src="pda_robustSummarisation_peptideModels_files/figure-html/unnamed-chunk-38-1.png" width="672" /></p>
 <ul>
 <li>Robust regresion results in a better separation between the protein expression values for the different samples according to their spike-in concentration.</li>

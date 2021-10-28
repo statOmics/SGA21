@@ -1,11 +1,11 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021) (preloaded format=xelatex 2021.10.14)  15 OCT 2021 10:17
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021) (preloaded format=xelatex 2021.10.25)  28 OCT 2021 21:01
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
 **sequencing_intro.tex
 (./sequencing_intro.tex
 LaTeX2e <2021-06-01> patch level 1
-L3 programming layer <2021-10-12> (/Users/runner/Library/TinyTeX/texmf-dist/tex
+L3 programming layer <2021-10-18> (/Users/runner/Library/TinyTeX/texmf-dist/tex
 /latex/base/article.cls
 Document Class: article 2021/02/12 v1.4n Standard LaTeX document class
 (/Users/runner/Library/TinyTeX/texmf-dist/tex/latex/base/size10.clo
@@ -128,11 +128,11 @@ Package: ifluatex 2019/10/25 v1.5 ifluatex legacy package. Use iftex instead.
 )
 (/Users/runner/Library/TinyTeX/texmf-dist/tex/latex/unicode-math/unicode-math.s
 ty (/Users/runner/Library/TinyTeX/texmf-dist/tex/latex/l3kernel/expl3.sty
-Package: expl3 2021-10-12 L3 programming layer (loader) 
+Package: expl3 2021-10-18 L3 programming layer (loader) 
 
 (/Users/runner/Library/TinyTeX/texmf-dist/tex/latex/l3backend/l3backend-xetex.d
 ef
-File: l3backend-xetex.def 2021-10-12 L3 backend support: XeTeX
+File: l3backend-xetex.def 2021-10-18 L3 backend support: XeTeX
 (|extractbb --version)
 \c__kernel_sys_dvipdfmx_version_int=\count198
 \l__color_backend_stack_int=\count199
@@ -855,10 +855,10 @@ Package rerunfilecheck Info: File `sequencing_intro.out' has not changed.
 (rerunfilecheck)             Checksum: E89ED933F48AB75C723DB6E19FF7FEBF;1460.
  ) 
 Here is how much of TeX's memory you used:
- 16037 strings out of 478492
- 293330 string characters out of 5861015
- 752121 words of memory out of 5000000
- 36112 multiletter control sequences out of 15000+600000
+ 16040 strings out of 478472
+ 293435 string characters out of 5860372
+ 753781 words of memory out of 5000000
+ 36135 multiletter control sequences out of 15000+600000
  409841 words of font info for 75 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  87i,6n,120p,310b,449s stack positions out of 5000i,500n,10000p,200000b,80000s
