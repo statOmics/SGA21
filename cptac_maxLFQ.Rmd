@@ -132,10 +132,10 @@ pe <- logTransform(pe, base = 2, i = "proteinRaw", name = "proteinLog")
 We now remove the contaminants and proteins that map to decoys.
 
 ```{r}
-pe[["proteinLog"]] <- pe[["proteinLog"]][rowData(pe[["proteinLog"]])$Reverse != "+", ]
-pe[["proteinLog"]] <- pe[["proteinLog"]][rowData(pe[["proteinLog"]])$
-    Potential.contaminant != "+", ]
+pe <- filterFeatures(pe,~ Reverse != "+")
+pe <- filterFeatures(pe,~ Potential.contaminant != "+")
 ```
+
 We keep `r nrow(pe[["proteinLog"]])` peptides upon filtering.
 
 

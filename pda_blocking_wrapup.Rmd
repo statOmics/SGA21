@@ -175,13 +175,15 @@ pe3 <- filterFeatures(pe3,~ Potential.contaminant != "+")
 We keep peptides that were observed at last twice.
 
 ```{r}
-pe[["peptideLog"]] <- pe[["peptideLog"]][rowData(pe[["peptideLog"]])$nNonZero >= 2, ]
+pe <- filterFeatures(pe,~nNonZero >= 2)
 nrow(pe[["peptideLog"]])
 
-pe2[["peptideLog"]] <- pe2[["peptideLog"]][rowData(pe2[["peptideLog"]])$nNonZero >= 2, ]
-nrow(pe[["peptideLog"]])
 
-pe3[["peptideLog"]] <- pe3[["peptideLog"]][rowData(pe3[["peptideLog"]])$nNonZero >= 2, ]
+pe2 <- filterFeatures(pe2,~nNonZero >= 2)
+nrow(pe2[["peptideLog"]])
+
+
+pe3 <- filterFeatures(pe3,~nNonZero >= 2)
 nrow(pe3[["peptideLog"]])
 ```
 
