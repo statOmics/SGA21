@@ -76,6 +76,24 @@ source("https://raw.githubusercontent.com/statOmics/SGA21/master/install.R")
    - Lecture: [Differential Abundance Analysis](./pda_quantification_inference.html) [[PDF](./pda_quantification_inference.pdf)]
    - Tutorial: [Design](pda_tutorialDesign.html)
    - Wrap-up: [Blocking](./pda_blocking_wrapup.html) [[PDF](./pda_blocking_wrapup.pdf)]
+   
+4. Advanced materials and reading materials
+
+   - [Technical details: Inference upon summarization](./technicalDetailsProteomics.html)
+   - [Stage-wise testing](./docs/stagewiseTesting.pdf)
+   
+   - Papers: 
+
+      - [Sticker et al. (2020) Robust summarization and inference in proteome-wide label-free quantification](https://www.biorxiv.org/content/10.1101/668863v1)
+      - [Ludger Goeminne: Extensive Background on proteomics and proteomics data analysis (Introduction of PhD)](./docs/backgroundProteomicsDataAnalysis.pdf)
+      - [Van den Berge et al. (2017) Stage-wise testing: stageR paper](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-017-1277-0)
+
+5. Solutions
+
+   - CPTAC study: See [wrap-up preprocessing](./pda_robustSummarisation_peptideModels.html)
+   - [cancer 6x6](cancer2_6x6.html)
+   - mouse: See [wrap-up blocking](./pda_blocking_wrapup.html)
+   - [Heart study](heartMainInteractionStageR.html)
 
 
 # Instructors

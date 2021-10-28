@@ -1,0 +1,33 @@
+---
+title: "Statistical Methods for Quantitative MS-based Proteomics: Part II. Differential Abundance Analysis"
+author: "Lieven Clement"
+date: "[statOmics](https://statomics.github.io), Ghent University"
+output:
+    html_document:
+      code_download: true
+      theme: cosmo
+      toc: true
+      toc_float: true
+      highlight: tango
+      number_sections: true
+bibliography: msqrob2.bib
+
+---
+
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
+
+
+```{r}
+library(tidyverse)
+set.seed(1243)
+simSameVar<-sapply(1:1066,function(m,n) rnorm(n,sd=1),n=6) %>% t
+sds <- apply(simSameVar,1,function(y,group) lm(y ~ group) %>% sigma, group=rep(0:1,each=3))
+varSq <- limma::squeezeVar(sds^2,4)
+
+data.frame(sdOrig = sds, sdMod = varSq$var.post^.5) %>% 
+  ggplot(aes(sdOrig,sdMod)) +
+  geom_point() + 
+  xlim(range(sds)) +
+  ylim(range(sds))
+```
+
