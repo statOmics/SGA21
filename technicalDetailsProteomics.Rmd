@@ -733,7 +733,7 @@ p1 +
 Suppose that the standard deviations for all proteins are the same and are equal to 1.
 We simulate proteins with the same mean as the fitted mean in the experiment but with standard deviation of 1.
 
-```{r warnings=FALSE, message=FALSE}
+```{r warning=FALSE, message=FALSE}
 nCoefs <- getCoef(rowData(pe[["proteinRobust"]])$msqrobModels[[2]]) %>% length
 coefs <-
 sapply(rowData(pe[["proteinRobust"]])$msqrobModels,
