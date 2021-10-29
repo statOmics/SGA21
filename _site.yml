@@ -15,17 +15,17 @@ navbar:
         href: recapGeneralLinearModel.html
       - text: 2.1 PDA - identification
         href: ./docs/martens_proteomics_bioinformatics.pdf
-      - text: 2.2 Quantification - Preprocessing
+      - text: 2.2 PDA- Quantification - Preprocessing
         href: pda_quantification_preprocessing.html
-      - text: 2.2 Wrap-up Preprocessing - Peptide-Level-Models
+      - text: 2.2 PDA - Wrap-up Preprocessing - Peptide-Level-Models
         href: pda_robustSummarisation_peptideModels.html
-      - text: 2.3 Quantification - Differential Abundance Analysis
+      - text: 2.3 PDA - Quantification - Differential Abundance Analysis
         href: pda_quantification_inference.html
-      - text: 2.3 Wrap-up DA - Blocking
+      - text: 2.3 PDA - Wrap-up DA - Blocking
         href: pda_blocking_wrapup.html
-      - text: 2.4. DA Technical Details
+      - text: 2.4. PDA - DA Technical Details
         href: technicalDetailsProteomics.html
-      - text: 2.5 Stage-wise testing
+      - text: 2.5 PDA- Stage-wise testing
         href: ./docs/stagewiseTesting.pdf
 
     - text: "tutorials"
