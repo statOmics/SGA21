@@ -252,3 +252,5 @@ include_graphics("./images_sequencing/limmaVoomMeanVariance.png")
 include_graphics("./images_sequencing/limmaVoomWeights.png")
 ```
 
+
+**Add limma-voom analysis of RNA-seq data**

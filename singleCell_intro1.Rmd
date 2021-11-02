@@ -1,0 +1,49 @@
+---
+title: "Single-cell RNA-sequencing intro"
+author: "Koen Van den Berge"
+date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+  pdf_document:
+    toc: true
+    number_sections: true
+    latex_engine: xelatex
+---
+
+
+```{r, echo=FALSE}
+if(!"BiocManager" %in% installed.packages()[,1]){
+  install.packages("BiocManager")
+}
+if(!"scRNAseq" %in% installed.packages()[,1]){
+  BiocManager::install("scRNAseq")
+}
+```
+
+
+```{r}
+suppressPackageStartupMessages(library(scRNAseq))
+sce <- MacoskoRetinaData()
+sce
+class(sce)
+counts(sce)[1:5,1:5]
+head(colData(sce))
+
+# filter cells
+sce <- sce[,!is.na(colData(sce)$cluster)]
+sce
+```
+
+
+ - Explore this dataset. What do you think is different to these data as compared to a bulk RNA-seq dataset?
+ - Try visualizing the structure of this dataset using tools we have worked with before. For example, make a PCA and MDS plot. You can color the cells according to the cluster labels in the `colData`.
+ - Try visualizing the structure of this dataset using any tool you want.
+
+
+After trying:
+
+ Are you able to recapitulate the structure (e.g., cell type clusters)? What are the issues you are encountering, and **why** do you think these are happening?
+
+
