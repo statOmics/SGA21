@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021) (preloaded format=xelatex 2021.10.25)  2 NOV 2021 09:46
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021) (preloaded format=xelatex 2021.10.25)  2 NOV 2021 13:57
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -800,14 +800,14 @@ File: ./images_sequencing/seqWorkflow2.png Graphic file (type bmp)
 File: ./images_sequencing/referenceGenome.png Graphic file (type bmp)
 <./images_sequencing/referenceGenome.png>
 
-Overfull \hbox (320.24692pt too wide) in paragraph at lines 336--336
+Overfull \hbox (320.24692pt too wide) in paragraph at lines 349--349
 [][] 
  []
 
 File: ./images_sequencing/gtfFile.png Graphic file (type bmp)
 <./images_sequencing/gtfFile.png>
 
-Overfull \hbox (618.3965pt too wide) in paragraph at lines 340--340
+Overfull \hbox (618.3965pt too wide) in paragraph at lines 353--353
 [][] 
  []
 
@@ -815,7 +815,7 @@ Overfull \hbox (618.3965pt too wide) in paragraph at lines 340--340
 File: ./images_sequencing/splicedAlignment.png Graphic file (type bmp)
 <./images_sequencing/splicedAlignment.png>
 
-Overfull \hbox (335.29192pt too wide) in paragraph at lines 403--403
+Overfull \hbox (335.29192pt too wide) in paragraph at lines 416--416
 [][] 
  []
 
@@ -823,7 +823,7 @@ File: ./images_sequencing/kallisto_equivalenceClasses.png Graphic file (type bm
 p)
 <./images_sequencing/kallisto_equivalenceClasses.png>
 
-Overfull \hbox (10.09026pt too wide) in paragraph at lines 432--432
+Overfull \hbox (10.09026pt too wide) in paragraph at lines 445--445
 [][] 
  []
 
@@ -831,36 +831,37 @@ File: ./images_sequencing/kallisto_equivalenceClasses_caption.png Graphic file
 (type bmp)
 <./images_sequencing/kallisto_equivalenceClasses_caption.png>
 
-Overfull \hbox (70.29712pt too wide) in paragraph at lines 435--435
+Overfull \hbox (70.29712pt too wide) in paragraph at lines 448--448
 [][] 
  []
 
 File: ./images_sequencing/readCounting.png Graphic file (type bmp)
 <./images_sequencing/readCounting.png>
 
-Overfull \hbox (397.49017pt too wide) in paragraph at lines 462--462
+Overfull \hbox (397.49017pt too wide) in paragraph at lines 475--475
 [][] 
  []
 
 
-LaTeX Warning: Float too large for page by 24.06392pt on input line 463.
+LaTeX Warning: Float too large for page by 24.06392pt on input line 476.
 
+[9] [10] [11]
 File: ./images_sequencing/abundanceEMAlgorithm.png Graphic file (type bmp)
 <./images_sequencing/abundanceEMAlgorithm.png>
-[9] [10] [11] [12] [13] [14]
+[12] [13] [14]
 File: ./images_sequencing/seqWorkflow3.png Graphic file (type bmp)
 <./images_sequencing/seqWorkflow3.png>
-[15] (./sequencing_intro.aux)
+[15] [16] (./sequencing_intro.aux)
 Package rerunfilecheck Info: File `sequencing_intro.out' has not changed.
-(rerunfilecheck)             Checksum: E89ED933F48AB75C723DB6E19FF7FEBF;1460.
+(rerunfilecheck)             Checksum: 344487D7F6494113D987BCB3B3DEBBA4;1630.
  ) 
 Here is how much of TeX's memory you used:
- 16040 strings out of 478472
- 293435 string characters out of 5860372
- 753784 words of memory out of 5000000
- 36135 multiletter control sequences out of 15000+600000
- 409841 words of font info for 75 fonts, out of 8000000 for 9000
+ 16045 strings out of 478472
+ 293522 string characters out of 5860372
+ 754832 words of memory out of 5000000
+ 36138 multiletter control sequences out of 15000+600000
+ 409849 words of font info for 76 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 87i,6n,120p,310b,449s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 87i,6n,120p,310b,413s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on sequencing_intro.pdf (15 pages).
+Output written on sequencing_intro.pdf (16 pages).
