@@ -508,8 +508,10 @@ yhatA / yhatB # also equal to above.
  - It is important to keep in mind that standard statistical inference theory in GLMs works **asymptotically in terms of the sample size**. Thus we need many data points in order for the theory to hold in practice. In order for the $p$-values to be correct, our parametric (distributional) assumptions as well as the independence assumption, must also hold.
  - In bulk RNA-seq, we are often working with a limited number of samples and so we typically do not expect asymptotic theory to hold yet. In single-cell RNA-seq, we often perform several preprocessing steps before calculating $p$-values for each gene and so we may be 'using the data multiple times'. Rather than attaching strong probabilistic interpretations to the $p$-values, we therefore advice to view the $p$-values simply as useful numerical summaries for ranking the genes for further inspection in genomics applications.
  
- **TODO: add schematic comparing Wald with LRT using log-likelihood function**
-  
+```{r, echo=FALSE, fig.cap=paste("")}
+include_graphics("./images_sequencing/likTests.png")
+```
+
 ### Wald test and likelihood ratio test in `R`
 
 Let's use a Wald test and a likelihood ratio test to test whether the average number of bikers differs between a working day or a weekend day, using a simple GLM with only that variable as a covariate.
