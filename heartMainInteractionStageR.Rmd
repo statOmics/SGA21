@@ -1,0 +1,609 @@
+---
+title: "Proteomics data analysis: heart"
+author: "Lieven Clement"
+date: "statOmics, Ghent University (https://statomics.github.io)"
+output:
+    html_document:
+      code_download: true
+      theme: cosmo
+      toc: true
+      toc_float: true
+      highlight: tango
+      number_sections: true
+---
+# Background
+Researchers have assessed the proteome in different regions of the heart for 3 patients (identifiers 3, 4, and 8). For each patient they sampled the left atrium (LA), right atrium (RA), left ventricle (LV) and the right ventricle (RV). The data are a small subset of the public dataset PXD006675 on PRIDE.
+
+Suppose that researchers are mainly interested in comparing the ventricular to the atrial proteome. Particularly, they would like to compare the left atrium to the left ventricle, the right atrium to the right ventricle, the average ventricular vs atrial proteome and if ventricular vs atrial proteome shifts differ between left and right heart region.
+
+
+# Data
+
+We first import the peptides.txt file. This is the file that contains your peptide-level intensities. For a MaxQuant search [6], this peptides.txt file can be found by default in the "path_to_raw_files/combined/txt/" folder from the MaxQuant output, with "path_to_raw_files" the folder where raw files were saved. In this tutorial, we will use a MaxQuant peptides file from MaxQuant that can be found in the data tree of the SGA2020 github repository https://github.com/statOmics/SGA2020/tree/data/quantification/heart .
+
+To import the data we use the `QFeatures` package.
+
+We generate the object peptideRawFile with the path to the peptideRaws.txt file.
+Using the `grepEcols` function, we find the columns that contain the expression
+data of the peptideRaws in the peptideRaws.txt file.
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(limma)
+library(QFeatures)
+library(msqrob2)
+library(plotly)
+
+peptidesFile <- "https://raw.githubusercontent.com/statOmics/PDA21/data/quantification/heart/peptides.txt"
+
+ecols <- grep("Intensity\\.", names(read.delim(peptidesFile)))
+
+pe <- readQFeatures(
+  table = peptidesFile,
+  fnames = 1,
+  ecol = ecols,
+  name = "peptideRaw", sep="\t")
+
+pe
+pe[["peptideRaw"]]
+```
+
+We will make use from data wrangling functionalities from the tidyverse package.
+The %>% operator allows us to pipe the output of one function to the next function.
+
+```{r}
+colData(pe)$location <- substr(
+  colnames(pe[["peptideRaw"]]),
+  11,
+  11) %>%
+  unlist %>%  
+  as.factor
+
+colData(pe)$tissue <- substr(
+    colnames(pe[["peptideRaw"]]),
+    12,
+    12) %>%
+    unlist %>%  
+    as.factor
+
+colData(pe)$patient <- substr(
+  colnames(pe[["peptideRaw"]]),
+  13,
+  13) %>%
+  unlist %>%  
+  as.factor
+```
+
+
+We calculate how many non zero intensities we have per peptide and this
+will be useful for filtering.
+
+```{r}
+rowData(pe[["peptideRaw"]])$nNonZero <- rowSums(assay(pe[["peptideRaw"]]) > 0)
+```
+
+
+Peptides with zero intensities are missing peptides and should be represent
+with a `NA` value rather than `0`.
+```{r}
+pe <- zeroIsNA(pe, "peptideRaw") # convert 0 to NA
+```
+
+
+## Data exploration
+
+`r format(mean(is.na(assay(pe[["peptideRaw"]])))*100,digits=2)`% of all peptide
+intensities are missing and for some peptides we do not even measure a signal
+in any sample. The missingness is similar across samples.
+
+
+# Preprocessing
+
+This section preforms standard preprocessing for the peptide data. This
+include log transformation, filtering and summarisation of the data.
+
+## Log transform the data
+
+```{r}
+pe <- logTransform(pe, base = 2, i = "peptideRaw", name = "peptideLog")
+limma::plotDensities(assay(pe[["peptideLog"]]))
+```
+
+
+## Filtering
+
+### Handling overlapping protein groups
+In our approach a peptide can map to multiple proteins, as long as there is
+none of these proteins present in a smaller subgroup.
+
+```{r}
+pe <- filterFeatures(pe, ~ Proteins %in% smallestUniqueGroups(rowData(pe[["peptideLog"]])$Proteins))
+```
+
+### Remove reverse sequences (decoys) and contaminants
+
+We now remove the contaminants, peptides that map to decoy sequences, and proteins
+which were only identified by peptides with modifications.
+
+First look to the names of the variables for the peptide features
+```{r}
+pe[["peptideLog"]] %>%
+  rowData %>%
+  names
+```
+
+No information on decoys.
+
+```{r}
+pe <- filterFeatures(pe,~ Potential.contaminant != "+")
+```
+
+
+### Drop peptides that were only identified in one sample
+
+We keep peptides that were observed at last twice.
+
+```{r}
+pe <- filterFeatures(pe,~nNonZero >= 2)
+nrow(pe[["peptideLog"]])
+```
+
+We keep `r nrow(pe[["peptideLog"]])` peptides after filtering.
+
+## Normalize the data
+```{r}
+pe <- normalize(pe, 
+                i = "peptideLog", 
+                name = "peptideNorm", 
+                method = "center.median")
+```
+
+
+## Explore normalized data
+
+After  normalisation the density curves for all samples are comparable.
+
+```{r}
+limma::plotDensities(assay(pe[["peptideNorm"]]))
+```
+
+This is more clearly seen is a boxplot.
+
+```{r,}
+boxplot(assay(pe[["peptideNorm"]]), col = palette()[-1],
+       main = "Peptide distribtutions after normalisation", ylab = "intensity")
+```
+
+
+We can visualize our data using a Multi Dimensional Scaling plot,
+eg. as provided by the `limma` package.
+
+```{r}
+limma::plotMDS(assay(pe[["peptideNorm"]]),
+  col = colData(pe)$location:colData(pe)$tissue %>%
+    as.numeric,
+  labels = colData(pe) %>%
+    rownames %>%  
+    substr(start = 11, stop = 13)
+  )
+```
+
+The first axis in the plot is showing the leading log fold changes
+(differences on the log scale) between the samples.
+
+
+## Summarization to protein level
+
+We use robust summarization in aggregateFeatures. This is the default workflow of aggregateFeatures so you do not have to specifiy the argument `fun`.
+However, because we compare methods we have included the `fun` argument to show the summarization method explicitely.
+
+```{r,warning=FALSE}
+pe <- aggregateFeatures(pe,
+ i = "peptideNorm",
+ fcol = "Proteins",
+ na.rm = TRUE,
+ name = "proteinRobust",
+ fun = MsCoreUtils::robustSummary)
+```
+
+```{r}
+plotMDS(assay(pe[["proteinRobust"]]),
+  col = colData(pe)$location:colData(pe)$tissue %>%
+    as.numeric,
+  labels = colData(pe) %>%
+    rownames %>%  
+    substr(start = 11, stop = 13)
+)
+```
+
+# Data Analysis
+
+## Estimation
+
+We model the protein level expression values using `msqrob`.
+By default `msqrob2` estimates the model parameters using robust regression.  
+
+```{r, warning=FALSE}
+pe <- msqrob(
+  object = pe,
+  i = "proteinRobust",
+  formula = ~ location*tissue + patient)
+```
+
+## Inference
+
+Explore Design
+```{r}
+library(ExploreModelMatrix)
+VisualizeDesign(colData(pe),~ location*tissue + patient)$plotlist
+```
+
+
+
+```{r}
+design <- model.matrix(~location*tissue + patient, data = colData(pe))
+L <- makeContrast(
+  c(
+    "tissueV = 0",
+    "tissueV + locationR:tissueV = 0",
+    "tissueV + 0.5*locationR:tissueV = 0","locationR:tissueV = 0"),
+  parameterNames = colnames(design)
+  )
+
+
+pe <- hypothesisTest(object = pe, i = "proteinRobust", contrast = L, overwrite=TRUE)
+```
+
+## Evaluate results contrast $\log_2 FC_{V-A}^L$
+
+### Volcano-plot
+
+
+```{r,warning=FALSE}
+volcanoLeft <- ggplot(rowData(pe[["proteinRobust"]])$"tissueV",
+                 aes(x = logFC, y = -log10(pval), color = adjPval < 0.05)) +
+ geom_point(cex = 2.5) +
+ scale_color_manual(values = alpha(c("black", "red"), 0.5)) + theme_minimal()
+volcanoLeft
+```
+
+
+### Heatmap
+
+We first select the names of the proteins that were declared signficant.
+
+```{r}
+sigNamesLeft <- rowData(pe[["proteinRobust"]])$tissueV %>%
+ rownames_to_column("proteinRobust") %>%
+ filter(adjPval<0.05) %>%
+ pull(proteinRobust)
+heatmap(assay(pe[["proteinRobust"]])[sigNamesLeft, ])
+```
+
+There are `r length(sigNamesLeft)` proteins significantly differentially expressed at the 5% FDR level.
+
+```{r}
+rowData(pe[["proteinRobust"]])$tissueV %>%
+  cbind(.,rowData(pe[["proteinRobust"]])$Protein.names) %>%
+  na.exclude %>%
+  filter(adjPval<0.05) %>%
+  arrange(pval)  %>%
+  knitr::kable(.)
+```
+
+## Evaluate results contrast $\log_2 FC_{V-A}^R$
+
+### Volcano-plot
+
+
+```{r,warning=FALSE}
+volcanoRight <- ggplot(rowData(pe[["proteinRobust"]])$"tissueV + locationR:tissueV",
+                 aes(x = logFC, y = -log10(pval), color = adjPval < 0.05)) +
+ geom_point(cex = 2.5) +
+ scale_color_manual(values = alpha(c("black", "red"), 0.5)) + theme_minimal()
+volcanoRight
+```
+
+
+### Heatmap
+
+We first select the names of the proteins that were declared signficant.
+
+```{r}
+sigNamesRight <- rowData(pe[["proteinRobust"]])$"tissueV + locationR:tissueV" %>%
+ rownames_to_column("proteinRobust") %>%
+ filter(adjPval<0.05) %>%
+ pull(proteinRobust)
+heatmap(assay(pe[["proteinRobust"]])[sigNamesRight, ])
+```
+
+There are `r length(sigNamesRight)` proteins significantly differentially expressed at the 5% FDR level.
+
+```{r}
+rowData(pe[["proteinRobust"]])$"tissueV + locationR:tissueV"  %>%
+  cbind(.,rowData(pe[["proteinRobust"]])$Protein.names) %>%
+  na.exclude %>%
+  filter(adjPval<0.05) %>%
+  arrange(pval) %>%
+  knitr::kable(.)
+```
+
+
+## Evaluate results average contrast $\log_2 FC_{V-A}$
+
+### Volcano-plot
+
+
+```{r,warning=FALSE}
+volcanoAvg <- ggplot(rowData(pe[["proteinRobust"]])$"tissueV + 0.5 * locationR:tissueV",
+                 aes(x = logFC, y = -log10(pval), color = adjPval < 0.05)) +
+ geom_point(cex = 2.5) +
+ scale_color_manual(values = alpha(c("black", "red"), 0.5)) + theme_minimal()
+volcanoAvg
+```
+
+
+### Heatmap
+
+We first select the names of the proteins that were declared signficant.
+
+```{r}
+sigNamesAvg <- rowData(pe[["proteinRobust"]])$"tissueV + 0.5 * locationR:tissueV" %>%
+ rownames_to_column("proteinRobust") %>%
+ filter(adjPval<0.05) %>%
+ pull(proteinRobust)
+heatmap(assay(pe[["proteinRobust"]])[sigNamesAvg, ])
+```
+
+There are `r length(sigNamesAvg)` proteins significantly differentially expressed at the 5% FDR level.
+
+```{r}
+rowData(pe[["proteinRobust"]])$"tissueV + 0.5 * locationR:tissueV" %>%
+  cbind(.,rowData(pe[["proteinRobust"]])$Protein.names) %>%
+  na.exclude %>%
+  filter(adjPval<0.05) %>%
+  arrange(pval) %>%
+  knitr::kable(.)
+```
+
+
+
+## Interaction
+
+### Volcano-plot
+
+
+```{r,warning=FALSE}
+volcanoInt <- ggplot(rowData(pe[["proteinRobust"]])$"locationR:tissueV",
+                 aes(x = logFC, y = -log10(pval), color = adjPval < 0.05)) +
+ geom_point(cex = 2.5) +
+ scale_color_manual(values = alpha(c("black", "red"), 0.5)) + theme_minimal()
+volcanoInt
+```
+
+### Heatmap
+
+There were no genes significant at the 5% FDR level.
+We return the top 25 genes.
+
+```{r}
+sigNamesInt <- rowData(pe[["proteinRobust"]])$"locationR:tissueV" %>%
+ rownames_to_column("proteinRobust") %>%
+ filter(adjPval<0.05) %>%
+ pull(proteinRobust)
+hlp <- order((rowData(pe[["proteinRobust"]])$"locationR:tissueV")[,"adjPval"])[1:25]
+heatmap(assay(pe[["proteinRobust"]])[hlp, ])
+```
+
+There are `r length(sigNamesInt)` proteins significantly differentially expressed at the 5% FDR level.
+
+```{r}
+rowData(pe[["proteinRobust"]])$"locationR:tissueV" %>%
+  cbind(.,rowData(pe[["proteinRobust"]])$Protein.names) %>%
+  na.exclude %>%
+  filter(adjPval<0.05) %>%
+  arrange(pval)
+```
+
+#  Large difference in number of proteins that are returned
+
+Note, that much more proteins are returned significant for average contrast ($\log_2 FC_{V-A}$) as compared to contrast for assessing the fold change between ventriculum and atrium left and right. The power for the average contrast is larger than for the contrast left or right because the log2 FC can be estimated with higher precision.
+
+For none of the proteins the interaction was significant (change in log2 FC between ventriculum and atrium in the right vs the left heart region). The power for the interaction is typically low.
+
+## Reason
+
+Part of variance covariance matrix of model parameters due to design:
+
+```{r}
+X <- model.matrix(~ location*tissue + patient, colData(pe))
+covarUnscaled <- solve(t(X) %*% X)
+```
+
+Variance of contrasts (diagonal elements) due to design
+```{r}
+varContrasts <- t(L)%*%covarUnscaled%*%L %>%
+  diag
+varContrasts
+sqrt(varContrasts)
+```
+
+So it is clear that the standard error of the log2 FC left and right is the same.
+That of the average contrast is a factor $\sqrt{2}$ smaller!
+Indeed, we use double the number of samples to estimate it!
+
+```{r}
+varContrasts[3]/varContrasts[2]
+sqrt(varContrasts)[3]/sqrt(varContrasts)[2]
+1/sqrt(2)
+```
+
+The standard error of the interaction is a factor $\sqrt{2}$ larger than that of the main effects!
+```{r}
+varContrasts[4]/varContrasts[2]
+sqrt(varContrasts)[4]/sqrt(varContrasts)[2]
+sqrt(2)
+```
+
+## Msqrob
+
+This is not the case for the standard errors of protein 2???
+
+```{r}
+rowData(pe[["proteinRobust"]])$"tissueV"[2,]
+rowData(pe[["proteinRobust"]])$"tissueV + locationR:tissueV"[2,]
+rowData(pe[["proteinRobust"]])$"tissueV + 0.5 * locationR:tissueV"[2,]
+rowData(pe[["proteinRobust"]])$"locationR:tissueV"[2,]
+```
+
+Because msqrob is using robust regression to assess DE!
+
+```{r}
+pe %>%
+  colData %>%
+  as_tibble %>%
+  mutate(w=getModel(rowData(pe[["proteinRobust"]])$msqrobModels[[2]])$w)
+```
+
+For protein 2 the samples at the left and right side have different weights!
+
+
+### Part of standard error due to design:
+
+```{r}
+covUnscaledRobust <- solve(
+  t(X) %*%
+  diag(
+    getModel(rowData(pe[["proteinRobust"]])$msqrobModels[[2]])$w) %*% X)
+
+varContrastsRobust <- t(L)%*%covUnscaledRobust%*%L %>%
+  diag
+varContrastsRobust
+sqrt(varContrastsRobust)
+```
+
+### Standard errors Contrasts
+
+```{r}
+sqrt(varContrastsRobust) * getSigmaPosterior(rowData(pe[["proteinRobust"]])$msqrobModels[[2]])
+```
+
+```{r}
+rowData(pe[["proteinRobust"]])$"tissueV"[2,]
+rowData(pe[["proteinRobust"]])$"tissueV + locationR:tissueV"[2,]
+rowData(pe[["proteinRobust"]])$"tissueV + 0.5 * locationR:tissueV"[2,]
+rowData(pe[["proteinRobust"]])$"locationR:tissueV"[2,]
+```
+
+
+## Stagewise testing
+
+[stageR paper](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-017-1277-0)
+
+### Omnibus test
+
+```{r}
+source("https://raw.githubusercontent.com/statOmics/SGA2020/gh-pages/assets/topFeaturesOmnibus.R")
+pe <- omnibusTest(pe, "proteinRobust", L)
+```
+
+### Heatmap significant proteins Omnibus test
+
+We first select the names of the proteins that were declared signficant.
+
+```{r}
+sigNamesOmnibus <- rowData(pe[["proteinRobust"]])$omnibusTest %>%
+ rownames_to_column("proteinRobust") %>%
+ filter(adjPval<0.05) %>%
+ pull(proteinRobust)
+heatmap(assay(pe[["proteinRobust"]])[sigNamesOmnibus, ])
+```
+
+There are `r length(sigNamesOmnibus)` proteins significantly differentially expressed at the 5% FDR level.
+
+```{r}
+rowData(pe[["proteinRobust"]])$omnibusTest  %>%
+  cbind(.,rowData(pe[["proteinRobust"]])$Protein.names) %>%
+  na.exclude %>%
+  filter(adjPval<0.05) %>%
+  arrange(pval) %>%
+  knitr::kable(.)
+```
+
+### Confirmation stage
+
+
+```{r}
+library(stageR)
+pAll <- sapply(
+  c("omnibusTest",
+    "tissueV",
+    "tissueV + locationR:tissueV",
+    "tissueV + 0.5 * locationR:tissueV",
+    "locationR:tissueV"),
+    function(name,assay)
+      pull(rowData(assay)[,name],"pval"),
+  assay = pe[["proteinRobust"]])
+rownames(pAll) <- rownames(pe[["proteinRobust"]])
+
+stageWiseAnalysis <- stageR(pAll[,1], pAll[,-1])
+stageWiseAnalysis <- stageWiseAdjustment(stageWiseAnalysis, method = "holm", alpha = 0.05, allowNA = TRUE)
+
+rowData(pe[["proteinRobust"]])$stageWiseAnalysis <- data.frame(pAll)
+rowData(pe[["proteinRobust"]])$stageWiseAnalysis[] <- NA
+rowData(pe[["proteinRobust"]])$stageWiseAnalysis[getPScreen(stageWiseAnalysis) %>% is.na %>% `!`,] <- getAdjustedPValues(stageWiseAnalysis, onlySignificantGenes=FALSE, order=FALSE)
+```
+
+```{r}
+sigNamesStageWise <- apply(rowData(pe[["proteinRobust"]])$stageWiseAnalysis, 2, function(x) (x < 0.05) %>% which %>% names)
+
+sapply(sigNamesStageWise,length)
+
+for (i in 1:length(sigNamesStageWise))
+heatmap(assay(pe[["proteinRobust"]])[sigNamesStageWise[[i]], ], main=names(sigNamesStageWise)[i])
+```
+
+## Confirmation improved
+
+Instead of the Holm correction, we can use a better correction for this specific design in the confirmation stage.
+If we pass the screening stage we know that at least one null hypothesis related to the contrasts is false.
+If this is not the case we have made an false positive conclusion, but the multiple testing correction in the screening stage already accounts for that.
+
+In the confirmation stage we have to correct for the maximum number of hypotheses that we can falsely reject.
+The omnibus hypothesis test essentially tests the overall null hypothesis that the log2 protein abundance is on average equal between atrium and ventriculum both in the left and right heart region.
+This involves testing simultaneously two model parameters: the main effect for ventriculum and the ventriculum:location interaction.
+All our hypotheses are based on these two model parameters, so the tests are not independent.
+The following configurations can occur:
+- None of the model parameters differ from zero, in which we can falsely reject all hypotheses. However, we already corrected for that in the screening stage!
+- If only the main ventriculum effect differs from zero, we know that the average log2 fold change between  atrium and ventriculum left, right and overall differ from zero. So we falsely reject at most one null hypothesis, i.e. the interaction.
+- If only interaction differs from zero, only the null hypothesis related to log2 fold change in the left heart region can be falsely rejected.
+- If both the main effect and the interaction differ from zero it is possible that
+    - the interaction is as large in magnitude as the main effect but opposite in sign. This would mean that the log2 fold change in the right heart region is zero, which we can falsely reject.
+    - the interaction effect is twice as large in magnitude as the main effect but opposite in sign. This would mean that the log2 fold change in left and right side are equal in size but opposite in sign, implying that contrast that averages over the average log2 fold changes left and right would be zeor, which we could falsely reject
+    - all effects are true.
+
+Hence, as soon as we enter the confirmation stage that we can at maximum make one false rejection so for this design and for our hypotheses of interest we do not have to correct for multiple testing in the second stage because we only have to account for the fact that we can at most make one false rejection.  
+
+So we can set the ```method="none"```
+```{r}
+stageWiseAnalysis <- stageWiseAdjustment(stageWiseAnalysis, method = "none", alpha = 0.05, allowNA = TRUE)
+
+rowData(pe[["proteinRobust"]])$stageWiseAnalysis <- data.frame(pAll)
+rowData(pe[["proteinRobust"]])$stageWiseAnalysis[] <- NA
+rowData(pe[["proteinRobust"]])$stageWiseAnalysis[getPScreen(stageWiseAnalysis) %>% is.na %>% `!`,] <- getAdjustedPValues(stageWiseAnalysis, onlySignificantGenes=FALSE, order=FALSE)
+```
+
+```{r}
+sigNamesStageWise <- apply(rowData(pe[["proteinRobust"]])$stageWiseAnalysis, 2, function(x) (x < 0.05) %>% which %>% names)
+
+sapply(sigNamesStageWise,length)
+
+for (i in 1:length(sigNamesStageWise))
+heatmap(assay(pe[["proteinRobust"]])[sigNamesStageWise[[i]], ], main=names(sigNamesStageWise)[i])
+```
+
+Note, that
+- our more relaxed FDR correction enables us to reject more null hypotheses in the second stage.
+- we can recover `r length(sigNamesStageWise[[5]])` proteins with significant interactions.
+
+It is also very important to realise that setting the method to correct for multiple testing in the second stage at `method = none` is only correct for very specific designs and research hypotheses that are assessed. For most analyses we suggest to use the Holm method, which always we provide correct results. 

@@ -22,7 +22,8 @@ pkgs <- c(
   'DESeq2',
   'scales',
   'QFeatures',
-  'msqrob2')
+  'msqrob2', 
+  'stageR')
 
 install.packages("BiocManager", Ncpus = 2L)
 BiocManager::install(pkgs)

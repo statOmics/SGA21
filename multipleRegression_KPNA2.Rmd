@@ -167,7 +167,7 @@ We can assess all contrasts of interest using the multcomp package. This will al
 - $H_0: \log_2{FC}_{g3n0-g1n0}= \beta_{g3}=0$ $\rightarrow$ "grade3 = 0"
 - $H_0: \log_2{FC}_{g3n1-g1n1}= \beta_{g3} + \hat\beta_{g3n1}=0$ $\rightarrow$ "grade3+grade3:node1 = 0"
 - $H_0: \log_2{FC}_{g1n1-g1n0}= \beta_{n1}$  $\rightarrow$ "node1 = 0"
-- $H_0: \log_2{FC}_{g3n1-g1n1}= \beta_{n1} + \hat\beta_{g3n1}=0$ $\rightarrow$ "node1+grade3:node1 = 0"
+- $H_0: \log_2{FC}_{g3n1-g3n0}= \beta_{n1} + \hat\beta_{g3n1}=0$ $\rightarrow$ "node1+grade3:node1 = 0"
 - $H_0: \log_2{FC}_{g3n1-g1n1} - \log_2{FC}_{g3n0-g1n0} = \hat\beta_{g3n1}=0$, note that the latter hypothesis is also equivalent to $H_0: \log_2{FC}_{g3n1-g3n0} - \log_2{FC}_{g1n1-g1n0} = \hat\beta_{g3n1}=0$ $\rightarrow$ "grade3:node1 = 0"
 
 ```{r}

@@ -1,0 +1,290 @@
+---
+title: "Proteomics data analysis: cancer example 6x6"
+author: "Lieven Clement"
+date: "statOmics, Ghent University (https://statomics.github.io)"
+output:
+    html_document:
+      code_download: true
+      theme: cosmo
+      toc: true
+      toc_float: true
+      highlight: tango
+      number_sections: true
+---
+
+# Background
+Eighteen Estrogen Receptor Positive Breast cancer tissues from from patients treated with tamoxifen upon recurrence have been assessed in a proteomics study. Nine patients had a good outcome (or) and the other nine had a poor outcome (pd).
+The proteomes have been assessed using an LTQ-Orbitrap  and the thermo output .RAW files were searched with MaxQuant (version 1.4.1.2) against the human proteome database (FASTA version 2012-09, human canonical proteome).
+
+# Data
+
+We first import the peptides.txt file. This is the file that contains your peptide-level intensities. For a MaxQuant search [6], this peptides.txt file can be found by default in the "path_to_raw_files/combined/txt/" folder from the MaxQuant output, with "path_to_raw_files" the folder where raw files were saved. In this tutorial, we will use a MaxQuant peptides file from MaxQuant that can be found in the data tree of the SGA2020 github repository https://github.com/statOmics/SGA2020/tree/data/quantification/cancer .
+
+To import the data we use the `QFeatures` package.
+
+We generate the object peptideRawFile with the path to the peptideRaws.txt file.
+Using the `grepEcols` function, we find the columns that contain the expression
+data of the peptideRaws in the peptideRaws.txt file.
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(limma)
+library(QFeatures)
+library(msqrob2)
+library(plotly)
+
+peptidesFile <- "https://raw.githubusercontent.com/statOmics/SGA2020/data/quantification/cancer/peptides6vs6.txt"
+
+ecols <- grep(
+  "Intensity\\.", 
+  names(read.delim(peptidesFile))
+  )
+
+pe <- readQFeatures(
+  table = peptidesFile,
+  fnames = 1,
+  ecol = ecols,
+  name = "peptideRaw", sep="\t")
+
+pe
+pe[["peptideRaw"]]
+```
+
+We will make use from data wrangling functionalities from the tidyverse package.
+The %>% operator allows us to pipe the output of one function to the next function.
+
+```{r}
+colData(pe)$outcome <- substr(
+  colnames(pe[["peptideRaw"]]),
+  11,
+  12) %>%
+  unlist %>%  
+  as.factor
+```
+
+
+We calculate how many non zero intensities we have per peptide and this
+will be useful for filtering.
+
+```{r}
+rowData(pe[["peptideRaw"]])$nNonZero <- rowSums(assay(pe[["peptideRaw"]]) > 0)
+```
+
+
+Peptides with zero intensities are missing peptides and should be represent
+with a `NA` value rather than `0`.
+```{r}
+pe <- zeroIsNA(pe, "peptideRaw") # convert 0 to NA
+```
+
+
+## Data exploration
+
+
+`r format(mean(is.na(assay(pe[["peptideRaw"]])))*100,digits=2)`% of all peptide
+intensities are missing and for some peptides we do not even measure a signal
+in any sample.
+
+# Preprocessing
+
+This section preforms standard preprocessing for the peptide data. This
+include log transformation, filtering and summarisation of the data.
+
+## Log transform the data
+
+```{r}
+pe <- logTransform(pe, base = 2, i = "peptideRaw", name = "peptideLog")
+limma::plotDensities(assay(pe[["peptideLog"]]))
+```
+
+
+## Filtering
+
+### Handling overlapping protein groups
+In our approach a peptide can map to multiple proteins, as long as there is
+none of these proteins present in a smaller subgroup.
+
+
+```{r}
+pe <- filterFeatures(pe, ~ Proteins %in% smallestUniqueGroups(rowData(pe[["peptideLog"]])$Proteins))
+```
+
+### Remove reverse sequences (decoys) and contaminants
+
+We now remove the contaminants, peptides that map to decoy sequences, and proteins
+which were only identified by peptides with modifications.
+
+```{r}
+pe <- filterFeatures(pe,~Reverse != "+")
+pe <- filterFeatures(pe,~ Contaminant != "+")
+```
+
+### Remove peptides of proteins that were only identified with modified peptides
+
+I will skip this step for the moment. Large protein groups file needed for this.
+
+### Drop peptides that were only identified in one sample
+
+We keep peptides that were observed at last twice.
+
+```{r}
+pe <- filterFeatures(pe,~nNonZero >= 2)
+nrow(pe[["peptideLog"]])
+```
+
+We keep `r nrow(pe[["peptideLog"]])` peptides after filtering.
+
+## Normalize the data using median centering 
+
+We normalize the data by substracting the sample median from every intensity for peptide $p$  in a sample $i$: 
+
+$$y_{ip}^\text{norm} = y_{ip} - \hat\mu_i$$ 
+
+with $\hat\mu_i$ the median intensity over all observed peptides in sample $i$.
+
+```{r}
+pe <- normalize(pe, 
+                i = "peptideLog", 
+                name = "peptideNorm", 
+                method = "center.median")
+```
+
+
+
+## Explore  normalized data
+
+Upon the normalisation the density curves are nicely registered
+
+```{r}
+pe[["peptideNorm"]] %>% 
+  assay %>%
+  as.data.frame() %>%
+  gather(sample, intensity) %>% 
+  mutate(condition = colData(pe)[sample,"outcome"]) %>%
+  ggplot(aes(x = intensity,group = sample,color = condition)) + 
+    geom_density()
+```
+
+
+
+We can visualize our data using a Multi Dimensional Scaling plot,
+eg. as provided by the `limma` package.
+
+```{r}
+limma::plotMDS(assay(pe[["peptideNorm"]]), col = as.numeric(colData(pe)$outcome))
+```
+
+The first axis in the plot is showing the leading log fold changes
+(differences on the log scale) between the samples.
+
+
+## Summarization to protein level
+
+We use robust summarization in aggregateFeatures. This is the default workflow of aggregateFeatures so you do not have to specifiy the argument `fun`.
+
+
+```{r,warning=FALSE}
+pe <- aggregateFeatures(pe,
+ i = "peptideNorm",
+ fcol = "Proteins",
+ na.rm = TRUE,
+ name = "proteinRobust")
+```
+
+```{r}
+plotMDS(assay(pe[["proteinRobust"]]), col = as.numeric(colData(pe)$outcome))
+```
+
+# Data Analysis
+
+## Estimation
+
+We model the protein level expression values using `msqrob`.
+By default `msqrob2` estimates the model parameters using robust regression.  
+
+```{r, warning=FALSE}
+pe <- msqrob(object = pe, i = "proteinRobust", formula = ~outcome)
+```
+
+## Inference
+
+First, we extract the parameter names of the model.
+```{r}
+getCoef(rowData(pe[["proteinRobust"]])$msqrobModels[[1]])
+```
+
+Contrast? 
+
+```{r}
+library(ExploreModelMatrix)
+VisualizeDesign(colData(pe),~outcome)$plotlist[[1]]
+```
+
+The mean log2 expression for samples from outcome B is '(Intercept)+outcomePD'.
+Hence, the average log2 fold change between outcome b and
+outcome a is modelled using the parameter 'outcomePD'.
+Thus, we assess the contrast 'outcomePD=0' with our statistical test.
+
+```{r}
+L <- makeContrast("outcomePD = 0", parameterNames = c("outcomePD"))
+pe <- hypothesisTest(object = pe, i = "proteinRobust", contrast = L)
+```
+
+## Plots
+
+### Volcano-plot
+
+
+```{r,warning=FALSE}
+volcano <- ggplot(rowData(pe[["proteinRobust"]])$outcomePD,
+                 aes(x = logFC, y = -log10(pval), color = adjPval < 0.05)) +
+ geom_point(cex = 2.5) +
+ scale_color_manual(values = alpha(c("black", "red"), 0.5)) + theme_minimal()
+volcano
+```
+
+### Heatmap
+
+We first select the names of the proteins that were declared signficant.
+
+```{r}
+sigNames <- rowData(pe[["proteinRobust"]])$outcomePD %>%
+ rownames_to_column("proteinRobust") %>%
+ filter(adjPval<0.05) %>%
+ pull(proteinRobust)
+heatmap(assay(pe[["proteinRobust"]])[sigNames, ])
+```
+
+There are `r length(sigNames)` proteins significantly differentially expressed at the 5% FDR level.
+
+### Detail plots
+
+We first extract the normalized peptideRaw expression values for a particular protein.  
+
+
+```{r, warning=FALSE, message=FALSE}
+for (protName in sigNames[1:5])
+{
+pePlot <- pe[protName, , c("peptideNorm","proteinRobust")]
+pePlotDf <- data.frame(longFormat(pePlot))
+pePlotDf$assay <- factor(pePlotDf$assay,
+                       levels = c("peptideNorm", "proteinRobust"))
+pePlotDf$outcome <- as.factor(colData(pePlot)[pePlotDf$colname, "outcome"])
+
+# plotting
+p1 <- ggplot(data = pePlotDf,
+      aes(x = colname, y = value, group = rowname)) +
+   geom_line() + geom_point() +  theme_minimal() +
+   facet_grid(~assay) + ggtitle(protName)
+print(p1)
+
+# plotting 2
+p2 <- ggplot(pePlotDf, aes(x = colname, y = value, fill = outcome)) +
+ geom_boxplot(outlier.shape = NA) + geom_point(position = position_jitter(width = .1),
+                                               aes(shape = rowname)) +
+ scale_shape_manual(values = 1:nrow(pePlotDf)) +
+ labs(title = protName, x = "sample", y = "peptide intensity (log2)") + theme_minimal()
+ facet_grid(~assay)
+print(p2)
+}
+```

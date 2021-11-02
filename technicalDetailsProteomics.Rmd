@@ -1,0 +1,1141 @@
+---
+title: "Technical details on linear regression for proteomics when starting from summarized protein expression values"
+author: "Lieven Clement"
+date: "statOmics, Ghent University (https://statomics.github.io)"
+output:
+    html_document:
+      code_download: true
+      theme: cosmo
+      toc: true
+      toc_float: true
+      highlight: tango
+      number_sections: true
+---
+
+# Preamble
+
+Read stored results for heart data
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(limma)
+library(QFeatures)
+library(msqrob2)
+pe <- readRDS(
+  url(
+    "https://raw.githubusercontent.com/statOmics/SGA2020/gh-pages/assets/peHeart.rds",
+    "rb")
+  )
+```
+
+# Linear regression
+
+- Consider a vector of predictors $\mathbf{x}_i=(x_1,\ldots,x_{p-1})$ and
+- a real-valued response $Y_i$
+- with $i = 1, \ldots, n$
+- then the linear regression model can be written as
+\[
+Y_i=f(\mathbf{x}) +\epsilon=\beta_0+\sum\limits_{j=1}^{p-1} x_{ij}\beta + \epsilon_i
+\]
+with i.i.d. $\epsilon_i\sim N(0,\sigma^2)$
+
+---
+
+- $n$ observations $(\mathbf{x}_1,y_1) \ldots (\mathbf{x}_n,y_n)$
+- Regression in matrix notation
+\[\mathbf{Y}=\mathbf{X\beta} + \boldsymbol{\epsilon}\]
+with $\mathbf{Y}=\left[\begin{array}{c}y_1\\ \vdots\\y_n\end{array}\right]$,
+$\mathbf{X}=\left[\begin{array}{cccc} 1&x_{11}&\ldots&x_{1p-1}\\
+\vdots&\vdots&&\vdots\\
+1&x_{n1}&\ldots&x_{np-1}
+\end{array}\right]$,
+$\boldsymbol{\beta}=\left[\begin{array}{c}\beta_0\\ \vdots\\ \beta_{p-1}\end{array}\right]$ and
+$\boldsymbol{\epsilon}=\left[\begin{array}{c} \epsilon_1 \\ \vdots \\ \epsilon_n\end{array}\right]$
+
+---
+
+## Least Squares (LS)
+
+- Minimize the residual sum of squares
+\begin{eqnarray*}
+RSS(\boldsymbol{\beta})&=&\sum\limits_{i=1}^n e^2_i\\
+&=&\sum\limits_{i=1}^n \left(y_i-\beta_0-\sum\limits_{j=1}^p x_{ij}\beta_j\right)^2
+\end{eqnarray*}
+- or in matrix notation
+\begin{eqnarray*}
+RSS(\boldsymbol{\beta})&=&(\mathbf{Y}-\mathbf{X\beta})^T(\mathbf{Y}-\mathbf{X\beta})\\
+&=&\Vert \mathbf{Y}-\mathbf{X\beta}\Vert^2
+\end{eqnarray*}
+with the $L_2$-norm of a $p$-dim. vector $v$ $\Vert \mathbf{v} \Vert=\sqrt{v_1^2+\ldots+v_p^2}$
+
+- $\rightarrow$ $\hat{\boldsymbol{\beta}}=\text{argmin}_\beta \Vert \mathbf{Y}-\mathbf{X\beta}\Vert^2$}
+
+
+---
+
+### Minimize RSS
+\[
+\begin{array}{ccc}
+\frac{\partial RSS}{\partial \boldsymbol{\beta}}&=&\mathbf{0}\\\\
+\frac{(\mathbf{Y}-\mathbf{X\beta})^T(\mathbf{Y}-\mathbf{X\beta})}{\partial \boldsymbol{\beta}}&=&\mathbf{0}\\\\
+-2\mathbf{X}^T(\mathbf{Y}-\mathbf{X\beta})&=&\mathbf{0}\\\\
+\mathbf{X}^T\mathbf{X\beta}&=&\mathbf{X}^T\mathbf{Y}\\\\
+\hat{\boldsymbol{\beta}}&=&(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y}
+\end{array}
+\]
+
+---
+
+#### Heart example
+
+```{r}
+y <- assay(pe[["proteinRobust"]])[2,]
+fit <- lm(y ~ location*tissue + patient, data = colData(pe), x = TRUE)
+head(fit$x,4)
+```
+
+The model matrix can also be obtained without fitting the model:
+
+```{r}
+X <- model.matrix(~ location * tissue + patient, colData(pe))
+head(X,4)
+```
+
+Least squares:
+```{r}
+betas <- solve(t(X)%*%X) %*% t(X) %*% y
+cbind(fit$coef, betas)
+```
+
+---
+
+### Variance Estimator?
+\[
+\begin{array}{ccl}
+\hat{\boldsymbol{\Sigma}}_{\hat{\boldsymbol{\beta}}}
+&=&\text{var}\left[(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y}\right]\\\\
+&=&(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\text{var}\left[\mathbf{Y}\right]\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}\\\\
+&=&(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T(\mathbf{I}\sigma^2)\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}
+\\\\
+&=&(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{I}\quad\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}\sigma^2\\\\
+%\hat{\boldmath{\Sigma}}_{\hat{\boldsymbol{\beta}}}&=&(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\var\left[\mathbf{Y}\right](\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}\\
+&=&(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}\sigma^2\\\\
+&=&(\mathbf{X}^T\mathbf{X})^{-1}\sigma^2
+\end{array}
+\]
+
+---
+
+#### heart example
+
+
+```{r}
+summary(fit)$cov.unscaled * sigma(fit)^2
+```
+
+```{r}
+n <- nrow(X)
+p <- ncol(X)
+mse <- sum((y-X%*%betas)^2)/(n-p)
+SigmaBeta <- solve(t(X)%*%X) * mse   
+SigmaBeta
+range(SigmaBeta - summary(fit)$cov.unscaled * sigma(fit)^2)
+```
+
+```{r}
+data.frame(summary(fit)$coef[,1:2], betas = betas, seBetas = diag(SigmaBeta)^.5)
+```
+
+## Contrasts
+
+When we assess a contrast we assess a linear combination of model parameters:
+
+\[ H_0: \mathbf{L^T\beta} = 0 \text{ vs } H_1: \mathbf{L^T\beta} \neq 0 \]
+
+Estimator of Contrast?
+
+\[\mathbf{L}^T\hat{\boldsymbol{\beta}}\]
+
+
+Variance?
+
+\[
+\boldsymbol{\Sigma}_{\mathbf{L}\hat{\boldsymbol{\beta}}}=\mathbf{L}^T\boldsymbol{\Sigma}_{\hat{\boldsymbol{\beta}}}\mathbf{L}
+\]
+
+---
+
+### heart example
+
+```{r}
+L <- makeContrast(
+  c(
+    "tissueV = 0",
+    "tissueV + locationR:tissueV = 0",
+    "tissueV + 0.5*locationR:tissueV = 0","locationR:tissueV = 0"),
+  parameterNames =
+    rowData(pe[["proteinRobust"]])$msqrobModels[[2]] %>%
+    getCoef %>%
+    names
+  )
+L
+```
+
+```{r}
+contrasts <- t(L) %*% betas
+SigmaContrasts <- t(L) %*% SigmaBeta %*% L
+seContrasts <- SigmaContrasts %>%
+  diag %>%
+  sqrt
+```
+
+Comparison with lm and glht results
+
+```{r}
+library(multcomp)
+fitGlht <- glht(fit, linfct = t(L))
+summary(fitGlht, test = adjusted("none"))
+data.frame(contrasts, seContrasts)
+```
+
+- Note, that the power for assessing $\log_2$ FC between ventriculum and atrium  left and right is the same. Indeed, the standard errors are equal for both effects.
+
+
+- Note, that the power for assessing $\log_2$ FC between ventriculum and atrium over both heart regions is higher than when assessing the effect left or right.
+
+  - Indeed, the standard error is a factor $\sqrt{2}$ smaller for the former effect
+  - We intuitively can explain this because we can use all samples (double the number of samples) to assess the average effect.
+  - Hence the variance is a factor two smaller, and the se with a factor $\sqrt{2}$
+
+- Note, that we have the lowest power to pick up an interaction effect. Indeed, the se is a factor $\sqrt{2}$ larger than for the ventriculum - atrium effect left or right and a factor 2 larger than for the average effect between ventriculum and atrium.
+
+```{r}
+seContrasts / seContrasts[1]
+sqrt(2)
+1/sqrt(2)
+```
+
+### t-tests
+
+ - When the assumptions of the linear model hold
+\[
+\hat{\boldsymbol{\beta}} \sim MVN\left[\boldsymbol{\beta},\left(\mathbf{X}^T\mathbf{X}\right)^{-1}\sigma^2\right]
+\]
+- Hence,
+\[
+\mathbf{L}^T\hat{\boldsymbol{\beta}} \sim MVN\left[\mathbf{L}^T\boldsymbol{\beta},\mathbf{L}^T\left[\left(\mathbf{X}^T\mathbf{X}\right)^{-1}\sigma^2\right]\mathbf{L}\right]
+\]
+- We estimate $\sigma^2$ by MSE
+$$\hat{\sigma}^2=\frac{\mathbf{e}^T\mathbf{e}}{n-p} \rightarrow \hat{\boldsymbol{\Sigma}}_{\hat{\boldsymbol{\beta}}}=\left(\mathbf{X}^T\mathbf{X}\right)^{-1}\hat\sigma^2$$
+
+- When we test one contrast at the time (e.g. the $k^\text{th}$ contrast) the statistic reduces to
+
+$$T=\frac{\mathbf{L}_k^T\hat{\boldsymbol{\beta}}}{\sqrt{\left(\mathbf{L}^T_k\hat{\boldsymbol{\Sigma}}_{\hat{\boldsymbol{\beta}}}\mathbf{L}_k\right)}} \underset{H_0}{\sim} t_{n-p}$$
+follows a t distribution with n-p degrees of freedom under $H_0: \mathbf{L}^T_k\hat{\boldsymbol{\beta}}=0$
+
+---
+
+#### heart example
+
+```{r}
+tContrasts <- contrasts/seContrasts
+pContrasts <- pt(abs(tContrasts),
+  df = n - p,
+  lower.tail = FALSE) * 2
+```
+
+Comparison with lm and glht results
+
+```{r}
+summary(fitGlht, test = adjusted("none"))
+data.frame(contrasts, seContrasts, tContrasts, pContrasts)
+```
+
+
+---
+
+### Omnibus test
+
+- We can also assess all contrasts simultaneously with the omnibus null hypothesis:
+\[H_0: \mathbf{L}^T\hat{\boldsymbol{\beta}}=\mathbf{0}\]
+
+- Statistic
+$$\mathbf{F}=\frac{\hat{\boldsymbol{\beta}}^T\mathbf{L}\left(\mathbf{L}^T\hat{\boldsymbol{\Sigma}}_{\hat{\boldsymbol{\beta}}}\mathbf{L}\right)^{-1}\mathbf{L}^T\hat{\boldsymbol{\beta}}}{n_c} \underset{H_0}{\sim} F_{n_c,n-p}$$
+follows an F distribution with $n_c$ and n-p degrees of freedom under the omnibus null hypothesis.
+- Note, that $n_c$ equals the number of contrasts, and
+- $\mathbf{L}$ is assumed to be full rank
+
+---
+
+
+If the matrix \mathbf{L} is not full rank, but has rank $r < n_c$
+
+- i.e. some of the contrasts can be written as linear combinations of other contrasts,
+- the inverse of the variance covariance matrix of the contrasts does not exist
+- we can then decompose L in $r$ orthogonal contrasts $\mathbf{Q}$ with
+\[\mathbf{Q}_j^T \mathbf{Q}_k^T = \delta_{jk},\]
+
+- $j,k \in 1,\ldots,r$,
+
+- $\delta{jk} = 0$ and if $j\neq k$ $\delta{jk} = 1$
+
+- Decomposition can be done using the QR decomposition  
+
+- We can than assess the omnibus null hypothesis using the statistic:
+$$\mathbf{F}=\frac{\hat{\boldsymbol{\beta}}^T\mathbf{Q}_r\left(\mathbf{Q}^T_r\hat{\boldsymbol{\Sigma}}_{\hat{\boldsymbol{\beta}}}\mathbf{Q}_r\right)^{-1}\mathbf{Q}^T_r\hat{\boldsymbol{\beta}}}{r} \underset{H_0}{\sim} F_{r,n-p}$$
+
+---
+
+#### Heart example
+
+```{r}
+try(solve(SigmaContrasts))
+```
+
+- We cannot invert the variance matrix of the contrasts!
+- Indeed, the contrasts are linear combinations of two parameters and the contrast matrix $\mathbf{L}$ will thus have rank 2
+- We calculate orthogonal contrasts:
+
+```{r}
+qrL <- qr(L)
+r <- qrL$rank
+r
+Q <- qr.Q(qrL)[,1:r]
+rownames(Q) <- rownames(L)
+Q
+```
+
+- Q is orthonormal
+
+```{r}
+t(Q)%*%Q
+```
+
+Exploring Q shows that assessing the omnibus hypothesis is thus equivalent to assessing if the null hypothesis that
+\[H_0: \beta_\text{tissue} = \beta_\text{tissue:location} = 0\]
+
+```{r}
+est <- t(Q) %*% betas
+SigmaEst <- t(Q) %*% SigmaBeta %*% Q
+Fstat <- t(est) %*% solve(SigmaEst) %*% est / r
+pOmnibus <- pf(Fstat, r, p, lower.tail = FALSE)
+```
+
+- Comparison with lm results
+- We can assess the omnibus hypothesis also by comparing two models
+    - model with location, tissue, location - tissue interaction and patient effect
+    - null model: model with location and patient effect
+
+```{r}
+fit0 <- lm(y ~ location + patient, colData(pe))
+anova(fit, fit0)
+Fstat
+pOmnibus
+```
+
+# Robust regression
+
+- With msqrob2 we perform robust regression to estimate the model parameters of the regression model
+
+- No normality assumption needed
+- Robust fit minimises the maximal bias of the estimators
+- CI and statistical tests are based on asymptotic theory
+- If $\epsilon$ is normal, the M-estimators have a high efficiency!
+- ordinary least squares (OLS): minimize loss function \[\sum\limits_{i=1}^n (y_i-\mathbf{x}_i^T\boldsymbol{\beta})^2\]
+
+- M-estimation: minimize loss function
+\[\sum\limits_{i=1}^n  \rho\left(y_i-\mathbf{x}_i^T\boldsymbol{\beta}\right)\]
+with
+
+  - $\rho$ is symmetric, i.e. $\rho(z)=\rho(-z)$
+  - $\rho$ has a minimum at $\rho(0)=0$, is positive for all $z\neq 0$
+  - $\rho(z)$ increases as $\vert z\vert$ increases
+
+---
+
+ The estimator $\hat{\mu}$ is also the solution to the equation
+ \[
+   \sum_{i=1}^n \Psi(y_i - \mathbf{x}_i\boldsymbol{\beta}) =0,
+ \]
+ where $\Psi$ is the derivative of $\rho$. For $\hat{\beta}$ possessing the robustness property, $\Psi$ should be bounded.
+
+---
+
+ Example: least squares
+
+ - $\rho(z) = z^2$, and thus $\Psi(z)=2z$ (unbounded!). Not robust!
+
+- $\hat{\boldsymbol{\beta}}$ is the solution of
+ \[
+   \sum_{i=1}^n 2 \mathbf{x}_i (y_i - \mathbf{x}_i^T\boldsymbol{\beta}) = 0 \text{ or } \hat{\boldsymbol{\beta}} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}\mathbf{y}
+ \]
+ with $\mathbf{X}=[\mathbf{x}_1 \ldots \mathbf{x}_G]^T$
+
+---
+
+ When a location and a scale parameter, say $\sigma$, have to be estimated simultaneously, we write
+ \[
+   (\hat{\boldsymbol{\beta}},\hat{\sigma}) = \text{ArgMin}_{\boldsymbol{\beta},\sigma} \sum_{i=1}^n \rho\left(\frac{y_i - \mathbf{x}_i^T\boldsymbol{\beta}}{\sigma}\right)
+   \text{ and } \sum_{i=1}^n \Psi\left(\frac{y_i - \mathbf{x}_i^T\boldsymbol{\beta}}{\sigma}\right) =0.
+ \]
+
+ Define $u_i = \frac{y_i - \mathbf{x}_i^T\boldsymbol{\beta}}{\sigma}$. The last estimation equation is equivalent to
+ \[
+   \sum_{i=1}^n w(u_i) u_i = 0 ,
+ \]
+ with weight function $w(u)=\Psi(u)/u$. This is the typical form that appears when solving the
+ *iteratively reweighted least squares problem*,
+ \[
+   (\hat{\boldsymbol{\beta}},\hat{\sigma}) = \text{ArgMin}_{\mu,\sigma} \sum_{i=1}^n w(u_i^{(k-1)}) \left(u_i^{(k)}\right)^2 ,
+ \]
+ where $k$ represents the iteration number.
+
+---
+
+## Some Examples of Robust Functions
+
+![](https://raw.githubusercontent.com/statOmics/SGA2020/gh-pages/assets/TableRobust.PNG)
+
+PhD thesis Bolstad 2004
+
+---
+
+## The $\rho$ functions
+
+![](https://raw.githubusercontent.com/statOmics/SGA2020/gh-pages/assets/RhoRobust.PNG)
+
+PhD thesis Bolstad 2004
+
+---
+
+### Common $\Psi$-Functions
+![](https://raw.githubusercontent.com/statOmics/SGA2020/gh-pages/assets/robustRegressionPsi.png)
+
+PhD thesis Bolstad 2004
+
+---
+
+### Corresponding Weight Functions
+![](https://raw.githubusercontent.com/statOmics/SGA2020/gh-pages/assets/robustRegressionWeights.png)
+
+PhD thesis Bolstad 2004
+
+---
+
+```{r}
+library("MASS")
+rfit <- rlm(y ~ location * tissue + patient, colData(pe), maxit=1)
+qplot(fit$coefficient[-1],
+  rfit$coefficient[-1],
+  xlab="fit",
+  ylab="robust fit") +
+  geom_abline() +
+  xlim(range(c(fit$coefficient[-1],rfit$coefficient[-1]))) +
+  ylim(range(c(fit$coefficient[-1],rfit$coefficient[-1])))
+```
+
+---
+
+```{r}
+rfit$w
+plot(
+  rfit$fitted,
+  rfit$res,
+  cex=rfit$w,
+  pch=19,col=2,
+  cex.lab=1.5,
+  cex.axis=1.5,
+  ylab="residuals",
+  xlab="fit")
+points(rfit$fitted, rfit$res , cex= 1.5)
+```
+
+---
+
+```{r}
+summary(fit)
+summary(rfit)
+rowData(pe[["proteinRobust"]])$msqrobModels[[2]] %>% getCoef
+```
+
+---
+
+## Understanding implementation of robust regression
+
+### Simulate 20 observations from a linear model with errors that follow a normal distribution
+
+```{r}
+set.seed <- 112358
+nobs <- 20
+sdy <- 1
+xsim <- seq(0, 1, length.out = nobs)
+ysim <- 10 + 5*xsim + rnorm(nobs, sd = sdy)
+```
+
+### add outlier at high leverage point
+
+```{r}
+ysim[nobs] <- 7
+```
+
+### fit linear model
+
+```{r}
+ols <- lm(ysim ~ xsim)
+```
+
+### fit robust linear model
+
+```{r}
+library(MASS)
+mEst <- rlm(ysim ~ xsim)
+```
+
+#### plot results
+
+```{r}
+plot(xsim, ysim)
+abline(ols, lwd = 2)
+abline(mEst, col = "red", lwd = 2)
+legend("topleft",
+  legend = c("OLS", "M-estimation"),
+  lwd = 2,
+  col = 1:2)
+round(mEst$w,3)
+```
+
+The plot clearly shows that the outlier has a high impact on the slope estimate.
+This is because the outlier is at a high leverage point, i.e. far from the average covariate pattern.
+
+### Implement it yourself
+#### start from ols fit
+
+```{r}
+lmMod <- ols
+```
+
+#### Use robust variance estimator to calculate the z
+
+```{r}
+res <- lmMod$res
+stdev <- mad(res)
+stdev
+median(abs(res-median(res)))*1.4826
+z <- res/stdev
+```
+
+#### Calculate weights use psi.huber function
+
+```{r}
+w <- psi.huber(z)
+plot(xsim, ysim)
+plot(xsim, lmMod$res, cex = w, pch = 19, col = "red")
+points(xsim,lmMod$res, cex = 1.5)
+```
+
+#### Perform a weighted regression use lm with weights=w
+
+```{r}
+lmMod <- lm(ysim~xsim, weights = w)
+```
+
+#### Plot results
+
+```{r}
+plot(xsim, ysim)
+abline(ols, lwd = 2)
+abline(mEst, col = "red", lwd = 2)
+abline(lmMod, col = "blue", lwd = 2)
+legend("topleft",
+  legend = c("OLS","M-estimation","Our Impl"),
+  lwd = 2,
+  col = c("black", "red", "blue"))
+```
+
+#### Repeat this many times
+```{r}
+lmMod <- ols
+for (k in 1:3)
+{
+######repeat this part several times until convergence
+#use robust variance estimator to calculate the z
+res <- lmMod$res
+stdev <- mad(res)
+median(abs(res-median(res)))*1.4826
+
+z <- res/stdev
+
+#calculate weights
+#use psi.huber function
+w <- psi.huber(z)
+
+#perform a weighted regression use lm with weights=w
+lmMod <- lm(ysim ~ xsim, weights = w)
+
+#plot results
+plot(xsim,ysim)
+abline(ols, lwd = 2)
+abline(mEst, col = "red", lwd = 2)
+abline(lmMod, col = "blue", lwd = 2)
+legend("topleft",
+  legend = c("OLS","M-estimation","Our Impl"),
+  lwd = 2,
+  col = c("black", "red", "blue")
+  )
+####################################
+}
+```
+
+# Empirical Bayes/Moderated $t$-test.
+
+ A general class of moderated test statistics is given by
+
+ \[\tilde{T}_p = \frac{\mathbf{L}_k \hat{ \boldsymbol{\beta_p}}}{\mathbf{L}_k^T(\mathbf{X}^T\mathbf{WX})^{-1}\mathbf{L}_k^T \tilde{s}_p^2}\]
+
+ where $\tilde{s}_p$ is a moderated variance estimator.
+
+Simple approach: set $\tilde{s}_p=s_p + s_0$: simply add a small positive constant to the denominator of the t-statistic
+
+\textbf{empirical Bayes} theory provides formal framework for borrowing strength across genes or proteins,
+e.g. popular bioconductor package \textbf{limma}
+\[\tilde{s}_g=\sqrt{\frac{d_ps_p^2+d_0s_0^2}{d_g+d_0}},\]
+and the moderated t-statistic is t-distributed with $d_0+d_g$ degrees of freedom under the null hypothesis $H_0: \mathbf{L}\boldsymbol{\beta}=0$.
+
+- Note, that the degrees of freedom increase by borrowing strength across proteins.
+
+---
+
+## Intermezzo: Bayesian Methods
+
+- Frequentists consider data as random and population parameters as fixed but unknown
+- In Bayesian viewpoint a person has prior beliefs about the population parameters and the uncertainty on this prior beliefs are represented by a probability distribution placed on this parameter.
+
+  - This distribution reflects the person's subjective prior opinion about plausible values of the parameter.
+  - And is referred to as the prior $g(\boldsymbol{\theta})$.
+
+- Bayesian thinking will update the prior information on the population parameters by confronting the model to data ($\mathbf{Y}$).
+
+- By using Bayes Theorem this results in a posterior distribution on the model parameters.  
+\[
+g(\boldsymbol{\theta}\vert\mathbf{Y})=\frac{f(Y\vert \boldsymbol{\theta})g(\boldsymbol{\theta})}{\int f(Y\vert \boldsymbol{\theta}) g(\boldsymbol{\theta}) d\boldsymbol{\theta}} \text{     }\left(\text{ posterior}=\frac{\text{prior} \times \text{ likelihood}}{\text{Marginal distribution}}\right)
+\]
+
+---
+
+## Limma  approach
+
+Developed for gene expression analysis with micro arrays.
+Let g be the index for gene g.
+\[
+\begin{array}{cc}
+&\beta_{gk}\vert \sigma^2_g,\beta_{gk}\neq 0 \sim N(0,v_{0k}\sigma_g^2)\\\\
+\text{Prior}\\
+&\frac{1}{\sigma^2_g}\sim s^2_0\frac{\chi^2_{d_0}}{d_0}\\\\\\\\
+&\hat \beta_{gk} | \beta_{gk} , \sigma_g^2 \sim N( \beta_{gk} , v_{gk}\sigma_g^2)\\\\
+\text{Data}\\
+&s_g^2\sim \sigma^2_g\frac{\chi^2_{d_g}}{d_g}\\\\
+\end{array}
+\]
+
+---
+
+## Limma  approach
+
+Under this assumption, it can be shown that
+
+- Posterior Mean for the variance parameter: \[\tilde{s}^2_p = \text{E}\left[\sigma^2_p\vert s_p^2\right]=\frac{d_0 s_0^2+d_ps_p^2}{d_0+d_p}\]
+
+- \[\tilde{T}_p=\frac{\mathbf{L}_k \hat{ \boldsymbol{\beta_p}}}{\mathbf{L}_k^T(\mathbf{X}^T\mathbf{WX})^{-1}\mathbf{L}_k^T \tilde{s}_p^2}\]
+
+is t-distributed under $H_0: \mathbf{L}_j\boldsymbol{\beta} = 0$
+
+\[\tilde{T}_p \vert H_0 \sim t(d_0 + d_p)\]
+
+---
+
+## Empirical Bayes
+- A fully Bayesian
+  - would define the prior distribution by carefully choosing the prior parameters based on prior knowledge on the process
+  - would confront the prior to the data and performs inference using the posterior distribution of the model parameters.
+- In an empirical Bayesian approach one estimates the prior parameters based on the data.
+- In **Limma** moment estimators for $s_0$ and $d_0$ are derived using the information on the gene (protein) wise variances of all genes (proteins).
+- In **Limma** one also does not work with the full posterior distribution for the variances, but with the maximum a-posterior estimate.
+
+---
+
+## Illustration
+
+We borrow strength across proteins by
+
+1. placing a scaled $\chi^2$ prior: $\chi^2(s_o,d_0)$ on the precisions ($1/\sigma^2_p$)
+2. estimating the prior parameters $s_0$ and $df_0$
+3. replacing the estimated protein-wise variances ($s_p^2$) with the maximum a-posteriori variance
+\[\tilde{s}_p = \frac{d_p s^2_p + d_0 s_0^2}{d_p+d_0}\]
+
+
+```{r}
+sd <- sapply(
+  rowData(pe[["proteinRobust"]])$msqrobModels,
+  getSigma) %>%
+  na.exclude
+sdPost <- sapply(
+  rowData(pe[["proteinRobust"]])$msqrobModels,
+  getSigmaPosterior) %>%
+  na.exclude
+
+p1 <- qplot(sd,sdPost) +
+  geom_abline()
+p1
+```
+
+### How do we get to the posterior standard deviation?
+
+```{r}
+hlp <- limma::squeezeVar(
+  var = sapply(rowData(pe[["proteinRobust"]])$msqrobModels, getVar),
+  df = sapply(rowData(pe[["proteinRobust"]])$msqrobModels, getDF)
+  )
+```
+
+#### Degrees of freedom of prior
+
+```{r}
+hlp$df.prior
+
+model <- rowData(pe[["proteinRobust"]])$msqrobModels[[2]]
+getDfPosterior(model) - getDF(model)
+```
+
+#### posterior variance
+
+$$\tilde s_p=\sqrt{\frac{d_p\times s^2_p + d_0 s_0^2}{d_p+d_0}} $$
+
+```{r}
+hlp$var.prior
+
+varPost <- (getVar(model) * getDF(model) + hlp$df.prior * hlp$var.prior)/(getDF(model)+hlp$df.prior)
+sqrt(varPost)
+getSigmaPosterior(model)
+```
+
+Hence, standard deviations are shrunken towards prior standard deviation!
+Large standard deviations become smaller and smaller standard deviations become larger!
+
+```{r}
+p1 +
+  geom_hline(yintercept = hlp$var.prior^.5)
+```
+
+
+
+### Illustration via Simulation
+
+Suppose that the standard deviations for all proteins are the same and are equal to 1.
+We simulate proteins with the same mean as the fitted mean in the experiment but with standard deviation of 1.
+
+```{r warning=FALSE, message=FALSE}
+nCoefs <- getCoef(rowData(pe[["proteinRobust"]])$msqrobModels[[2]]) %>% length
+coefs <-
+sapply(rowData(pe[["proteinRobust"]])$msqrobModels,
+    function(x) getCoef(x)[1:nCoefs]
+  ) %>%
+  t %>%
+  na.exclude
+
+
+p <- nrow(coefs)
+n <- ncol(pe[[1]])
+f0_equalVar <- sapply(1:p,
+  FUN=function(i, n, betas, sd, design) {
+  rnorm(n, mean = design %*% betas[i,], sd = sd)},
+  n = n,
+  betas = coefs,
+  sd = 1,
+  design = X
+  ) %>%
+  t
+colnames(f0_equalVar) <- colnames(pe[[1]])
+sims <- readQFeatures(f0_equalVar %>% as.data.frame, ecol = 1:n, name = "sim_equalVar")
+colData(sims) <- colData(pe)
+sims <- msqrob(object = sims, i = "sim_equalVar", formula = ~ location*tissue + patient)
+
+sd0 <- sapply(
+  rowData(sims[["sim_equalVar"]])$msqrobModels,
+  getSigma) %>%
+  na.exclude
+sdPost0 <- sapply(
+  rowData(sims[["sim_equalVar"]])$msqrobModels,
+  getSigmaPosterior) %>%
+  na.exclude
+
+qplot(sd0,sdPost0) +
+  geom_abline() +
+  ylim(range(sd0))
+```
+
+- We observe a large variability in the individual protein level standard deviation estimates.
+- We simulated proteins with standard deviation of 1, but the protein estimates vary from `r paste(round(range(sd0),2),collapse=", ... , ")`.
+- Large uncertainty on the estimation of variances in small samples
+- The empirical Bayes method, however, recognises that all proteins are simulated with the same variance.
+- Hence, it can borrow tremendous strength across proteins to stabilize the variance estimation
+- Here, it shrinks all protein variance to the prior variance, which is indeed very close to 1, the value we have adopted in the simulation.
+
+Note, that the prior degree of freedom also is set to infinity:
+```{r}
+getDF(rowData(sims[["sim_equalVar"]])$msqrobModels[[1]])
+getDfPosterior(rowData(sims[["sim_equalVar"]])$msqrobModels[[1]])
+```
+
+which imposes shrinkage to the prior standard deviation!
+
+The empirical Bayes method can thus indeed recognise the common variance that is shared across proteins!
+
+# P-values
+
+## Simulation under H_0.
+
+- Mean log2 protein intensity for atrium equals mean log2 protein intensity for ventriculum in the left heart region.
+- sd equals the sd for the protein.
+
+
+1. Extract $\hat \sigma$ and $\beta$'s  
+```{r}
+sd <- sapply(
+  rowData(pe[["proteinRobust"]])$msqrobModels,
+  getSigma) %>%
+  na.exclude
+
+coefs <-
+sapply(rowData(pe[["proteinRobust"]])$msqrobModels,
+    function(x) getCoef(x)[1:nCoefs]
+  ) %>%
+  t %>%
+  na.exclude
+```
+
+2. Set $\beta_\text{tissue}$ equal to 0. No FC between atrium and ventriculum left.
+
+```{r}
+coefs0 <- coefs
+coefs0[,3] <- 0
+```
+
+3. Simulate protein expressions for each protein from a Normal distribution under $H_0$ for left heart region (no FC between atrium and ventriculum left) and sd the sd for the protein.
+```{r}
+set.seed(104)
+f0 <- sapply(1:p,
+  function(i, betas, sd, design)
+  rnorm(n, mean = design %*% betas[i,], sd = sd[i]),
+  betas = coefs0,
+  sd = sd,
+  design = X
+  ) %>%
+  t
+colnames(f0) <- colnames(pe[[1]])
+```
+
+4. Setup QFeatures object and perform MSqRob analysis
+
+```{r warning = FALSE, message = FALSE}
+sims <- readQFeatures(f0 %>% as.data.frame, ecol = 1:n, name = "sim0")
+colData(sims) <- colData(pe)
+sims <- msqrob(object = sims, i = "sim0", formula = ~ location*tissue + patient)
+sims <- hypothesisTest(object = sims, i = "sim0", contrast = L)
+```
+
+### Evaluate  pvalues  under H_0
+
+```{r}
+volcano <- ggplot(rowData(sims[["sim0"]])$tissueV,
+                 aes(x = logFC, y = -log10(pval), color = pval < 0.05)) +
+ geom_point(cex = 2.5) +
+ scale_color_manual(values = alpha(c("black", "red"), 0.5)) + theme_minimal()
+volcano
+```
+
+Number of false positives without multiple testing?
+
+```{r}
+rowData(sims[["sim0"]])$tissueV %>%
+  filter(pval <0.05) %>%
+  nrow
+mean(rowData(sims[["sim0"]])$tissueV$pval < 0.05)    
+hist(rowData(sims[["sim0"]])$tissueV$pval,main = "simulation H0")
+```
+
+
+- The p-values are uniform!
+- All p-values under the null are equally likely.
+- Statistical hypthesis testing leads to a uniform test strategy under $H_0$
+- If use p-value cutoff at 0.05 we expect to return 5% of the non-DE proteins  as differentially expressed: many false positives can be expected!
+
+
+## Pvalue distribution in real experiment
+
+```{r}
+hist(rowData(pe[["proteinRobust"]])$tissueV$pval, main = "realData")
+```
+
+- A mixture of null proteins (non-DE): uniform, and, DE proteins: enrichment of p-values at low p-values
+
+
+# Correction for multiple testing
+
+- We can adjust the p-values for multiple testing.
+
+## Family wise error rate correction:
+
+- A list of returned proteins is considered to be in error as soon as it contains at most one false positive protein.
+
+- $\text{FWER} = P(FP \leq 1)$
+
+- FWER: probability of making at least one false positive decision or
+probability to declare at least one protein differentially abundant which is truly non differentially abundant
+
+### Bonferroni method
+
+- Simple method
+- $m$ tests are performed at the level $\alpha/m$
+- FWER$\leq\sum\limits_{p=1}^{m}P(reject H_{0p}\vert H_{0p}\text{ is true})=m \alpha/m=\alpha$
+- Provides strong control
+- Bonferroni is very conservative
+- Works for dependent tests
+- Adjusted p-value: $\tilde{p}_p=\min(m\ p_p,1)$
+
+---
+
+#### Bonferroni in practise
+
+Via R functions
+
+```{r}
+padj <- p.adjust(
+  rowData(pe[["proteinRobust"]])$tissueV$pval,
+  method = "bonferroni")
+```
+
+Own Implementation: adjust and make sure that p-value is smaller than 1.
+
+```{r}
+m <- sum(!is.na(rowData(pe[["proteinRobust"]])$tissueV$pval))
+padjSelf <-  rowData(pe[["proteinRobust"]])$tissueV$pval * m
+padjSelf[padjSelf > 1] <- 1
+
+range(padj - padjSelf, na.rm = TRUE)
+```
+#### Illustration in simulation under $H_0$ and heart case study
+
+```{r}
+volcano <- ggplot(rowData(sims[["sim0"]])$tissueV,
+                 aes(x = logFC, y = -log10(pval), color = p.adjust(pval,"bonferroni") < 0.05)) +
+ geom_point(cex = 2.5) +
+ scale_color_manual(values = alpha(c("black", "red"), 0.5)) +
+ theme_minimal() +
+ ggtitle("simulated heart data under H0")
+volcano
+```
+
+- No false positives are returned for simulation under H_0. List is correct according to FWER.
+
+```{r}
+volcano <- ggplot(rowData(pe[["proteinRobust"]])$tissueV,
+                 aes(x = logFC, y = -log10(pval), color = p.adjust(pval,"bonferroni") < 0.05)) +
+ geom_point(cex = 2.5) +
+ scale_color_manual(values = alpha(c("black", "red"), 0.5)) +
+ theme_minimal() +
+ ggtitle("real heart data")
+volcano
+```
+
+- Very few proteins are returned for real data. Very conservative!
+
+### FWER: step down method of Holm
+
+- Compare smallest p-value with $\alpha/m$
+- If you can reject the smallest p-value at $\alpha/m$ level
+  - asses second smallest p-value at the $\alpha/(m-1)$
+- If you can reject the second smallest p-value at $\alpha/(m-1)$ level
+    - asses third smallest p-value at the $\alpha/(m-2)$
+- ...
+- If you can reject the k-1 smallest p-value at $\alpha/(m-k+2)$ level
+  - asses k smallest p-value at the $\alpha/(m-k+1)$ level
+- continu as long as you can reject.
+
+The Holm is a step down method (from more to less significant) that corrects in each step for the number of null hypothesis that you still can falsely reject.
+
+---
+
+Adjusted p-values:
+
+- Order p-values with $(k)$ the $k^{th}$ smallest p-value  
+- $\tilde{p}_{(k)}=\min(p_{(k)}(m-k+1),1)$
+
+Suppose 2 tests: $p_{(1)}=0.001$, $p_{(2)}=0.0015$
+$\rightarrow$ $\tilde{p}_{(1)}=0.002$, $\tilde{p}_{(2)}=0.0015$
+
+- Problem: Monotonicity is not the same as for original p-values!
+- Enforce monotonicity:
+$\tilde{p}_{(k)}=\max\limits_{h=1,\ldots,k}\min(p_{(h)}(m-h+1),1)$
+
+---
+
+#### Holm example  
+
+With R functions:
+
+```{r}
+padj <- p.adjust(
+  rowData(pe[["proteinRobust"]])$tissueV$pval,
+  method = "holm")
+```
+
+Own implementation
+
+1. Order p-values
+```{r}
+padjSelf <-  rowData(pe[["proteinRobust"]])$tissueV$pval
+ord <- order(padjSelf)
+pOrd <- padjSelf[ord]
+m <- sum(!is.na(padjSelf))
+```
+
+2. Adjust ordered p-values and ensure that value is not larger than 1
+```{r}
+pOrd[1:m] <- pOrd[1:m]*(m - (1:m) + 1)
+pOrd[pOrd>1] <- 1
+```
+
+3. Monotonicity
+```{r}
+pmax <- pOrd[1]
+for (i in 2:m)
+{
+  if (pOrd[i] > pmax)
+    pmax <- pOrd[i] else
+    pOrd[i] <- pmax
+}
+```
+
+4. Put adjusted p-values in original order
+```{r}
+padjSelf[ord] <- pOrd
+range(padj - padjSelf, na.rm = TRUE)
+```
+
+#### Illustration in simulation under $H_0$ and heart case study
+
+```{r}
+volcano <- ggplot(rowData(sims[["sim0"]])$tissueV,
+                 aes(x = logFC, y = -log10(pval), color = p.adjust(pval,"holm") < 0.05)) +
+ geom_point(cex = 2.5) +
+ scale_color_manual(values = alpha(c("black", "red"), 0.5)) +
+ theme_minimal() +
+ ggtitle("simulated heart data under H0")
+volcano
+```
+
+- No false positives are returned for simulation under H_0. List is correct according to FWER.
+
+```{r}
+volcano <- ggplot(rowData(pe[["proteinRobust"]])$tissueV,
+                 aes(x = logFC, y = -log10(pval), color = p.adjust(pval,"holm") < 0.05)) +
+ geom_point(cex = 2.5) +
+ scale_color_manual(values = alpha(c("black", "red"), 0.5)) +
+ theme_minimal() +
+ ggtitle("real heart data")
+volcano
+```
+
+- Very few proteins are returned for real data. Still very conservative!
+
+
+## False discovery rate
+
+- Adjusted P-values with the Benjamini Hochberg correction correspond to the estimated FDR of the set that is returned when the significance level is set at this threshold.
+\begin{eqnarray}
+FDR(p_0) &=& \text{E}\left[\frac{FP}{(FP + TP)}\right]\\
+&\approx&\frac{p_0 \times m}{\#p_p \leq p_0}\\
+\end{eqnarray}
+
+So adjusted p-value for protein j equals
+\[\tilde p_j = \frac{p_{0,j} \times m}{\#p_p \leq p_{0,j}}\]
+
+However, the FDR always has to be between 0 and 1 so:
+
+\[\tilde p_j = \min\left[\frac{p_{0,j} \times m}{\#p_p \leq p_{0,j}},1\right]\]
+
+and the adjusted p-values should remain in the same order as the original p-values.
+
+\[\tilde p_j =  \min\limits_{\forall k: p_k > p_j} \min\left[\frac{p_{0,k} \times m}{\#p_p \leq p_{0,k}},1\right]\]
+
+1. Order pvalues
+```{r}
+pvals <- rowData(pe[["proteinRobust"]])$tissueV$pval
+naInd <- is.na(pvals)
+pHlp <- pvals[!naInd]
+ord <- pHlp %>% order
+pHlp <- pHlp[ord]
+```
+
+2. Adjust ordered p-values
+```{r}
+pHlp <- pHlp*length(pHlp)/(1:length(pHlp))
+```
+
+3. Ensure adjust p-values are smaller are equal than 1
+```{r}
+pHlp[pHlp>1] <- 1
+```
+
+4. Monotonicity constraint
+```{r}
+pmin <- pHlp[length(pHlp)]
+for (j in (length(pHlp)-1):1)
+{
+  if (pHlp[j] < pmin)
+    pmin <- pHlp[j] else
+    pHlp[j] <- pmin   
+}
+```
+
+5. Put p-values back in original order
+
+```{r}
+pHlp[ord] <- pHlp
+pAdj <- pvals
+pAdj[!naInd] <- pHlp
+
+head(pAdj)
+head(rowData(pe[["proteinRobust"]])$tissueV)
+range(rowData(pe[["proteinRobust"]])$tissueV$adjPval - pAdj,na.rm=TRUE)
+```
+
+#### Illustration in simulation under $H_0$ and heart case study
+
+```{r}
+volcano <- ggplot(rowData(sims[["sim0"]])$tissueV,
+                 aes(x = logFC, y = -log10(pval), color = adjPval < 0.05)) +
+ geom_point(cex = 2.5) +
+ scale_color_manual(values = alpha(c("black", "red"), 0.5)) +
+ theme_minimal() +
+ ggtitle("simulated heart data under H0")
+volcano
+```
+
+- No false positives are returned for simulation under H_0. List is correct according to FWER.
+- It can be shown that the FDR-method controls the FWER when $H_0$ is true for all features.   
+
+
+```{r}
+volcano <- ggplot(rowData(pe[["proteinRobust"]])$tissueV,
+                 aes(x = logFC, y = -log10(pval), color = adjPval < 0.05)) +
+ geom_point(cex = 2.5) +
+ scale_color_manual(values = alpha(c("black", "red"), 0.5)) +
+ theme_minimal() +
+ ggtitle("real heart data")
+volcano
+```
+
+The FDR method allows us to return much longer DA protein lists at the expense of a few false positives.
+The FDR controls the fraction of false positives in the list that you return on average on the significance level that is adopted.
+So if you use $\alpha=0.05$ we expect on average 5% of false positives in the list that we return.
