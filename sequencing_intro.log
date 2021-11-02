@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021) (preloaded format=xelatex 2021.10.25)  29 OCT 2021 06:46
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021) (preloaded format=xelatex 2021.10.25)  2 NOV 2021 08:21
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -857,7 +857,7 @@ Package rerunfilecheck Info: File `sequencing_intro.out' has not changed.
 Here is how much of TeX's memory you used:
  16040 strings out of 478472
  293435 string characters out of 5860372
- 753781 words of memory out of 5000000
+ 753784 words of memory out of 5000000
  36135 multiletter control sequences out of 15000+600000
  409841 words of font info for 75 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191

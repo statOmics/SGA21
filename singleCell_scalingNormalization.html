@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Koen Van den Berge" />
+
+
+<title>Scaling normalization and offsets</title>
+
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<script src="site_libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+<style type="text/css">
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SGA21</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-chalkboard-teacher"></span>
+     
+    Lectures
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="./docs/intro.pdf">1.1 Position</a>
+    </li>
+    <li>
+      <a href="recapGeneralLinearModel.html">1.2 Recap linear model</a>
+    </li>
+    <li>
+      <a href="./docs/martens_proteomics_bioinformatics.pdf">2.1 PDA - identification</a>
+    </li>
+    <li>
+      <a href="pda_quantification_preprocessing.html">2.2 PDA- Quantification - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_robustSummarisation_peptideModels.html">2.2 PDA - Wrap-up Preprocessing - Peptide-Level-Models</a>
+    </li>
+    <li>
+      <a href="pda_quantification_inference.html">2.3 PDA - Quantification - Differential Abundance Analysis</a>
+    </li>
+    <li>
+      <a href="pda_blocking_wrapup.html">2.3 PDA - Wrap-up DA - Blocking</a>
+    </li>
+    <li>
+      <a href="technicalDetailsProteomics.html">2.4. PDA - DA Technical Details</a>
+    </li>
+    <li>
+      <a href="./docs/stagewiseTesting.pdf">2.5 PDA- Stage-wise testing</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-laptop"></span>
+     
+    tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="multipleRegression_KPNA2.html">1 Intro KPNA2</a>
+    </li>
+    <li>
+      <a href="https://www.compomics.com/bioinformatics-for-proteomics/">2.1 Identification</a>
+    </li>
+    <li>
+      <a href="pda_tutorialPreprocessing.html">2.2 DA - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_tutorialDesign.html">2.3 DA - Design</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Scaling normalization and offsets</h1>
+<h4 class="author">Koen Van den Berge</h4>
+
+</div>
+
+
+<div id="no-offset" class="section level1">
+<h1><span class="header-section-number">1</span> No offset</h1>
+<p>The gene is extremely significantly DE between groups.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">set.seed</span>(<span class="dv">65</span>)</span>
+<span id="cb1-2"><a href="#cb1-2"></a>nPerGroup &lt;-<span class="st"> </span><span class="dv">8</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a>y &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">rpois</span>(<span class="dt">n=</span>nPerGroup, <span class="dt">lambda =</span> <span class="dv">7</span>),</span>
+<span id="cb1-4"><a href="#cb1-4"></a>       <span class="kw">rpois</span>(<span class="dt">n=</span>nPerGroup, <span class="dt">lambda =</span> <span class="dv">11</span>))</span>
+<span id="cb1-5"><a href="#cb1-5"></a>group &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>, <span class="dt">each =</span> nPerGroup)</span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="kw">plot</span>(group, y)</span></code></pre></div>
+<p><img src="singleCell_scalingNormalization_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Poisson GLM, no library size: signifcantly DE</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>m &lt;-<span class="st"> </span><span class="kw">glm</span>(y <span class="op">~</span><span class="st"> </span><span class="kw">factor</span>(group),</span>
+<span id="cb2-3"><a href="#cb2-3"></a>         <span class="dt">family =</span> <span class="st">&quot;poisson&quot;</span>)</span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="kw">summary</span>(m)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## glm(formula = y ~ factor(group), family = &quot;poisson&quot;)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.7195  -0.7771   0.0556   0.8105   1.1133  
+## 
+## Coefficients:
+##                Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)      1.6582     0.1543  10.747  &lt; 2e-16 ***
+## factor(group)2   0.7621     0.1869   4.078 4.53e-05 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for poisson family taken to be 1)
+## 
+##     Null deviance: 30.916  on 15  degrees of freedom
+## Residual deviance: 13.055  on 14  degrees of freedom
+## AIC: 78.587
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+</div>
+<div id="library-size-offset" class="section level1">
+<h1><span class="header-section-number">2</span> Library size offset</h1>
+<p>Since library sizes are different between groups, accounting for library size results in the gene no longer being DE at the 5% significance level. Not correcting for sequencing depth would thus result in spurious results.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># Suppose library sizes are different between groups</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>libSize &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">rpois</span>(<span class="dt">n=</span>nPerGroup, <span class="dt">lambda =</span> <span class="fl">1e5</span>),</span>
+<span id="cb4-3"><a href="#cb4-3"></a>             <span class="kw">rpois</span>(<span class="dt">n=</span>nPerGroup, <span class="dt">lambda =</span> <span class="fl">1.5e5</span>))</span>
+<span id="cb4-4"><a href="#cb4-4"></a></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="co"># Poisson GLM with library size offset: no longer significantly DE on 5% level.</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a>m &lt;-<span class="st"> </span><span class="kw">glm</span>(y <span class="op">~</span><span class="st"> </span><span class="kw">factor</span>(group) <span class="op">+</span><span class="st"> </span><span class="kw">offset</span>(<span class="kw">log</span>(libSize)),</span>
+<span id="cb4-7"><a href="#cb4-7"></a>         <span class="dt">family =</span> <span class="st">&quot;poisson&quot;</span>)</span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="kw">summary</span>(m)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## glm(formula = y ~ factor(group) + offset(log(libSize)), family = &quot;poisson&quot;)
+## 
+## Deviance Residuals: 
+##      Min        1Q    Median        3Q       Max  
+## -1.73231  -0.78231   0.05288   0.81088   1.11070  
+## 
+## Coefficients:
+##                Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)     -9.8536     0.1543 -63.859   &lt;2e-16 ***
+## factor(group)2   0.3545     0.1869   1.897   0.0578 .  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for poisson family taken to be 1)
+## 
+##     Null deviance: 16.851  on 15  degrees of freedom
+## Residual deviance: 13.111  on 14  degrees of freedom
+## AIC: 78.643
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+</div>
+<div id="scaling-versus-offsets" class="section level1">
+<h1><span class="header-section-number">3</span> Scaling versus offsets</h1>
+<p>In RNA-seq, we are working with count data. Count data has an inherent mean-variance structure, where the variance is positively associated with the mean. For example, assume a random variable <span class="math inline">\(Y_{i} \sim Poi(\mu)\)</span>, where <span class="math inline">\(i \in \{1, \ldots, n\}\)</span>. We can visualize the mean-variance relationship by simulating different random variables <span class="math inline">\(\mathbf{Y}_1, \mathbf{Y}_2, \mathbf{Y}_3\)</span>. Say,</p>
+<p><span class="math display">\[ Y_{1i} \sim Poi(\mu_1 = 5) \]</span> <span class="math display">\[ Y_{2i} \sim Poi(\mu_2 = 50) \]</span> <span class="math display">\[ Y_{3i} \sim Poi(\mu_3 = 500) \]</span></p>
+<p>Below, we enforce the same mean for all three random variables, i.e. we create the set of random variables <span class="math inline">\(\{ Y_{1i} \times 10, Y_{2i}, Y_{3i} / 10 \}\)</span>, and plot the density of each variable. It is clear that the distributions are drastically different. This is because, although they all have the same mean, their variance is different, and indeed this is because of the mean-variance relationship that was impliclty used when simulating the data.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">library</span>(ggplot2)</span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">set.seed</span>(<span class="dv">50</span>)</span>
+<span id="cb6-3"><a href="#cb6-3"></a>n &lt;-<span class="st"> </span><span class="fl">1e4</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a>y1 &lt;-<span class="st"> </span><span class="kw">rpois</span>(<span class="dt">n =</span> n, <span class="dt">lambda =</span> <span class="dv">5</span>)</span>
+<span id="cb6-5"><a href="#cb6-5"></a>y2 &lt;-<span class="st"> </span><span class="kw">rpois</span>(<span class="dt">n =</span> n, <span class="dt">lambda =</span> <span class="dv">50</span>)</span>
+<span id="cb6-6"><a href="#cb6-6"></a>y3 &lt;-<span class="st"> </span><span class="kw">rpois</span>(<span class="dt">n =</span> n, <span class="dt">lambda =</span> <span class="dv">500</span>)</span>
+<span id="cb6-7"><a href="#cb6-7"></a></span>
+<span id="cb6-8"><a href="#cb6-8"></a>df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">y =</span> <span class="kw">c</span>(y1 <span class="op">*</span><span class="st"> </span><span class="dv">10</span>, y2, y3 <span class="op">/</span><span class="st"> </span><span class="dv">10</span>),</span>
+<span id="cb6-9"><a href="#cb6-9"></a>                 <span class="dt">gr =</span> <span class="kw">factor</span>(<span class="kw">rep</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">each =</span> n)))</span>
+<span id="cb6-10"><a href="#cb6-10"></a></span>
+<span id="cb6-11"><a href="#cb6-11"></a><span class="kw">ggplot</span>(df, <span class="kw">aes</span>(<span class="dt">x=</span>y)) <span class="op">+</span></span>
+<span id="cb6-12"><a href="#cb6-12"></a><span class="st">  </span><span class="kw">geom_density</span>() <span class="op">+</span></span>
+<span id="cb6-13"><a href="#cb6-13"></a><span class="st">  </span><span class="kw">facet_wrap</span>(. <span class="op">~</span><span class="st"> </span>gr) <span class="op">+</span></span>
+<span id="cb6-14"><a href="#cb6-14"></a><span class="st">  </span><span class="kw">geom_vline</span>(<span class="dt">xintercept =</span> <span class="dv">50</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>) <span class="op">+</span></span>
+<span id="cb6-15"><a href="#cb6-15"></a><span class="st">  </span><span class="kw">theme_bw</span>()</span></code></pre></div>
+<p><img src="singleCell_scalingNormalization_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><strong>But didn’t you say a higher mean was associated with a higher variance?</strong></p>
+<p>The critical reader would rightly so be somewhat confused at this point. Indeed, above we wrote that <em>“the variance is positively associated with the mean”</em>, but the density plots are showing that <span class="math inline">\(\mathbf{Y}_3\)</span>, which was simulated to have the highest mean, has the smallest variance. Based on the simulation, we have that <span class="math inline">\(Var(\mathbf{Y}_3) = 500\)</span>. However, <span class="math inline">\(Var(\mathbf{Y}_3 / 10) = \frac{1}{100} Var(\mathbf{Y}_3) = 5\)</span>. Thus, <span class="math inline">\(\mathbf{Y}_3\)</span> indeed will have a small variance upon rescaling.</p>
+<p>One could also say that the <strong>relative</strong> certainty of the mean of a Poisson random variable increases with its mean. With relative certainty, we mean the coefficient of variation (CV). Indeed, the CV of a Poisson distribution decreases with the mean</p>
+<p><span class="math display">\[ CV(\mathbf{Y}_3) \le CV(\mathbf{Y}_2) \le CV(\mathbf{Y}_1).  \]</span></p>
+<p>We show this below using our simulated data.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>calcCV &lt;-<span class="st"> </span><span class="cf">function</span>(x) <span class="kw">sd</span>(x) <span class="op">/</span><span class="st"> </span><span class="kw">mean</span>(x)</span>
+<span id="cb7-2"><a href="#cb7-2"></a>cv1 &lt;-<span class="st"> </span><span class="kw">calcCV</span>(y1) ; cv1</span></code></pre></div>
+<pre><code>## [1] 0.4477185</code></pre>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>cv2 &lt;-<span class="st"> </span><span class="kw">calcCV</span>(y2) ; cv2</span></code></pre></div>
+<pre><code>## [1] 0.1417173</code></pre>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>cv3 &lt;-<span class="st"> </span><span class="kw">calcCV</span>(y3) ; cv3</span></code></pre></div>
+<pre><code>## [1] 0.0449334</code></pre>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">plot</span>(<span class="dt">x=</span><span class="kw">c</span>(<span class="kw">mean</span>(y1), <span class="kw">mean</span>(y2), <span class="kw">mean</span>(y3)),</span>
+<span id="cb13-2"><a href="#cb13-2"></a>     <span class="dt">y=</span><span class="kw">c</span>(cv1, cv2, cv3),</span>
+<span id="cb13-3"><a href="#cb13-3"></a>     <span class="dt">xlab=</span><span class="st">&quot;Mean&quot;</span>,</span>
+<span id="cb13-4"><a href="#cb13-4"></a>     <span class="dt">ylab=</span><span class="st">&quot;CV&quot;</span>)</span></code></pre></div>
+<p><img src="singleCell_scalingNormalization_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>See also appendix B1 of <a href="https://www.biorxiv.org/content/10.1101/2021.06.24.449781v2">Ahlmann-Eltze &amp; Huber (2021)</a> for more information and a more formal justification.</p>
+</div>
+
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiU2NhbGluZyBub3JtYWxpemF0aW9uIGFuZCBvZmZzZXRzIgphdXRob3I6ICJLb2VuIFZhbiBkZW4gQmVyZ2UiCm91dHB1dDogCiAgaHRtbF9kb2N1bWVudDoKICAgIHRvYzogdHJ1ZQogICAgdG9jX2Zsb2F0OiB0cnVlCi0tLQoKCiMgTm8gb2Zmc2V0CgpUaGUgZ2VuZSBpcyBleHRyZW1lbHkgc2lnbmlmaWNhbnRseSBERSBiZXR3ZWVuIGdyb3Vwcy4KCmBgYHtyfQpzZXQuc2VlZCg2NSkKblBlckdyb3VwIDwtIDgKeSA8LSBjKHJwb2lzKG49blBlckdyb3VwLCBsYW1iZGEgPSA3KSwKICAgICAgIHJwb2lzKG49blBlckdyb3VwLCBsYW1iZGEgPSAxMSkpCmdyb3VwIDwtIHJlcCgxOjIsIGVhY2ggPSBuUGVyR3JvdXApCnBsb3QoZ3JvdXAsIHkpCgojIFBvaXNzb24gR0xNLCBubyBsaWJyYXJ5IHNpemU6IHNpZ25pZmNhbnRseSBERQptIDwtIGdsbSh5IH4gZmFjdG9yKGdyb3VwKSwKICAgICAgICAgZmFtaWx5ID0gInBvaXNzb24iKQpzdW1tYXJ5KG0pCmBgYAoKIyBMaWJyYXJ5IHNpemUgb2Zmc2V0CgpTaW5jZSBsaWJyYXJ5IHNpemVzIGFyZSBkaWZmZXJlbnQgYmV0d2VlbiBncm91cHMsIGFjY291bnRpbmcgZm9yIGxpYnJhcnkgc2l6ZSByZXN1bHRzIGluIHRoZSBnZW5lIG5vIGxvbmdlciBiZWluZyBERSBhdCB0aGUgNSUgc2lnbmlmaWNhbmNlIGxldmVsLiBOb3QgY29ycmVjdGluZyBmb3Igc2VxdWVuY2luZyBkZXB0aCB3b3VsZCB0aHVzIHJlc3VsdCBpbiBzcHVyaW91cyByZXN1bHRzLgoKYGBge3J9CiMgU3VwcG9zZSBsaWJyYXJ5IHNpemVzIGFyZSBkaWZmZXJlbnQgYmV0d2VlbiBncm91cHMKbGliU2l6ZSA8LSBjKHJwb2lzKG49blBlckdyb3VwLCBsYW1iZGEgPSAxZTUpLAogICAgICAgICAgICAgcnBvaXMobj1uUGVyR3JvdXAsIGxhbWJkYSA9IDEuNWU1KSkKCiMgUG9pc3NvbiBHTE0gd2l0aCBsaWJyYXJ5IHNpemUgb2Zmc2V0OiBubyBsb25nZXIgc2lnbmlmaWNhbnRseSBERSBvbiA1JSBsZXZlbC4KbSA8LSBnbG0oeSB+IGZhY3Rvcihncm91cCkgKyBvZmZzZXQobG9nKGxpYlNpemUpKSwKICAgICAgICAgZmFtaWx5ID0gInBvaXNzb24iKQpzdW1tYXJ5KG0pCmBgYAoKCiMgU2NhbGluZyB2ZXJzdXMgb2Zmc2V0cwoKSW4gUk5BLXNlcSwgd2UgYXJlIHdvcmtpbmcgd2l0aCBjb3VudCBkYXRhLiBDb3VudCBkYXRhIGhhcyBhbiBpbmhlcmVudCBtZWFuLXZhcmlhbmNlIHN0cnVjdHVyZSwgd2hlcmUgdGhlIHZhcmlhbmNlIGlzIHBvc2l0aXZlbHkgYXNzb2NpYXRlZCB3aXRoIHRoZSBtZWFuLgpGb3IgZXhhbXBsZSwgYXNzdW1lIGEgcmFuZG9tIHZhcmlhYmxlICRZX3tpfSBcc2ltIFBvaShcbXUpJCwgd2hlcmUgJGkgXGluIFx7MSwgXGxkb3RzLCBuXH0kLiBXZSBjYW4gdmlzdWFsaXplIHRoZSBtZWFuLXZhcmlhbmNlIHJlbGF0aW9uc2hpcCBieSBzaW11bGF0aW5nIGRpZmZlcmVudCByYW5kb20gdmFyaWFibGVzICRcbWF0aGJme1l9XzEsIFxtYXRoYmZ7WX1fMiwgXG1hdGhiZntZfV8zJC4KU2F5LAoKXFsgWV97MWl9IFxzaW0gUG9pKFxtdV8xID0gNSkgXF0KXFsgWV97Mml9IFxzaW0gUG9pKFxtdV8yID0gNTApIFxdClxbIFlfezNpfSBcc2ltIFBvaShcbXVfMyA9IDUwMCkgXF0KCkJlbG93LCB3ZSBlbmZvcmNlIHRoZSBzYW1lIG1lYW4gZm9yIGFsbCB0aHJlZSByYW5kb20gdmFyaWFibGVzLCBpLmUuIHdlIGNyZWF0ZSB0aGUgc2V0IG9mIHJhbmRvbSB2YXJpYWJsZXMgJFx7IFlfezFpfSBcdGltZXMgMTAsIFlfezJpfSwgWV97M2l9IC8gMTAgXH0kLCBhbmQgcGxvdCB0aGUgZGVuc2l0eSBvZiBlYWNoIHZhcmlhYmxlLgpJdCBpcyBjbGVhciB0aGF0IHRoZSBkaXN0cmlidXRpb25zIGFyZSBkcmFzdGljYWxseSBkaWZmZXJlbnQuIFRoaXMgaXMgYmVjYXVzZSwgYWx0aG91Z2ggdGhleSBhbGwgaGF2ZSB0aGUgc2FtZSBtZWFuLCB0aGVpciB2YXJpYW5jZSBpcyBkaWZmZXJlbnQsIGFuZCBpbmRlZWQgdGhpcyBpcyBiZWNhdXNlIG9mIHRoZSBtZWFuLXZhcmlhbmNlIHJlbGF0aW9uc2hpcCB0aGF0IHdhcyBpbXBsaWNsdHkgdXNlZCB3aGVuIHNpbXVsYXRpbmcgdGhlIGRhdGEuIAoKYGBge3J9CmxpYnJhcnkoZ2dwbG90MikKc2V0LnNlZWQoNTApCm4gPC0gMWU0CnkxIDwtIHJwb2lzKG4gPSBuLCBsYW1iZGEgPSA1KQp5MiA8LSBycG9pcyhuID0gbiwgbGFtYmRhID0gNTApCnkzIDwtIHJwb2lzKG4gPSBuLCBsYW1iZGEgPSA1MDApCgpkZiA8LSBkYXRhLmZyYW1lKHkgPSBjKHkxICogMTAsIHkyLCB5MyAvIDEwKSwKICAgICAgICAgICAgICAgICBnciA9IGZhY3RvcihyZXAoMTozLCBlYWNoID0gbikpKQoKZ2dwbG90KGRmLCBhZXMoeD15KSkgKwogIGdlb21fZGVuc2l0eSgpICsKICBmYWNldF93cmFwKC4gfiBncikgKwogIGdlb21fdmxpbmUoeGludGVyY2VwdCA9IDUwLCBjb2w9InJlZCIpICsKICB0aGVtZV9idygpCmBgYAoKKipCdXQgZGlkbid0IHlvdSBzYXkgYSBoaWdoZXIgbWVhbiB3YXMgYXNzb2NpYXRlZCB3aXRoIGEgaGlnaGVyIHZhcmlhbmNlPyoqCgpUaGUgY3JpdGljYWwgcmVhZGVyIHdvdWxkIHJpZ2h0bHkgc28gYmUgc29tZXdoYXQgY29uZnVzZWQgYXQgdGhpcyBwb2ludC4gSW5kZWVkLCBhYm92ZSB3ZSB3cm90ZSB0aGF0ICoidGhlIHZhcmlhbmNlIGlzIHBvc2l0aXZlbHkgYXNzb2NpYXRlZCB3aXRoIHRoZSBtZWFuIiosIGJ1dCB0aGUgZGVuc2l0eSBwbG90cyBhcmUgc2hvd2luZyB0aGF0ICRcbWF0aGJme1l9XzMkLCB3aGljaCB3YXMgc2ltdWxhdGVkIHRvIGhhdmUgdGhlIGhpZ2hlc3QgbWVhbiwgaGFzIHRoZSBzbWFsbGVzdCB2YXJpYW5jZS4gQmFzZWQgb24gdGhlIHNpbXVsYXRpb24sIHdlIGhhdmUgdGhhdCAkVmFyKFxtYXRoYmZ7WX1fMykgPSA1MDAkLiBIb3dldmVyLCAkVmFyKFxtYXRoYmZ7WX1fMyAvIDEwKSA9IFxmcmFjezF9ezEwMH0gVmFyKFxtYXRoYmZ7WX1fMykgPSA1JC4gVGh1cywgJFxtYXRoYmZ7WX1fMyQgaW5kZWVkIHdpbGwgaGF2ZSBhIHNtYWxsIHZhcmlhbmNlIHVwb24gcmVzY2FsaW5nLgoKT25lIGNvdWxkIGFsc28gc2F5IHRoYXQgdGhlICoqcmVsYXRpdmUqKiBjZXJ0YWludHkgb2YgdGhlIG1lYW4gb2YgYSBQb2lzc29uIHJhbmRvbSB2YXJpYWJsZSBpbmNyZWFzZXMgd2l0aCBpdHMgbWVhbi4gV2l0aCByZWxhdGl2ZSBjZXJ0YWludHksIHdlIG1lYW4gdGhlIGNvZWZmaWNpZW50IG9mIHZhcmlhdGlvbiAoQ1YpLiBJbmRlZWQsIHRoZSBDViBvZiBhIFBvaXNzb24gZGlzdHJpYnV0aW9uIGRlY3JlYXNlcyB3aXRoIHRoZSBtZWFuCgpcWyBDVihcbWF0aGJme1l9XzMpIFxsZSBDVihcbWF0aGJme1l9XzIpIFxsZSBDVihcbWF0aGJme1l9XzEpLiAgXF0KCldlIHNob3cgdGhpcyBiZWxvdyB1c2luZyBvdXIgc2ltdWxhdGVkIGRhdGEuCgpgYGB7cn0KY2FsY0NWIDwtIGZ1bmN0aW9uKHgpIHNkKHgpIC8gbWVhbih4KQpjdjEgPC0gY2FsY0NWKHkxKSA7IGN2MQpjdjIgPC0gY2FsY0NWKHkyKSA7IGN2MgpjdjMgPC0gY2FsY0NWKHkzKSA7IGN2MwoKcGxvdCh4PWMobWVhbih5MSksIG1lYW4oeTIpLCBtZWFuKHkzKSksCiAgICAgeT1jKGN2MSwgY3YyLCBjdjMpLAogICAgIHhsYWI9Ik1lYW4iLAogICAgIHlsYWI9IkNWIikKYGBgCgoKU2VlIGFsc28gYXBwZW5kaXggQjEgb2YgW0FobG1hbm4tRWx0emUgXCYgSHViZXIgKDIwMjEpXShodHRwczovL3d3dy5iaW9yeGl2Lm9yZy9jb250ZW50LzEwLjExMDEvMjAyMS4wNi4yNC40NDk3ODF2MikgZm9yIG1vcmUgaW5mb3JtYXRpb24gYW5kIGEgbW9yZSBmb3JtYWwganVzdGlmaWNhdGlvbi4KCgoKCg==</div>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("singleCell_scalingNormalization.Rmd");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

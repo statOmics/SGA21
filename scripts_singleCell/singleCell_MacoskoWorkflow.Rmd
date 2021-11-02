@@ -1,0 +1,289 @@
+---
+title: 'scRNA-seq workflow: Macosko et al.'
+author: "Koen Van den Berge"
+date: "11/16/2020"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+# Import data
+
+The `scRNAseq` package provides convenient access to several datasets. See the [package Bioconductor page](http://bioconductor.org/packages/release/data/experiment/html/scRNAseq.html) for more information.
+
+```{r}
+# install BiocManager package if not installed yet.
+# BiocManager is the package installer for Bioconductor software.
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+# install scRNAseq package if not yet installed.
+if(!"scRNAseq" %in% installed.packages()[,1]) BiocManager::install("scRNAseq")
+
+# Code below might ask you to create an ExperimentHub directory. 
+# Type 'yes' and hit Enter, to allow this.
+suppressPackageStartupMessages(library(scRNAseq))
+sce <- MacoskoRetinaData()
+```
+
+# A `SingleCellExperiment` object
+
+
+```{r}
+sce
+```
+
+## Accessing data from a `SingleCellExperiment` object
+
+Please see [Figure 4.1 in OSCA](http://bioconductor.org/books/release/OSCA/data-infrastructure.html) for an overview of a `SingleCellExperiment` object.
+
+```{r}
+# Data: assays
+assays(sce)
+assays(sce)$counts[1:5, 1:5]
+
+# Feature metadata: rowData
+rowData(sce) # empty for now
+
+# Cell metadata: colData
+colData(sce)
+
+# Reduced dimensions: reducedDims
+reducedDims(sce) # empty for now
+```
+
+## Creating a new `SingleCellExperiment` object
+
+```{r}
+sceNew <- SingleCellExperiment(assays = list(counts = assays(sce)$counts))
+sceNew
+
+rm(sceNew)
+```
+
+## Storing (meta)data in a `SingleCellExperiment` object
+
+```{r}
+fakeGeneNames <- paste0("gene", 1:nrow(sce))
+rowData(sce)$fakeName <- fakeGeneNames
+head(rowData(sce))
+# Remove again by setting to NULL
+rowData(sce)$fakeName <- NULL
+
+assays(sce)$logCounts <- log1p(assays(sce)$counts)
+assays(sce)
+assays(sce)$logCounts[1:5, 1:5]
+assays(sce)$logCounts <- NULL
+```
+
+# Filtering non-informative genes
+
+```{r}
+keep <- rowSums(assays(sce)$counts > 0) > 10
+table(keep)
+
+sce <- sce[keep,]
+```
+
+
+# Quality control
+
+## Calculate QC variables
+
+```{r}
+library(scater)
+is.mito <- grepl("^MT-", rownames(sce))
+sum(is.mito) # 28 mitochondrial genes
+df <- perCellQCMetrics(sce, subsets=list(Mito=is.mito))
+## add the QC variables to sce object
+colData(sce) <- cbind(colData(sce), df)
+# the QC variables have now been added to the colData of our SCE object.
+colData(sce)
+```
+
+## EDA
+
+High-quality cells should have many features expressed, and a low contribution of mitochondrial genes. Here, we see that several cells have a very low number of expressed genes, and where most of the molecules are derived from mitochondrial genes. This indicates likely damaged cells, presumably because of loss of cytoplasmic RNA from perforated cells, so we'd want to remove these for the downstream analysis.
+
+```{r}
+# Number of genes vs library size
+plotColData(sce, x = "sum", y="detected", colour_by="cluster") 
+
+# Mitochondrial genes
+plotColData(sce, x = "detected", y="subsets_Mito_percent")
+```
+
+## QC using adaptive thresholds
+
+Below, we remove cells that are outlying with respect to
+
+ 1. A low sequencing depth (number of UMIs);
+ 2. A low number of genes detected;
+ 3. A high percentage of reads from mitochondrial genes.
+ 
+We remove a total of $3423$ cells, most of which because of an outlyingly high percentage of reads from mitochondrial genes.
+
+```{r}
+lowLib <- isOutlier(df$sum, type="lower", log=TRUE)
+lowFeatures <- isOutlier(df$detected, type="lower", log=TRUE)
+highMito <- isOutlier(df$subsets_Mito_percent, type="higher")
+
+table(lowLib)
+table(lowFeatures)
+table(highMito)
+
+discardCells <- (lowLib | lowFeatures | highMito)
+table(discardCells)
+colData(sce)$discardCells <- discardCells
+
+# visualize cells to be removed
+plotColData(sce, x = "detected", y="subsets_Mito_percent", colour_by = "discardCells")
+
+```
+
+
+## Identifying and removing empty droplets
+
+Note that the removal of cells with low sequencing depth using the adaptive threshold procedure above is a way of removing empty droplets. 
+Other approaches are possible, e.g., removing cells by statistical testing using `emtpyDrops`.
+This does require us to specify a lower bound on the total number of UMIs, below which all cells are considered to correspond to empty droplets.
+This lower bound may not be trivial to derive, but the `barcodeRanks` function can be useful to identify an elbow/knee point.
+
+```{r}
+library(DropletUtils)
+bcrank <- barcodeRanks(counts(sce))
+
+# Only showing unique points for plotting speed.
+uniq <- !duplicated(bcrank$rank)
+plot(bcrank$rank[uniq], bcrank$total[uniq], log="xy",
+    xlab="Rank", ylab="Total UMI count", cex.lab=1.2)
+
+abline(h=metadata(bcrank)$inflection, col="darkgreen", lty=2)
+abline(h=metadata(bcrank)$knee, col="dodgerblue", lty=2)
+abline(h=350, col="orange", lty=2) # picked visually myself
+
+legend("topright", legend=c("Inflection", "Knee", "Empirical knee point"), 
+        col=c("darkgreen", "dodgerblue", "orange"), lty=2, cex=1.2)
+
+set.seed(100)
+limit <- 350   
+all.out <- emptyDrops(counts(sce), lower=limit, test.ambient=TRUE)
+# p-values for cells with total UMI count under the lower bound.
+hist(all.out$PValue[all.out$Total <= limit & all.out$Total > 0],
+    xlab="P-value", main="", col="grey80")
+
+# but note that it would remove a very high number of cells
+ength(which(all.out$FDR <= 0.001))
+
+# so we stick to the more lenient adaptive filtering strategy
+# remove cells identified using adaptive thresholds
+sce <- sce[, !colData(sce)$discardCells]
+```
+
+## Identifying and removing doublets
+
+```{r}
+
+```
+
+
+# Normalization
+
+For normalization, the size factors $s_i$ computed here are simply scaled library sizes:
+\[ N_i = \sum_g Y_{gi} \]
+\[ s_i = N_i / \bar{N}_i \]
+
+```{r}
+sce <- logNormCounts(sce)
+
+# note we also returned log counts: see the additional logcounts assay.
+sce
+
+# you can extract size factors using
+sf <- librarySizeFactors(sce)
+mean(sf) # equal to 1 due to scaling.
+plot(x= log(colSums(assays(sce)$counts)), 
+     y=sf)
+```
+
+# Feature selection
+
+```{r}
+library(scran)
+dec <- modelGeneVar(sce)
+fitRetina <- metadata(dec)
+plot(fitRetina$mean, fitRetina$var, 
+     xlab="Mean of log-expression",
+    ylab="Variance of log-expression")
+curve(fitRetina$trend(x), col="dodgerblue", add=TRUE, lwd=2)
+
+# get 10% highly variable genes
+hvg <- getTopHVGs(dec, prop=0.1)
+head(hvg)
+
+# plot these 
+plot(fitRetina$mean, fitRetina$var, 
+     col = c("orange", "darkseagreen3")[(names(fitRetina$mean) %in% hvg)+1],
+     xlab="Mean of log-expression",
+    ylab="Variance of log-expression")
+curve(fitRetina$trend(x), col="dodgerblue", add=TRUE, lwd=2)
+legend("topleft", 
+       legend = c("Selected", "Not selected"), 
+       col = c("darkseagreen3", "orange"),
+       pch = 16,
+       bty='n')
+```
+
+# Dimensionality reduction
+
+Note that, below, we color the cells using the known, true cell type label as defined in the metadata, to empirically evaluate the dimensionality reduction. In reality, we don't know this yet at this stage.
+
+## The most basic DR
+
+Just by looking at the top two genes based on our feature selection criterion, we can already see some separation according to the cell type!
+
+```{r}
+colData(sce)$cluster <- as.factor(colData(sce)$cluster)
+cl <- colData(sce)$cluster
+
+par(bty='l')
+plot(x = assays(sce)$counts[hvg[1],],
+     y = assays(sce)$counts[hvg[2],],
+     col = as.numeric(cl),
+     pch = 16, cex = 1/3,
+     xlab = "Most informative gene",
+     ylab = "Second most informative gene",
+     main = "Cells colored acc to cell type")
+```
+
+## Linear dimensionality reduction: PCA
+
+We are able to recover quite some structure. 
+However, many cell populations remain obscure, and the plot is overcrowded.
+
+```{r}
+set.seed(1234)
+sce <- runPCA(sce, ncomponents=30, subset_row=hvg)
+plotPCA(sce, colour_by = "cluster")
+```
+
+
+## Non-linear dimensionality reduction: UMAP
+
+```{r}
+sce <- runUMAP(sce, dimred = 'PCA', external_neighbors=TRUE)
+plotUMAP(sce)
+```
+
+# Clustering
+
+```{r}
+# Build a shared nearest-neighbor graph from PCA space
+g <- buildSNNGraph(sce, use.dimred = 'PCA')
+# Louvain clustering on the SNN graph, and add to sce
+colData(sce)$label <- factor(igraph::cluster_louvain(g)$membership)
+
+# Visualization.
+plotUMAP(sce, colour_by="label")
+```
