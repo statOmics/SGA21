@@ -91,6 +91,11 @@ include_graphics("./images_sequencing/fastqLine.png")
 
 As you'll have noticed, the base call quality scores are encoded as ASCII characters for efficient storage. These ASCII characters can be converted into integers called Phred scores, which are logarithmically related to the probability of an erroneous base call.
 
+ ---
+ 
+Many published papers upload their raw FASTQ-files on the Gene Expression Omnibus (GEO). 
+If you'll be working in transcriptomics, you will most likely have to download files from there. You can get the links manually, e.g., by following [this tutorial](https://www.imm.ox.ac.uk/files/ccb/downloading_fastq_geo), through `R` using custom packages, e.g., [GEOfastq](https://bioconductor.org/packages/release/bioc/html/GEOfastq.html), or you can use a command-line program like [kingfisher](https://github.com/wwood/kingfisher-download) (recommended).
+
 # Preprocessing of raw sequencing data
 
 After sequencing, we typically do a quality control (QC) check to verify the quality of the samples. During QC check, aberrant samples due to e.g. degraded mRNA can be detected.
@@ -204,6 +209,11 @@ Once abundances have been quantified, the (estimated) counts are typically store
 ```{r, echo=FALSE, fig.cap=paste("Figure: An updated sequencing workflow. Image adapted from Van den Berge et al. (2019).")}
 include_graphics("./images_sequencing/seqWorkflow3.png")
 ```
+
+# A preprocessing tutorial
+
+The course GitHub repository contains code to download and quantify a sample from an RNA-seq dataset we will analyze later. Take a look at the code [here](https://github.com/statOmics/SGA21/blob/master/sequencing_preprocessing.sh), and try to run the code, which will require you to install several bioinformatics software tools, as mentioned in the file.
+If successful, you could try adapting the script in order to download and quantify all samples from that dataset.
 
 # References
 
