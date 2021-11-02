@@ -454,7 +454,19 @@ div.tocify {
       <a href="technicalDetailsProteomics.html">2.4. PDA - DA Technical Details</a>
     </li>
     <li>
-      <a href="./docs/stagewiseTesting.pdf">2.5 PDA- Stage-wise testing</a>
+      <a href="./docs/stagewiseTesting.pdf">2.5 PDA - Stage-wise testing</a>
+    </li>
+    <li>
+      <a href="sequencing_intro.html">3.1 SDA - Intro to sequencing</a>
+    </li>
+    <li>
+      <a href="sequencing_countData.html">3.2 SDA - Working with count data</a>
+    </li>
+    <li>
+      <a href="sequencing_rnaseqIntro.html">3.3 SDA - Intro to RNA-seq analysis</a>
+    </li>
+    <li>
+      <a href="sequencing_technicalDE.html">3.4 SDA - Technical topics in DE analysis</a>
     </li>
   </ul>
 </li>
@@ -478,6 +490,9 @@ div.tocify {
     </li>
     <li>
       <a href="pda_tutorialDesign.html">2.3 DA - Design</a>
+    </li>
+    <li>
+      <a href="sequencing_preprocessing.sh">3.1 Preprocessing</a>
     </li>
   </ul>
 </li>
@@ -676,11 +691,11 @@ Fit: lm(formula = gene %&gt;% log2 ~ grade * node, data = kpna2)
 
 Linear Hypotheses:
                            Estimate Std. Error t value Pr(&gt;|t|)    
-grade3 == 0                  1.6675     0.1827   9.127   &lt;0.001 ***
-grade3 + grade3:node1 == 0   0.8928     0.1827   4.886   &lt;0.001 ***
-node1 == 0                   0.6577     0.1827   3.600   0.0071 ** 
-node1 + grade3:node1 == 0   -0.1170     0.1827  -0.640   0.8981    
-grade3:node1 == 0           -0.7748     0.2584  -2.998   0.0265 *  
+grade3 == 0                  1.6675     0.1827   9.127  &lt; 0.001 ***
+grade3 + grade3:node1 == 0   0.8928     0.1827   4.886  &lt; 0.001 ***
+node1 == 0                   0.6577     0.1827   3.600  0.00718 ** 
+node1 + grade3:node1 == 0   -0.1170     0.1827  -0.640  0.89818    
+grade3:node1 == 0           -0.7748     0.2584  -2.998  0.02645 *  
 ---
 Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 (Adjusted p values reported -- single-step method)</code></pre>
@@ -690,39 +705,39 @@ Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&
 
 Fit: lm(formula = gene %&gt;% log2 ~ grade * node, data = kpna2)
 
-Quantile = 2.6982
+Quantile = 2.6965
 95% family-wise confidence level
  
 
 Linear Hypotheses:
                            Estimate lwr      upr     
-grade3 == 0                 1.66754  1.17455  2.16053
-grade3 + grade3:node1 == 0  0.89279  0.39980  1.38578
-node1 == 0                  0.65773  0.16474  1.15072
-node1 + grade3:node1 == 0  -0.11702 -0.61001  0.37597
-grade3:node1 == 0          -0.77475 -1.47194 -0.07756</code></pre>
+grade3 == 0                 1.66754  1.17486  2.16022
+grade3 + grade3:node1 == 0  0.89279  0.40011  1.38547
+node1 == 0                  0.65773  0.16505  1.15041
+node1 + grade3:node1 == 0  -0.11702 -0.60970  0.37566
+grade3:node1 == 0          -0.77475 -1.47151 -0.07799</code></pre>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a><span class="dv">2</span><span class="op">^</span><span class="kw">confint</span>(fitGlht)<span class="op">$</span>confint</span></code></pre></div>
 <pre><code>                       Estimate       lwr       upr
-grade3                3.1767209 2.2573584 4.4705156
-grade3 + grade3:node1 1.8567602 1.3194024 2.6129697
-node1                 1.5775997 1.1210327 2.2201145
-node1 + grade3:node1  0.9220906 0.6552319 1.2976338
-grade3:node1          0.5844896 0.3605270 0.9475796
+grade3                3.1767209 2.2564779 4.4722601
+grade3 + grade3:node1 1.8567602 1.3188878 2.6139894
+node1                 1.5775997 1.1205954 2.2209809
+node1 + grade3:node1  0.9220906 0.6549763 1.2981401
+grade3:node1          0.5844896 0.3603281 0.9481026
 attr(,&quot;conf.level&quot;)
 [1] 0.95
 attr(,&quot;calpha&quot;)
-[1] 2.697702</code></pre>
+[1] 2.700783</code></pre>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a><span class="dv">2</span><span class="op">^-</span><span class="kw">confint</span>(fitGlht)<span class="op">$</span>confint[<span class="st">&quot;grade3:node1&quot;</span>,]</span></code></pre></div>
 <pre><code>Estimate      lwr      upr 
-1.710895 2.773172 1.055528 </code></pre>
+1.710895 2.773672 1.055338 </code></pre>
 </div>
 <div id="conclusion" class="section level1">
 <h1><span class="header-section-number">5</span> Conclusion</h1>
 <ul>
 <li><p>There is an extremely significant association between the KPNA2 expression and hystological grade in patients with unaffected as well as in patients with affected lymph nodes (both p&lt;&lt;0.001). When lymph nodes are unaffected, the expression is on average 3.18 times higher for patients with histological grade 3 than patients with histological grade 1 (95% CI [2.26, 4.47]). For patients with affected lymph nodes the expression is on average 1.86 times higher for patients with histological grade 3 tumors than patients with histological grade 1 tumors (95% CI [1.32, 2.61]).</p></li>
-<li><p>The association between the KPNA2 expression with the lymph node status in grade 1 patients is very significant (<span class="math inline">\(p=\)</span> 0.0071).<br />
+<li><p>The association between the KPNA2 expression with the lymph node status in grade 1 patients is very significant (<span class="math inline">\(p=\)</span> 0.0072).<br />
 The KPNA2 expression in histological grade 1 patients with affected lymph nodes is on average 1.58 times higher than for grade 1 patients with unaffected lymph nodes (95% CI [1.12, 2.22]). In grade 3 patients, however, this association is not significant (<span class="math inline">\(p=\)</span> 0.9, 95% CI [0.66, 1.3] ).</p></li>
-<li><p>There is also a significant interaction between the hystological grade and the lymph node status. So the association between the KPNA2 expression and the histological grade depends on the lymph node status and vice versa (<span class="math inline">\(p=\)</span> 0.027). The fold change corresponding to histological grade is on average 1.71 times lower in patients with affected lymph nodes as compared to patients with unaffected lymph node (95% CI [1.06, 2.77]). (Similarly, the fold change corresponding to the node status is on average 1.71 times lower in patients with grade 3 tumors as compared to patients with grade 1 tumors, 95% CI [1.05, 2.78])</p></li>
+<li><p>There is also a significant interaction between the hystological grade and the lymph node status. So the association between the KPNA2 expression and the histological grade depends on the lymph node status and vice versa (<span class="math inline">\(p=\)</span> 0.027). The fold change corresponding to histological grade is on average 1.71 times lower in patients with affected lymph nodes as compared to patients with unaffected lymph node (95% CI [1.05, 2.77]). (Similarly, the fold change corresponding to the node status is on average 1.71 times lower in patients with grade 3 tumors as compared to patients with grade 1 tumors, 95% CI [1.06, 2.77])</p></li>
 </ul>
 </div>
 
