@@ -115,6 +115,10 @@ source("https://raw.githubusercontent.com/statOmics/SGA21/master/install.R")
 3. Analysis of RNA-seq data.
 
    - Lecture + Tutorial: [Four major challenges in the analysis of RNA-seq datasets](./sequencing_rnaseqIntro.html) [[PDF](./sequencing_rnaseqIntro.pdf).
+   
+4. Technical topics in bulk RNA-seq differential expression analysis (DEA).
+
+   - Lecture: [Technical topics in DEA](./sequencing_technicalDE.html) [[PDF](./sequencing_technicalDE.pdf).
 
 # Instructors
 
