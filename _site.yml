@@ -25,8 +25,16 @@ navbar:
         href: pda_blocking_wrapup.html
       - text: 2.4. PDA - DA Technical Details
         href: technicalDetailsProteomics.html
-      - text: 2.5 PDA- Stage-wise testing
+      - text: 2.5 PDA - Stage-wise testing
         href: ./docs/stagewiseTesting.pdf
+      - text: 3.1 SDA - Intro to sequencing
+        href: sequencing_intro.html
+      - text: 3.2 SDA - Working with count data
+        href: sequencing_countData.html
+      - text: 3.3 SDA - Intro to RNA-seq analysis
+        href: sequencing_rnaseqIntro.html
+      - text: 3.4 SDA - Technical topics in DE analysis
+        href: sequencing_technicalDE.html
 
     - text: "tutorials"
       icon: fa-laptop
@@ -39,6 +47,8 @@ navbar:
         href: pda_tutorialPreprocessing.html
       - text: 2.3 DA - Design
         href: pda_tutorialDesign.html
+      - text: 3.1 Preprocessing
+        href: sequencing_preprocessing.sh
 
         
 

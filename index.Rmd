@@ -100,25 +100,25 @@ source("https://raw.githubusercontent.com/statOmics/SGA21/master/install.R")
 
 1. Introduction to sequencing technology, raw data and preprocessing.
    
-   - Lecture: [Introduction to sequencing](./sequencing_intro.html) [[PDF](./sequencing_intro.pdf).
+   - Lecture: [Introduction to sequencing](./sequencing_intro.html) [[PDF](./sequencing_intro.pdf)].
    - Tutorial: 
 
 \newline
 
 2. Working with count data and generalized linear models.
    
-   - Lecture: [Working with count data and GLMs](./sequencing_countData.html) [[PDF](./sequencing_countData.pdf).
+   - Lecture: [Working with count data and GLMs](./sequencing_countData.html) [[PDF](./sequencing_countData.pdf)].
    - Tutorial: Embedded within the lecture: Analysis of bike-sharing data.
 
 \newline
 
 3. Analysis of RNA-seq data.
 
-   - Lecture + Tutorial: [Four major challenges in the analysis of RNA-seq datasets](./sequencing_rnaseqIntro.html) [[PDF](./sequencing_rnaseqIntro.pdf).
+   - Lecture + Tutorial: [Four major challenges in the analysis of RNA-seq datasets](./sequencing_rnaseqIntro.html) [[PDF](./sequencing_rnaseqIntro.pdf)].
    
 4. Technical topics in bulk RNA-seq differential expression analysis (DEA).
 
-   - Lecture: [Technical topics in DEA](./sequencing_technicalDE.html) [[PDF](./sequencing_technicalDE.pdf).
+   - Lecture: [Technical topics in DEA](./sequencing_technicalDE.html) [[PDF](./sequencing_technicalDE.pdf)].
 
 # Instructors
 
