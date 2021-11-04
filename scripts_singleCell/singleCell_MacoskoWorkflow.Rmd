@@ -18,8 +18,12 @@ The `scRNAseq` package provides convenient access to several datasets. See the [
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
-# install scRNAseq package if not yet installed.
-if(!"scRNAseq" %in% installed.packages()[,1]) BiocManager::install("scRNAseq")
+# install packages if not yet installed.
+pkgs <- c("SingleCellExperiment", "DropletUtils", "scRNAseq", "scater", "scuttle", "scran", "BiocSingular", "scDblFinder")
+notInstalled <- pkgs[!pkgs %in% installed.packages()[,1]]
+if(length(notInstalled) > 0){
+  BiocManager::install(notInstalled)
+}
 
 # Code below might ask you to create an ExperimentHub directory. 
 # Type 'yes' and hit Enter, to allow this.
@@ -174,7 +178,7 @@ hist(all.out$PValue[all.out$Total <= limit & all.out$Total > 0],
     xlab="P-value", main="", col="grey80")
 
 # but note that it would remove a very high number of cells
-ength(which(all.out$FDR <= 0.001))
+length(which(all.out$FDR <= 0.001))
 
 # so we stick to the more lenient adaptive filtering strategy
 # remove cells identified using adaptive thresholds
@@ -183,8 +187,34 @@ sce <- sce[, !colData(sce)$discardCells]
 
 ## Identifying and removing doublets
 
-```{r}
+We will use [scDblFinder](https://bioconductor.org/packages/3.14/bioc/html/scDblFinder.html) to detect doublet cells.
 
+
+
+```{r}
+## perform doublet detection
+set.seed(211103)
+sampleID <- unlist(lapply(strsplit(colData(sce)$cell.id, split="_"), "[[", 1))
+table(sampleID)
+sce <- scDblFinder(sce, returnType="table",
+                 samples = factor(sampleID))
+table(sce$scDblFinder.class)
+
+
+## visualize these scores
+## explore doublet score wrt original cluster labels
+boxplot(log1p(sce$scDblFinder.score) ~ factor(colData(sce)$cluster, exclude=NULL))
+
+tab <- table(sce$scDblFinder.class, sce$cluster, 
+      exclude=NULL)
+tab
+t(t(tab) / colSums(tab))
+
+barplot(t(t(tab) / colSums(tab))[2,],
+        xlab = "Cluster", ylab = "Fraction of doublets")
+
+# remove doublets
+sce <- sce[,!sce$scDblFinder.class == "doublet"]
 ```
 
 
@@ -267,6 +297,19 @@ set.seed(1234)
 sce <- runPCA(sce, ncomponents=30, subset_row=hvg)
 plotPCA(sce, colour_by = "cluster")
 ```
+
+## A (non-linear) generalization of PCA for exponential family distributions.
+
+```{r, eval=FALSE}
+library(glmpca)
+set.seed(211103)
+poipca <- glmpca(assays(sce)$counts,
+                 L=2, fam="poi",
+                 minibatch="stochastic")
+reducedDim(sce, "PoiPCA") <- poipca$x
+plot
+```
+
 
 
 ## Non-linear dimensionality reduction: UMAP

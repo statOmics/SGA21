@@ -59,11 +59,11 @@ include_graphics("./images_sequencing/seqTechnology_throughput.png")
 Library preparation steps:
 
 1. First, the biological **samples of interest are collected**. Owing to the maturity of different protocols for sequencing, several types of biological input samples are amenable to sequencing, such as frozen tissues or FFPE-preserved samples.
-2. The **mRNA molecules from our sample are captured**. This typically involves cell lysis in order to release the mRNA molecules from within the cells. The mRNA molecules are most often captured using (i) polyA-capture to select for polyadenylated RNA, or (ii) ribosomal depletion, where ribosomal and transfer RNAs are depleted, and so also non-polyA-mRNA molecules may be captured, such as long non-coding RNAs. In the case of `targeted sequencing', where relevant molecules are of main interest (e.g., a gene panel), these targets can be specifically targeted in this step.
+2. The **(m)RNA molecules from our sample are captured**. This typically involves cell lysis in order to release the (m)RNA molecules from within the cells. The mRNA molecules are most often captured using (i) polyA-capture to select for polyadenylated RNA, or (ii) ribosomal depletion, where ribosomal and transfer RNAs are depleted, and so also non-polyA-mRNA molecules may be captured, such as long non-coding RNAs. In the case of `targeted sequencing', where relevant molecules are of main interest (e.g., a gene panel), these targets can be specifically targeted in this step.
 3. **Fragmentation** of captured molecules. The captured molecules are fragmented, either chemically or mechanically. The appropriate size of fragments depends on the sequencing machines, but is often in the range of 300 - 500bp.
 4. **Reverse transcription**. Current dominant sequencing machines only sequence double-stranded DNA molecules. Therefore, in order to measure single-stranded mRNA, we must first reverse transcribe these molecules to a double-stranded complementary (cDNA) molecule.
 5. **Adapter ligation**. Adapters are oligonucleotides (short sequences of nucleotides) that are platform-specific sequences for fragment recognition by the sequencing machines. These are added either to the 3' or 5' end of the cDNA molecules or used as primers in the reverse transcription reaction. The final cDNA library consists of cDNA inserts flanked by an adapter sequence on each end. 
-6. **PCR amplification**. To increase concentration, several PCR reactions are performed.
+6. **PCR amplification**. To increase concentration, several PCR reaction cycles are performed.
 7. Loading the amplified cDNA library on the **sequencing** machine. Find out how sequencing-by-synthesis works through [this video](https://www.youtube.com/watch?v=fCd6B5HRaZ8). Note that the video shows paired-end sequencing, where a number of basepairs are sequenced at each end of the fragment. All previous steps together are described as `sample prep' in that video.
 
 ```{r, echo=FALSE, fig.cap=paste("Figure: The sequencing workflow. Image adapted from Van den Berge et al. (2019).")}
@@ -142,7 +142,7 @@ include_graphics("./images_sequencing/gtfFile.png")
 
 ### Alignment-based workflows
 
- - Traditionally, alignment-based workflows have been used to map reads, where one tries to find the exact coordinates a read maps to on the reference genome or the reference transcriptome.
+ - Traditionally, alignment-based workflows have been used to map reads, where one tries to **find the exact coordinates a read maps to** on the reference genome or the reference transcriptome.
  - Note that due to alternative splicing, reads do not necessarily map contiguously on a reference genome, as a read can overlap with a splicing junction, where an intron has been excised. When mapping against a transcriptome, however, reads should be mapping contiguously.
   - A main challenge in spliced alignment against a reference genome is the proper alignment of reads that span a splice junction, especially when these junctions are not annotated a priori. Indeed, in spliced alignment reads can be split at any nucleotide, and the corresponding subsequences can map several thousands of basepairs apart. Meanwhile, the main challenge in unspliced alignment to a transcriptome is the redundant sequence among related transcripts in the transcriptome, which often leads to a high multi-mapping rate (i.e., reads that cannot be unambiguously assigned to a single transcript).
  - Spliced alignment against a genome is therefore computationally a much harder task. Since the transcript sequences are already spliced when aligning to a reference transcriptome, reads should align contiguously, and many of the computationally expensive steps and heuristics can be avoided, there.
@@ -153,7 +153,7 @@ include_graphics("./images_sequencing/splicedAlignment.png")
 
 ### Alignment-free workflows
 
- - Modern approaches avoid mapping each fragment individually (i.e., do not attempt to find the exact coordinates of a read's origin), and instead posit a probabilistic model where transcript abundances are typically defined using its constituent $k$-mers. These methods are sometimes referred to as *lightweight*.
+ - Modern approaches **avoid mapping each fragment individually** (i.e., do not attempt to find the exact coordinates of a read's origin), and instead posit a probabilistic model where **transcript abundances are typically defined using its constituent $k$-mers**. These methods are sometimes referred to as *lightweight*.
  - A $k$-mer is a short sequence of nucleotides of length $k$. The space of possible $k$-mers and the corresponding transcripts can be precomputed in advance using the reference transcriptome, providing a computational advantage as it only needs to be computed once.
  - For each fragment, the transcripts its $k$-mers are compatible with is searched for using an indexed (efficiently searchable) transcriptome. The set of compatible transcripts is called the '$k$-compatibility class', 'equivalence class' or 'transcript compatibility class' of the fragment.
  
@@ -168,7 +168,7 @@ Given a set of mappings, using either alignment-based or alignment-free workflow
 
 **Counting**:
 
- - In alignment-based workflows, one could do a direct counting of fragments at the gene-level, counting the number fragments mapping to each gene. This has been the dominant approach for the first decade of RNA-seq data, often obtained using reference genome alignments. 
+ - In alignment-based workflows, one could do a direct counting of fragments at, for instance, the gene level, counting the number fragments mapping to each gene. This has been the dominant approach for the first decade of RNA-seq data, often obtained using reference genome alignments. 
  - Many heuristic choices need to be made: Do we count a fragment as soon as it intersects with the gene's coordinates, or do we require the full fragment to map to the gene? Do we count intronic reads? Do we count multi-mapping reads?
  
 ```{r, echo=FALSE, fig.cap=paste("Figure: Gene- and exon-level read counting. Image adapted from Charlotte Soneson.")}
@@ -179,7 +179,7 @@ include_graphics("./images_sequencing/readCounting.png")
  
  - Abundance quantification is more recently starting to shift from counting towards using statistical models to estimate the expression counts for a feature, which in this case is typically a transcript. 
  - This approach is amenable to alignment-free workflows, since the number of fragments in each equivalence class are sufficient statistics for the abundance quantification, meaning that they contain all information needed to estimate the parameters of the statistical model, and hence the feature-level abundances. Since the expression counts in this case are estimated, they are not necessarily integer counts, and will be referred to as 'estimated counts'. 
- - In order to derive these, the EM-algorithm is often used, although other approaches have been used by tools like Salmon. A big advantage of the estimation approach is that it probabilistically assigns fragments to transcripts, thereby automatically dealing with multi-mapping reads. The total number of fragments mapping to each transcript is then the sum of all fragment-level probabilities to be assigned to that respective transcript.
+ - In order to derive these, the EM-algorithm ([Dempster *et al.* (1977)](https://www.jstor.org/stable/2984875)) is often used, although other approaches have been used by tools like Salmon. A big advantage of the estimation approach is that it **probabilistically assigns fragments to transcripts, thereby automatically dealing with multi-mapping reads**. The total number of fragments mapping to each transcript is then the sum of all fragment-level probabilities to be assigned to that respective transcript.
  
 ```{r, echo=FALSE, fig.cap=paste("Figure: Abundance quantification using the EM algorithm. Figure from Van den Berge et al. (2019).")}
 include_graphics("./images_sequencing/abundanceEMAlgorithm.png")
@@ -187,13 +187,13 @@ include_graphics("./images_sequencing/abundanceEMAlgorithm.png")
 
 ### Abundance metrics
 
- - For simplicity, we have only been talking about feature-level counts as in sums of fragments. However, this is merely one metric that can be used as a proxy for expression, and several others exist. 
+ - For simplicity, we have mainly been talking about feature-level counts as in sums of fragments. However, this is merely one metric that can be used as a proxy for expression, and several others exist. 
  - Most of these were introduced to attempt to make the abundances more comparable across samples or features, as compared to the simple counts. These mainly serve to correct for technical biases such as transcript length and sequencing depth, both of which have significant impact on the observed counts. 
   - Indeed, for a gene with the same mRNA concentration in two samples, sequencing one sample deeper, will on average result in a higher count. 
   - Likewise, for two transcripts with the same mRNA concentration but different transcript lengths, one will tend to observe more fragments from the longer transcript due to the fragmentation step in the RNA-seq protocol, where longer transcripts can be split into more fragments of appropriate length.
 
 
-Below we introduce several relevant abundance metrics, but note that most data analysis methods we will discuss in this course will work with (estimated) counts. In what follows, let $Y_{fi}$ denote the random variable representing the expression counts of feature $f$ in sample $i$ (obtained either as a simple sum of fragments or estimated using lightweight approaches), and let $N_i = \sum_f Y_{fi}$ denote the sequencing depth of sample $i$.
+Below we introduce several relevant abundance metrics, but note that most data analysis methods we will discuss in this course will work with (estimated) counts. In what follows, let $Y_{fi}$ denote the random variable representing the expression counts of feature $f$ in sample $i$ (obtained either as a simple sum of fragments or estimated using lightweight approaches), and let $N_i = \sum_f Y_{fi}$ denote the sequencing depth ('library size') of sample $i$.
 
  * **Counts per million (CPM)** are the counts one could expect to observe if the sample was sequenced to a depth of one million.
  
