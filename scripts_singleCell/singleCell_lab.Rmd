@@ -20,3 +20,4 @@ Goals 2:
 
  - Implement different feature selection methods seen in lecture
  - Evaluate them through visualizing structure of the data.
+ - How correlated are the selected features?
