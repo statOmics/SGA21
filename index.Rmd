@@ -101,7 +101,8 @@ source("https://raw.githubusercontent.com/statOmics/SGA21/master/install.R")
 1. Introduction to sequencing technology, raw data and preprocessing.
    
    - Lecture: [Introduction to sequencing](./sequencing_intro.html) [[PDF](./sequencing_intro.pdf)].
-   - Tutorial: 
+   - Tutorial: [Preprocessing RNA-seq data](./sequencing_preprocessing.sh)
+   - Recommended reading: [RNA Sequencing Data: Hitchhiker's Guide to Expression Analysis](https://www.annualreviews.org/doi/abs/10.1146/annurev-biodatasci-072018-021255)
 
 \newline
 
@@ -115,6 +116,8 @@ source("https://raw.githubusercontent.com/statOmics/SGA21/master/install.R")
 3. Analysis of RNA-seq data.
 
    - Lecture + Tutorial: [Four major challenges in the analysis of RNA-seq datasets](./sequencing_rnaseqIntro.html) [[PDF](./sequencing_rnaseqIntro.pdf)].
+
+\newline
    
 4. Technical topics in bulk RNA-seq differential expression analysis (DEA).
 

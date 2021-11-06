@@ -79,7 +79,7 @@ Take a minute to consider the following question:
  
  ---
 
-Let's approximate the uncertainty in $beta_g$ and $\beta_k$ using simulation:
+Let's approximate the uncertainty in $\beta_g$ and $\beta_k$ using simulation:
  
 ```{r}
 N <- 1e3
@@ -166,7 +166,7 @@ where $\mathbf{X}$ now represents our $n \times p$ design matrix, with row $i$ c
   $$
 where $Y_i$ is the response variable, with mean $\mu_i$, $\eta_i$ is the linear predictor, $\mathbf{X}$ is the $n \times p$ model matrix and $\beta$ is the $p \times 1$ matrix of regression coefficients.
   - It is insightful to compare this model to a linear model where $Y_i$ is log-transformed. Indeed, in the linear model case, we would be modeling $E(\log Y_i )$, while in the GLM we are modeling $\log E(Y_i)$.
-  - This shows that in the GLM setting we are modeling a transformed version of the expected value, and after retransforming we can interpret the fit in terms of the mean of our response variable. In the transformed linear model, however, we are working with the expected value of a transformed version of our response variable, and we will not be able to interpret the fit in terms of the mean (because $E( \log Y_i) \ne \log E(Y_i)$. In this specific case, we would have to resort to interpreting changes in terms of a geometric mean.
+  - This shows that in the GLM setting we are modeling a transformed version of the expected value, and after retransforming we can interpret the fit in terms of the mean of our response variable. In the transformed linear model, however, we are working with the expected value of a transformed version of our response variable, and we will not be able to interpret the fit in terms of the mean, because $E( \log Y_i) \ne \log E(Y_i)$. In this specific case, we would have to resort to interpreting changes in terms of a geometric mean.
   - Also note that $\mathbf{X}^T_i \beta \in ]-\infty, \infty[$, while $Y_i$ must be non-negative $[0, \infty[$. The link function helps with this, since the exponential function transforms any real number to a non-negative number, i.e., $\exp(\mathbf{X}^T_i \beta) \in [0, \infty[$. 
   
 
@@ -368,7 +368,7 @@ summary(m)
   
  - We will first interpret the intercept, in terms of the average number of bikes being used. Note that the intercept corresponds to hour 0, at good weather (`weathersit` level 1), and average humidity (`humc`=0). We will denote the intercept as $\beta_0$ and its estimate as $\hat{\beta}_0$. All other coefficients will thus denote a relative change with respect to that reference level.
  - The model definition shows that $\log \mu_i = \mathbf{X}^T_i \mathbf{\beta}$, with $\mu$ the average number of bikes being used. Since we're only working with the intercept here, we may write $\log \mu_i = \beta_0$, and thus $\mu_i = \exp \beta_0$.
- - Plugging in the estimated intercept $\hat{\beta}_0$, we have $\exp \hat{\beta}_0 =$ `r round(exp(coef(m)[1]), 2)`. In other words, in clear weather with few clouds, at zero humidity and at hour 0, an average of `r round(exp(coef(m)[1]), 2)` bikes are being used.
+ - Plugging in the estimated intercept $\hat{\beta}_0$, we have $\exp \hat{\beta}_0 =$ `r round(exp(coef(m)[1]), 2)`. In other words, in clear weather with few clouds, at average humidity and at hour 0, an average of `r round(exp(coef(m)[1]), 2)` bikes are being used.
  
  ---
  
@@ -385,7 +385,7 @@ summary(m)
  
  *Interpretation of the humidity effect.*
  
- - The humidity effect is a bit more involved to interpret. Due to the quadratic and cubic terms, we cannot interpret the linear term separately (nor can we interpret the quadratic or cubic term separately); we must interpret both the linear, quadratic and cubic term simultaneously.
+ - The humidity effect is a bit more involved to interpret. Due to the quadratic and cubic terms, it is not straight forward to interpret the linear term separately (and the same applies to the quadratic or cubic term); we must interpret both the linear, quadratic and cubic term simultaneously.
  - Also due to the higher-order terms, the rate of change in average bikers will not be constant across the range of humidity. We can therefore not interpret the humidity effect using a single number as we've done previously.
  - We can, however, provide some examples for specific humidity values, along with a visualization of its global effect.
   - For example, let's derive the change in average bikes being used at a humidity that is $0.2$ above average, versus average humidity.
@@ -543,7 +543,7 @@ W2 <- C %*% beta %*% solve(C %*% Sigma %*% t(C)) %*% t(beta) %*% t(C)
 W2
 # note this being equal to
 W^2
-pval <- 1-pchisq(W, df=1)
+pval <- 1-pchisq(W2, df=1)
 pval
 
 # finally, we can also read the Wald test result from the summary of the model
@@ -576,7 +576,7 @@ anova(mReduced, mFull, test = "Chisq") # note test statistic is identical
 
  - In linear models, we often use residuals $e_i = y_i - \hat{\mu}_i$ to check model assumptions (linearity, homoscedasticity). However, in a GLM setting, we know that the variance of our residuals will depend on the mean, i.e., $Var(\epsilon_i) = f(\mu_i)$. Using ordinary residuals such as $e_i$ therefore is no longer appropriate.
  - We have seen that the objective function that is used to fit a GLM is the log-likelihood of the data under the posited model. For example, the log likelihood of a Poisson GLM with response variable $\mathbf{Y}$, with elements $Y_i, i \in \{1, \ldots, n\}$ and model matrix $\mathbf{X}$ is
- $$ \ell(\mathbf{Y};  \beta) = \log \prod_{i=1}^n \left( \frac{\exp (\mathbf{X}_i^T \beta)^{Y_i} \exp( - \exp(\mathbf{X}_i^T \beta))}{Y_i!} \right) = \sum_{i=1}^n \log \left( \frac{\exp(\mathbf{X}_i^T \beta)^{Y_i} \exp( - \exp(\mathbf{X}_i^T \beta))}{Y_i!} \right) \\ = \sum_{i=1}^n Y_i (\mathbf{X}_i^T \beta) + \exp(\mathbf{X}_i^T \beta)  - \log Y_i!. $$
+ $$ \ell(\mathbf{Y};  \beta) = \log \prod_{i=1}^n \left( \frac{\exp (\mathbf{X}_i^T \beta)^{Y_i} \exp( - \exp(\mathbf{X}_i^T \beta))}{Y_i!} \right) = \sum_{i=1}^n \log \left( \frac{\exp(\mathbf{X}_i^T \beta)^{Y_i} \exp( - \exp(\mathbf{X}_i^T \beta))}{Y_i!} \right) \\ = \sum_{i=1}^n Y_i (\mathbf{X}_i^T \beta) - \exp(\mathbf{X}_i^T \beta)  - \log Y_i!. $$
  The estimates $\hat{\beta}$ are then found by maximizing $\ell(\beta | \mathbf{Y}, \mathbf{X} )$ with respect to $\beta$. This is analogous to maximizing a Gaussian likelihood in the linear model setting.
  - A goodness-of-fit measure used in the GLM setting is the **residual deviance** $D$ (sometimes referred to simply as 'deviance'), that is twice the difference in log-likelihood between a 'saturated model' and the current model. Here, a saturated model, is a model where we fit one parameter per data point and therefore fit the data perfectly, in other words $\hat{\mu}_i = y_i$. This is,
  $$ D = 2 * \left\{ \ell(\mathbf{Y};  \beta | \hat{\mu}_i = y_i) - \ell(\mathbf{Y};  \beta | \hat{\mu}_i = \exp(\mathbf{X}_i^T \beta)) \right\}.$$
@@ -616,7 +616,7 @@ anova(mReduced, mFull, test = "Chisq") # note test statistic is identical
  - Above we have always assumed that the Poisson distribution is valid for the dataset we have been using. However, we never checked for this.
  - As a matter of fact, it often happens that the variance=mean assumption is too stringent for count data. If the variance is larger than the mean, this is referred to as **overdispersion**. Though much less common, underdispersion happens when the variance is smaller than the mean.
  - We can use Pearson residuals to measure overdispersion using the following argument. The Poisson GLM implies that
- $$ Y_i | X_i, \hat{\beta} \sim Poi(\hat{\mu}_i),$$
+ $$ Y_i | X, \hat{\beta} \sim Poi(\hat{\mu}_i),$$
  with $\hat{\mu}_i = \exp (\mathbf{X}_i^T \hat{\beta})$. This implies
  $$ Var(Y_i | X, \hat{\beta}) = \hat{\mu}_i.$$
  Since the variance is unaffected by addition we may also write
