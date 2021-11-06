@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021) (preloaded format=xelatex 2021.11.3)  4 NOV 2021 19:29
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021) (preloaded format=xelatex 2021.11.4)  6 NOV 2021 22:17
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -787,7 +787,7 @@ Overfull \hbox (32.86406pt too wide) in paragraph at lines 1267--1267
 LaTeX Warning: Float too large for page by 0.01822pt on input line 1267.
 
 [26] [27] [28] [29]
-Overfull \hbox (125.54485pt too wide) detected at line 1462
+Overfull \hbox (125.54485pt too wide) detected at line 1463
 [][][][] [][] [] [] [] [] [] [] [] [] []  [] [] [][][][][][][] [] [][][][][][] [] [] [][][][]
  []
 
@@ -798,7 +798,7 @@ Missing character: There is no 𝜇 (U+1D707) in font [lmroman10-bold]:mapping=t
 Missing character: There is no 𝜇 (U+1D707) in font [lmroman10-bold]:mapping=tex-text;!
 Missing character: There is no 𝜇 (U+1D707) in font [lmroman10-bold]:mapping=tex-text;!
 [30]
-Underfull \hbox (badness 10000) in paragraph at lines 1522--1533
+Underfull \hbox (badness 10000) in paragraph at lines 1523--1534
 
  []
 
