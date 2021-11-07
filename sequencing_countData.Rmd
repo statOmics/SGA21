@@ -588,7 +588,7 @@ anova(mReduced, mFull, test = "Chisq") # note test statistic is identical
  ---
  
  - Another type of residuals commonly used in a GLM setting are **Pearson residuals**. A Pearson residual is defined as
- $$ e_i = \frac{y_i - \hat{\mu}_i}{\sqrt{Var(\hat{\mu}_i)}},$$
+ $$ e_i = \frac{y_i - E(y_i)}{\sqrt{Var(y_i)}},$$
  and we can see that it has the form of a regular residual such as used in liner models (numerator), but normalized according to the variance of the estimated mean (denominator), to correct for the mean-variance relationship.
  
  ---
@@ -599,7 +599,7 @@ anova(mReduced, mFull, test = "Chisq") # note test statistic is identical
  $H_1$: The current model fits significantly worse than a saturated model.  
  - The residual deviance immediately tests this hypothesis using a likelihood ratio test and is therefore a useful goodness-of-fit measure.
  - Another measure of discrepancy is the generalized Pearson $\chi^2$ statistic
- $$ X^2 = \sum_{i=1}^n \frac{(y_i - \hat{\mu}_i)^2}{Var(\hat{\mu}_i)} = \sum_{i=1}^n e_i^2,$$
+ $$ X^2 = \sum_{i=1}^n \frac{(y_i - \hat{\mu}_i)^2}{Var(y_i)} = \sum_{i=1}^n e_i^2,$$
  with $e_i$ the Pearson residual of observation $i$. 
   - Asymptotic theory shows that both the residual deviance $D \sim \chi^2_{n-p} | H_0$ and $X^2 \sim \chi^2_{n-p} | H_0$, with $n$ the number of observations in our dataset (and, hence, the number of parameters fitted in our saturated model), and $p$ the number of parameters fitted in our current model.
  
@@ -622,8 +622,8 @@ anova(mReduced, mFull, test = "Chisq") # note test statistic is identical
  Since the variance is unaffected by addition we may also write
  $$ Var(Y_i - \hat{\mu}_i | X, \hat{\beta}) = \hat{\mu}_i.$$
  Which is also equal to
- $$ Var\left(\frac{Y_i - \hat{\mu}_i}{\sqrt{Var(\hat{\mu}_i)}} | X, \hat{\beta} \right) = \frac{\hat{\mu}_i}{Var(\hat{\mu}_i)}.$$
- Since we know from the Poisson distribution that $Var(\hat{\mu}_i) = \hat{\mu}_i$, we have that 
+ $$ Var\left(\frac{Y_i - \hat{\mu}_i}{\sqrt{Var(Y_i)}} | X, \hat{\beta} \right) = \frac{\hat{\mu}_i}{Var(Y_i)}.$$
+ Since we know from the Poisson distribution that $Var(Y_i) = \hat{\mu}_i$, we have that 
  $$ Var \left(\frac{Y_i - \hat{\mu}_i}{\sqrt{\hat{\mu}_i}} | X, \hat{\beta} \right) = \frac{\hat{\mu}_i}{\hat{\mu}_i}.$$
  Note that the formulation within the variance at left-hand side of the equation is our definition of Pearson residuals $E_i$. Thus, if the Poisson assumption holds, we can write
  $$ Var(E_i | X, \hat{\beta}) = 1,$$
