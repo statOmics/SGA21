@@ -164,7 +164,7 @@ where $\mathbf{X}$ now represents our $n \times p$ design matrix, with row $i$ c
   \end{array}
   \right.
   $$
-where $Y_i$ is the response variable, with mean $\mu_i$, $\eta_i$ is the linear predictor, $\mathbf{X}$ is the $n \times p$ model matrix and $\beta$ is the $p \times 1$ matrix of regression coefficients.
+where $Y_i$ is the response variable, with mean $\mu_i$, $\eta_i$ is the linear predictor, $\mathbf{X}$ is the $n \times p$ model matrix and $\beta$ is the $p \times 1$ matrix of regression coefficients, where $n$ is the number of data points and $p$ the total number of parameters to be estimated.
   - It is insightful to compare this model to a linear model where $Y_i$ is log-transformed. Indeed, in the linear model case, we would be modeling $E(\log Y_i )$, while in the GLM we are modeling $\log E(Y_i)$.
   - This shows that in the GLM setting we are modeling a transformed version of the expected value, and after retransforming we can interpret the fit in terms of the mean of our response variable. In the transformed linear model, however, we are working with the expected value of a transformed version of our response variable, and we will not be able to interpret the fit in terms of the mean, because $E( \log Y_i) \ne \log E(Y_i)$. In this specific case, we would have to resort to interpreting changes in terms of a geometric mean.
   - Also note that $\mathbf{X}^T_i \beta \in ]-\infty, \infty[$, while $Y_i$ must be non-negative $[0, \infty[$. The link function helps with this, since the exponential function transforms any real number to a non-negative number, i.e., $\exp(\mathbf{X}^T_i \beta) \in [0, \infty[$. 
@@ -589,7 +589,7 @@ anova(mReduced, mFull, test = "Chisq") # note test statistic is identical
  
  - Another type of residuals commonly used in a GLM setting are **Pearson residuals**. A Pearson residual is defined as
  $$ e_i = \frac{y_i - E(y_i)}{\sqrt{Var(y_i)}},$$
- and we can see that it has the form of a regular residual such as used in liner models (numerator), but normalized according to the variance of the estimated mean (denominator), to correct for the mean-variance relationship.
+ and we can see that it has the form of a regular residual such as used in liner models (numerator), but normalized according to the variance of the observed response (denominator), to correct for the mean-variance relationship.
  
  ---
  
