@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021) (preloaded format=xelatex 2021.11.4)  7 NOV 2021 21:40
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021) (preloaded format=xelatex 2021.11.4)  8 NOV 2021 08:15
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -771,7 +771,7 @@ Missing character: There is no 𝛽 (U+1D6FD) in font [lmroman10-bold]:mapping=t
 File: sequencing_countData_files/figure-latex/unnamed-chunk-8-1.pdf Graphic file (type pdf)
 <use sequencing_countData_files/figure-latex/unnamed-chunk-8-1.pdf>
 [22]
-Overfull \hbox (494.79375pt too wide) detected at line 1051
+Overfull \hbox (494.79375pt too wide) detected at line 1052
 [] [][] [] [][] [] [][][][] [] [][][][] [] [][][][] [] [][][][] [] [][][][][]  [] [][][][][] [] [][][][][] [] [][][][][] [] [][][][][] [] [][][][][] [] [][][][][][] [] [][][][][] [] [][][][][][] [] [][][][][] [] [][][][][][][]  [] [][] [] [][] [] [][][][] [] [][][][][] [] [][][][][] [] [][][][][][][] [] [] [][][][][][][] [] [][][][][][] [] [][][][][][]
  []
 
@@ -779,15 +779,15 @@ Overfull \hbox (494.79375pt too wide) detected at line 1051
 File: ./images_sequencing/likTests.pdf Graphic file (type pdf)
 <use ./images_sequencing/likTests.pdf>
 
-Overfull \hbox (32.86406pt too wide) in paragraph at lines 1267--1267
+Overfull \hbox (32.86406pt too wide) in paragraph at lines 1268--1268
 [][] 
  []
 
 
-LaTeX Warning: Float too large for page by 0.01822pt on input line 1267.
+LaTeX Warning: Float too large for page by 0.01822pt on input line 1268.
 
 [26] [27] [28] [29]
-Overfull \hbox (125.54485pt too wide) detected at line 1463
+Overfull \hbox (125.54485pt too wide) detected at line 1464
 [][][][] [][] [] [] [] [] [] [] [] [] []  [] [] [][][][][][][] [] [][][][][][] [] [] [][][][]
  []
 
@@ -798,7 +798,7 @@ Missing character: There is no 𝜇 (U+1D707) in font [lmroman10-bold]:mapping=t
 Missing character: There is no 𝜇 (U+1D707) in font [lmroman10-bold]:mapping=tex-text;!
 Missing character: There is no 𝜇 (U+1D707) in font [lmroman10-bold]:mapping=tex-text;!
 [30]
-Underfull \hbox (badness 10000) in paragraph at lines 1522--1533
+Underfull \hbox (badness 10000) in paragraph at lines 1523--1534
 
  []
 
