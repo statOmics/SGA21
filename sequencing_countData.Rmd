@@ -599,7 +599,7 @@ anova(mReduced, mFull, test = "Chisq") # note test statistic is identical
  $H_1$: The current model fits significantly worse than a saturated model.  
  - The residual deviance immediately tests this hypothesis using a likelihood ratio test and is therefore a useful goodness-of-fit measure.
  - Another measure of discrepancy is the generalized Pearson $\chi^2$ statistic
- $$ X^2 = \sum_{i=1}^n \frac{(y_i - \hat{\mu}_i)^2}{Var(y_i)} = \sum_{i=1}^n e_i^2,$$
+ $$ X^2 = \sum_{i=1}^n \frac{(y_i - \hat{\mu}_i)^2}{\sqrt{Var(y_i)}} = \sum_{i=1}^n e_i^2,$$
  with $e_i$ the Pearson residual of observation $i$. 
   - Asymptotic theory shows that both the residual deviance $D \sim \chi^2_{n-p} | H_0$ and $X^2 \sim \chi^2_{n-p} | H_0$, with $n$ the number of observations in our dataset (and, hence, the number of parameters fitted in our saturated model), and $p$ the number of parameters fitted in our current model.
  
