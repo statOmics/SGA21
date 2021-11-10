@@ -454,14 +454,10 @@ exp(t(L) %*% beta) # equals our manual calculation.
 # set up data frames with relevant predictor variables' values.
 dfA <- data.frame(weathersit = factor("light rain/snow"),
                     hr = factor(17),
-                    humc = 0.357,
-                    "I(humc^2)" = 0.357^2,
-                    "I(humc^3)" = 0.357^3)
+                    humc = 0.357)
 dfB <- data.frame(weathersit = factor("clear"),
                     hr = factor(8),
-                    humc = 0,
-                    "I(humc^2)" = 0,
-                    "I(humc^3)" = 0)
+                    humc = 0)
 
 # calculate estimated average number of bikers
 yhatA <- predict(m, 
@@ -583,7 +579,7 @@ anova(mReduced, mFull, test = "Chisq") # note test statistic is identical
  - From the equation above it becomes clear that the residual deviance is actually a ratio in log-likelihoods and therefore a likelihood ratio test statistic!
  - A low residual deviance can thus be interpreted as a model that is fitting the data well, since your current model will be close in log-likelihood to the saturated model. The deviance is a very useful statistic that is also important in statistical inference and model selection, e.g., for testing if a smaller model fits significantly worse than a larger model.
  - Finally, a **deviance residual** $D_i$ can then be defined as the square root of the contribution of the $i$th datum to the residual deviance
- $$ D_i = \sqrt{ 2* \left\{ \ell(Y_i;  \beta | \hat{\mu}_i = y_i) - \ell(Y_i;  \beta | \hat{\mu}_i = \exp(\mathbf{X}_i^T \beta)) \right\} } $$
+ $$ D_i = sign(Y_i - \exp(\mathbf{X}_i^T \beta)) \sqrt{ 2* \left\{ \ell(Y_i;  \beta | \hat{\mu}_i = y_i) - \ell(Y_i;  \beta | \hat{\mu}_i = \exp(\mathbf{X}_i^T \beta)) \right\} } $$
  
  ---
  

@@ -1,0 +1,201 @@
+---
+title: 'Sequencing: GLM for gene expression'
+author: "Koen Van den Berge"
+date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  pdf_document:
+    toc: true
+    number_sections: true
+    latex_engine: xelatex
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r functions, include=FALSE}
+# A function for captioning and referencing images
+fig <- local({
+    i <- 0
+    ref <- list()
+    list(
+        cap=function(refName, text) {
+            i <<- i + 1
+            ref[[refName]] <<- i
+            paste("Figure ", i, ": ", text, sep="")
+        },
+        ref=function(refName) {
+            ref[[refName]]
+        })
+})
+``` 
+
+```{r, echo=FALSE, message=FALSE, eval=TRUE}
+suppressPackageStartupMessages({
+  library(knitr)
+  library(rmarkdown)
+  library(ggplot2)
+})
+```
+
+
+```{r}
+suppressPackageStartupMessages(library(SummarizedExperiment))
+se <- readRDS("data/seParathyroid.rds")
+```
+
+
+```{r}
+## extract data from one gene
+y <- assays(se)$counts[5,]
+
+## extract covariates for each sample
+treatment <- colData(se)$treatment
+table(treatment)
+time <- colData(se)$time
+table(time)
+patient <- colData(se)$patient
+table(patient)
+
+table(patient, treatment, time)
+
+boxplot((y/colSums(assays(se)$counts)) ~ interaction(treatment, time))
+## dotplot for each treatment, matching patient samples
+df <- data.frame(y=y,
+                 treatment=treatment,
+                 time=time,
+                 patient=patient)
+ggplot(df, aes(x=time, y=y)) +
+  geom_point() +
+  geom_line(aes(group = patient)) + 
+  facet_grid(.~treatment) +
+  theme_classic()
+```
+
+
+# Poisson GLM
+
+```{r}
+m <- glm(y ~ treatment*time + patient,
+         family = "poisson")
+plot(m) # Extra-Poisson variation?
+```
+
+## Check overdispersion
+
+```{r}
+ePearson <- resid(m, type="pearson")
+n <- length(y)
+p <- length(coef(m))
+sum(ePearson^2) / (n-p) # huge overdispersion.
+```
+
+# Negative binomial model
+
+```{r}
+library(MASS)
+mNB <- glm.nb(y ~ treatment*time + patient)
+plot(mNB)
+summary(mNB)
+```
+
+
+## Statistical inference
+
+We will test seven different contrasts.
+
+```{r}
+L <- matrix(0, nrow = length(coef(mNB)), ncol = 7)
+rownames(L) <- names(coef(mNB))
+colnames(L) <- c("DPNvsCON24", "DPNvsCON48",
+                 "OHTvsCON24", "OHTvsCON48",
+                 "DPNvsCONInt", "OHTvsCONInt",
+                 "OHTvsDPNInt")
+# DPN vs control at 24h
+L[2,"DPNvsCON24"] <- 1
+# DPN vs control at 48h
+L[c(2,8),"DPNvsCON48"] <- 1
+# OHT vs control at 24h
+L[3,"OHTvsCON24"] <- 1
+# OHT vs control at 48h
+L[c(3,9),"OHTvsCON48"] <- 1
+# DPN control interaction
+L[8,"DPNvsCONInt"] <- 1
+# OHT control interaction
+L[9,"OHTvsCONInt"] <- 1
+# OHT DPN interaction
+L[c(9,8),"OHTvsDPNInt"] <- c(1, -1)
+
+L
+```
+
+
+### Wald test
+
+```{r}
+beta <- matrix(coef(mNB), ncol = 1)
+waldStats <- c()
+for(ll in 1:ncol(L)){
+  curL <- L[,ll,drop=FALSE]
+  curWald <- t(curL) %*% beta %*% solve(t(curL) %*% vcov(mNB) %*% curL) %*% t(beta) %*% curL
+  waldStats[ll] <- curWald
+}
+
+waldStats
+
+pvalues <- 1-pchisq(waldStats, df=1)
+pvalues
+```
+
+
+### Likelihood ratio test
+
+Implementing these contrasts using a likelihood ratio test is possible, but is not trivial.
+It would require a reparameterization of our model using the contrasts of interest. In this reparameterization, one variable may correspond to one contrast. We may then compare a full to an alternative model, dropping this variable, using a likelihood ratio test.
+While it is important to know that this is possible, we will not implement the reparameterization ourselves as it is considered outside the scope of this course.
+
+# Residuals
+
+## Deviance residuals
+
+```{r}
+## residual deviance
+sum(2*(dnbinom(x=y, mu=y, size=mNB$theta, log=TRUE) - dnbinom(x=y, mu=fitted(mNB), size=mNB$theta, log=TRUE)))
+
+## deviance residual
+devResid <- sign(y-fitted(mNB)) * sqrt(2*(dnbinom(x=y, mu=y, size=mNB$theta, log=TRUE) - 
+                      dnbinom(x=y, mu=fitted(mNB), size=mNB$theta, log=TRUE)))
+
+range(devResid - resid(mNB, type="deviance"))
+plot(devResid, resid(mNB, type="deviance")) ; abline(0,1, col="red")
+
+```
+
+## Pearson residuals
+
+```{r}
+pearsResid <- (y - fitted(mNB)) / sqrt(fitted(mNB) + 1/mNB$theta * fitted(mNB)^2)
+range(pearsResid - resid(mNB, type="pearson"))
+plot(x=pearsResid, y=resid(mNB, type="pearson")) ; abline(0,1, col="red")
+```
+
+
+## Goodness-of-fit
+
+```{r}
+X2 <- sum(pearsResid^2)
+1-pchisq(X2, df=length(y) - length(coef(mNB)))
+```
+
+# Re-analysis upon basic normalization
+
+A very simple normalization would use an offset to account for sequencing depth.
+Verify if our hypothesis test results remain upon using this basic normalization.
+
+```{r}
+seqDepth <- colSums(assays(se)$counts)
+```
+
+## Statistical inference
+
+.... 
+
