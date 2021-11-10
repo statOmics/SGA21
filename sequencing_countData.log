@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021) (preloaded format=xelatex 2021.11.4)  8 NOV 2021 08:17
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021) (preloaded format=xelatex 2021.11.8)  10 NOV 2021 14:30
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -779,15 +779,15 @@ Overfull \hbox (494.79375pt too wide) detected at line 1052
 File: ./images_sequencing/likTests.pdf Graphic file (type pdf)
 <use ./images_sequencing/likTests.pdf>
 
-Overfull \hbox (32.86406pt too wide) in paragraph at lines 1268--1268
+Overfull \hbox (32.86406pt too wide) in paragraph at lines 1264--1264
 [][] 
  []
 
 
-LaTeX Warning: Float too large for page by 0.01822pt on input line 1268.
+LaTeX Warning: Float too large for page by 0.01822pt on input line 1264.
 
 [26] [27] [28] [29]
-Overfull \hbox (125.54485pt too wide) detected at line 1464
+Overfull \hbox (125.54485pt too wide) detected at line 1460
 [][][][] [][] [] [] [] [] [] [] [] [] []  [] [] [][][][][][][] [] [][][][][][] [] [] [][][][]
  []
 
@@ -797,12 +797,12 @@ Missing character: There is no 𝜇 (U+1D707) in font [lmroman10-bold]:mapping=t
 Missing character: There is no 𝜇 (U+1D707) in font [lmroman10-bold]:mapping=tex-text;!
 Missing character: There is no 𝜇 (U+1D707) in font [lmroman10-bold]:mapping=tex-text;!
 Missing character: There is no 𝜇 (U+1D707) in font [lmroman10-bold]:mapping=tex-text;!
-[30]
-Underfull \hbox (badness 10000) in paragraph at lines 1523--1534
+
+Underfull \hbox (badness 10000) in paragraph at lines 1519--1530
 
  []
 
-[31] [32] [33] [34]
+[30] [31] [32] [33] [34]
 File: ./images_sequencing/xkcd-1725-linear_regression_2x.png Graphic file (type bmp)
 <./images_sequencing/xkcd-1725-linear_regression_2x.png>
 [35] [36] (./sequencing_countData.aux)

@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Koen Van den Berge" />
+
+
+<title>Sequencing: GLM for gene expression</title>
+
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<script src="site_libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+<style type="text/css">
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SGA21</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-chalkboard-teacher"></span>
+     
+    Lectures
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="./docs/intro.pdf">1.1 Position</a>
+    </li>
+    <li>
+      <a href="recapGeneralLinearModel.html">1.2 Recap linear model</a>
+    </li>
+    <li>
+      <a href="./docs/martens_proteomics_bioinformatics.pdf">2.1 PDA - identification</a>
+    </li>
+    <li>
+      <a href="pda_quantification_preprocessing.html">2.2 PDA- Quantification - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_robustSummarisation_peptideModels.html">2.2 PDA - Wrap-up Preprocessing - Peptide-Level-Models</a>
+    </li>
+    <li>
+      <a href="pda_quantification_inference.html">2.3 PDA - Quantification - Differential Abundance Analysis</a>
+    </li>
+    <li>
+      <a href="pda_blocking_wrapup.html">2.3 PDA - Wrap-up DA - Blocking</a>
+    </li>
+    <li>
+      <a href="technicalDetailsProteomics.html">2.4. PDA - DA Technical Details</a>
+    </li>
+    <li>
+      <a href="./docs/stagewiseTesting.pdf">2.5 PDA - Stage-wise testing</a>
+    </li>
+    <li>
+      <a href="sequencing_intro.html">3.1 SDA - Intro to sequencing</a>
+    </li>
+    <li>
+      <a href="sequencing_countData.html">3.2 SDA - Working with count data</a>
+    </li>
+    <li>
+      <a href="sequencing_rnaseqIntro.html">3.3 SDA - Intro to RNA-seq analysis</a>
+    </li>
+    <li>
+      <a href="sequencing_technicalDE.html">3.4 SDA - Technical topics in DE analysis</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-laptop"></span>
+     
+    tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="multipleRegression_KPNA2.html">1 Intro KPNA2</a>
+    </li>
+    <li>
+      <a href="https://www.compomics.com/bioinformatics-for-proteomics/">2.1 Identification</a>
+    </li>
+    <li>
+      <a href="pda_tutorialPreprocessing.html">2.2 DA - Preprocessing</a>
+    </li>
+    <li>
+      <a href="pda_tutorialDesign.html">2.3 DA - Design</a>
+    </li>
+    <li>
+      <a href="sequencing_preprocessing.sh">3.1 Preprocessing</a>
+    </li>
+    <li>
+      <a href="sequencing_lab_oneGene.html">3.2 GLM for one gene</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Sequencing: GLM for gene expression</h1>
+<h4 class="author">Koen Van den Berge</h4>
+<h4 class="date">Last compiled on 10 November, 2021</h4>
+
+</div>
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">suppressPackageStartupMessages</span>(<span class="kw">library</span>(SummarizedExperiment))</span>
+<span id="cb1-2"><a href="#cb1-2"></a>se &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="st">&quot;data/seParathyroid.rds&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">## extract data from one gene</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>y &lt;-<span class="st"> </span><span class="kw">assays</span>(se)<span class="op">$</span>counts[<span class="dv">5</span>,]</span>
+<span id="cb2-3"><a href="#cb2-3"></a></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="co">## extract covariates for each sample</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>treatment &lt;-<span class="st"> </span><span class="kw">colData</span>(se)<span class="op">$</span>treatment</span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="kw">table</span>(treatment)</span></code></pre></div>
+<pre><code>## treatment
+## Control     DPN     OHT 
+##       7       8       8</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>time &lt;-<span class="st"> </span><span class="kw">colData</span>(se)<span class="op">$</span>time</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="kw">table</span>(time)</span></code></pre></div>
+<pre><code>## time
+## 24h 48h 
+##  11  12</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>patient &lt;-<span class="st"> </span><span class="kw">colData</span>(se)<span class="op">$</span>patient</span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">table</span>(patient)</span></code></pre></div>
+<pre><code>## patient
+## 1 2 3 4 
+## 6 6 6 5</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">table</span>(patient, treatment, time)</span></code></pre></div>
+<pre><code>## , , time = 24h
+## 
+##        treatment
+## patient Control DPN OHT
+##       1       1   1   1
+##       2       1   1   1
+##       3       1   1   1
+##       4       0   1   1
+## 
+## , , time = 48h
+## 
+##        treatment
+## patient Control DPN OHT
+##       1       1   1   1
+##       2       1   1   1
+##       3       1   1   1
+##       4       1   1   1</code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">boxplot</span>((y<span class="op">/</span><span class="kw">colSums</span>(<span class="kw">assays</span>(se)<span class="op">$</span>counts)) <span class="op">~</span><span class="st"> </span><span class="kw">interaction</span>(treatment, time))</span></code></pre></div>
+<p><img src="sequencing_lab_oneGene_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="co">## dotplot for each treatment, matching patient samples</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a>df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">y=</span>y,</span>
+<span id="cb11-3"><a href="#cb11-3"></a>                 <span class="dt">treatment=</span>treatment,</span>
+<span id="cb11-4"><a href="#cb11-4"></a>                 <span class="dt">time=</span>time,</span>
+<span id="cb11-5"><a href="#cb11-5"></a>                 <span class="dt">patient=</span>patient)</span>
+<span id="cb11-6"><a href="#cb11-6"></a><span class="kw">ggplot</span>(df, <span class="kw">aes</span>(<span class="dt">x=</span>time, <span class="dt">y=</span>y)) <span class="op">+</span></span>
+<span id="cb11-7"><a href="#cb11-7"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
+<span id="cb11-8"><a href="#cb11-8"></a><span class="st">  </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">group =</span> patient)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb11-9"><a href="#cb11-9"></a><span class="st">  </span><span class="kw">facet_grid</span>(.<span class="op">~</span>treatment) <span class="op">+</span></span>
+<span id="cb11-10"><a href="#cb11-10"></a><span class="st">  </span><span class="kw">theme_classic</span>()</span></code></pre></div>
+<p><img src="sequencing_lab_oneGene_files/figure-html/unnamed-chunk-3-2.png" width="672" /></p>
+<div id="poisson-glm" class="section level1">
+<h1><span class="header-section-number">1</span> Poisson GLM</h1>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>m &lt;-<span class="st"> </span><span class="kw">glm</span>(y <span class="op">~</span><span class="st"> </span>treatment<span class="op">*</span>time <span class="op">+</span><span class="st"> </span>patient,</span>
+<span id="cb12-2"><a href="#cb12-2"></a>         <span class="dt">family =</span> <span class="st">&quot;poisson&quot;</span>)</span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="kw">plot</span>(m) <span class="co"># Extra-Poisson variation?</span></span></code></pre></div>
+<p><img src="sequencing_lab_oneGene_files/figure-html/unnamed-chunk-4-1.png" width="672" /><img src="sequencing_lab_oneGene_files/figure-html/unnamed-chunk-4-2.png" width="672" /><img src="sequencing_lab_oneGene_files/figure-html/unnamed-chunk-4-3.png" width="672" /><img src="sequencing_lab_oneGene_files/figure-html/unnamed-chunk-4-4.png" width="672" /></p>
+<div id="check-overdispersion" class="section level2">
+<h2><span class="header-section-number">1.1</span> Check overdispersion</h2>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>ePearson &lt;-<span class="st"> </span><span class="kw">resid</span>(m, <span class="dt">type=</span><span class="st">&quot;pearson&quot;</span>)</span>
+<span id="cb13-2"><a href="#cb13-2"></a>n &lt;-<span class="st"> </span><span class="kw">length</span>(y)</span>
+<span id="cb13-3"><a href="#cb13-3"></a>p &lt;-<span class="st"> </span><span class="kw">length</span>(<span class="kw">coef</span>(m))</span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="kw">sum</span>(ePearson<span class="op">^</span><span class="dv">2</span>) <span class="op">/</span><span class="st"> </span>(n<span class="op">-</span>p) <span class="co"># huge overdispersion.</span></span></code></pre></div>
+<pre><code>## [1] 115.2631</code></pre>
+</div>
+</div>
+<div id="negative-binomial-model" class="section level1">
+<h1><span class="header-section-number">2</span> Negative binomial model</h1>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="kw">library</span>(MASS)</span>
+<span id="cb15-2"><a href="#cb15-2"></a>mNB &lt;-<span class="st"> </span><span class="kw">glm.nb</span>(y <span class="op">~</span><span class="st"> </span>treatment<span class="op">*</span>time <span class="op">+</span><span class="st"> </span>patient)</span>
+<span id="cb15-3"><a href="#cb15-3"></a><span class="kw">plot</span>(mNB)</span></code></pre></div>
+<p><img src="sequencing_lab_oneGene_files/figure-html/unnamed-chunk-6-1.png" width="672" /><img src="sequencing_lab_oneGene_files/figure-html/unnamed-chunk-6-2.png" width="672" /><img src="sequencing_lab_oneGene_files/figure-html/unnamed-chunk-6-3.png" width="672" /><img src="sequencing_lab_oneGene_files/figure-html/unnamed-chunk-6-4.png" width="672" /></p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="kw">summary</span>(mNB)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## glm.nb(formula = y ~ treatment * time + patient, init.theta = 5.797944761, 
+##     link = log)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.7692  -0.8726  -0.2641   0.8303   1.5579  
+## 
+## Coefficients:
+##                       Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)           5.622089   0.279514  20.114  &lt; 2e-16 ***
+## treatmentDPN          0.415319   0.324036   1.282 0.199945    
+## treatmentOHT          0.620294   0.323896   1.915 0.055479 .  
+## time48h              -0.854023   0.325959  -2.620 0.008792 ** 
+## patient2              0.882139   0.241916   3.646 0.000266 ***
+## patient3              0.038663   0.242737   0.159 0.873450    
+## patient4              0.008082   0.258521   0.031 0.975059    
+## treatmentDPN:time48h  0.162526   0.440457   0.369 0.712132    
+## treatmentOHT:time48h -0.124510   0.440453  -0.283 0.777417    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for Negative Binomial(5.7979) family taken to be 1)
+## 
+##     Null deviance: 90.709  on 22  degrees of freedom
+## Residual deviance: 23.560  on 14  degrees of freedom
+## AIC: 308.63
+## 
+## Number of Fisher Scoring iterations: 1
+## 
+## 
+##               Theta:  5.80 
+##           Std. Err.:  1.69 
+## 
+##  2 x log-likelihood:  -288.632</code></pre>
+<div id="statistical-inference" class="section level2">
+<h2><span class="header-section-number">2.1</span> Statistical inference</h2>
+<p>We will test seven different contrasts.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>L &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, <span class="dt">nrow =</span> <span class="kw">length</span>(<span class="kw">coef</span>(mNB)), <span class="dt">ncol =</span> <span class="dv">7</span>)</span>
+<span id="cb18-2"><a href="#cb18-2"></a><span class="kw">rownames</span>(L) &lt;-<span class="st"> </span><span class="kw">names</span>(<span class="kw">coef</span>(mNB))</span>
+<span id="cb18-3"><a href="#cb18-3"></a><span class="kw">colnames</span>(L) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;DPNvsCON24&quot;</span>, <span class="st">&quot;DPNvsCON48&quot;</span>,</span>
+<span id="cb18-4"><a href="#cb18-4"></a>                 <span class="st">&quot;OHTvsCON24&quot;</span>, <span class="st">&quot;OHTvsCON48&quot;</span>,</span>
+<span id="cb18-5"><a href="#cb18-5"></a>                 <span class="st">&quot;DPNvsCONInt&quot;</span>, <span class="st">&quot;OHTvsCONInt&quot;</span>,</span>
+<span id="cb18-6"><a href="#cb18-6"></a>                 <span class="st">&quot;OHTvsDPNInt&quot;</span>)</span>
+<span id="cb18-7"><a href="#cb18-7"></a><span class="co"># DPN vs control at 24h</span></span>
+<span id="cb18-8"><a href="#cb18-8"></a>L[<span class="dv">2</span>,<span class="st">&quot;DPNvsCON24&quot;</span>] &lt;-<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb18-9"><a href="#cb18-9"></a><span class="co"># DPN vs control at 48h</span></span>
+<span id="cb18-10"><a href="#cb18-10"></a>L[<span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">8</span>),<span class="st">&quot;DPNvsCON48&quot;</span>] &lt;-<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb18-11"><a href="#cb18-11"></a><span class="co"># OHT vs control at 24h</span></span>
+<span id="cb18-12"><a href="#cb18-12"></a>L[<span class="dv">3</span>,<span class="st">&quot;OHTvsCON24&quot;</span>] &lt;-<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb18-13"><a href="#cb18-13"></a><span class="co"># OHT vs control at 48h</span></span>
+<span id="cb18-14"><a href="#cb18-14"></a>L[<span class="kw">c</span>(<span class="dv">3</span>,<span class="dv">9</span>),<span class="st">&quot;OHTvsCON48&quot;</span>] &lt;-<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb18-15"><a href="#cb18-15"></a><span class="co"># DPN control interaction</span></span>
+<span id="cb18-16"><a href="#cb18-16"></a>L[<span class="dv">8</span>,<span class="st">&quot;DPNvsCONInt&quot;</span>] &lt;-<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb18-17"><a href="#cb18-17"></a><span class="co"># OHT control interaction</span></span>
+<span id="cb18-18"><a href="#cb18-18"></a>L[<span class="dv">9</span>,<span class="st">&quot;OHTvsCONInt&quot;</span>] &lt;-<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb18-19"><a href="#cb18-19"></a><span class="co"># OHT DPN interaction</span></span>
+<span id="cb18-20"><a href="#cb18-20"></a>L[<span class="kw">c</span>(<span class="dv">9</span>,<span class="dv">8</span>),<span class="st">&quot;OHTvsDPNInt&quot;</span>] &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">-1</span>)</span>
+<span id="cb18-21"><a href="#cb18-21"></a></span>
+<span id="cb18-22"><a href="#cb18-22"></a>L</span></code></pre></div>
+<pre><code>##                      DPNvsCON24 DPNvsCON48 OHTvsCON24 OHTvsCON48 DPNvsCONInt
+## (Intercept)                   0          0          0          0           0
+## treatmentDPN                  1          1          0          0           0
+## treatmentOHT                  0          0          1          1           0
+## time48h                       0          0          0          0           0
+## patient2                      0          0          0          0           0
+## patient3                      0          0          0          0           0
+## patient4                      0          0          0          0           0
+## treatmentDPN:time48h          0          1          0          0           1
+## treatmentOHT:time48h          0          0          0          1           0
+##                      OHTvsCONInt OHTvsDPNInt
+## (Intercept)                    0           0
+## treatmentDPN                   0           0
+## treatmentOHT                   0           0
+## time48h                        0           0
+## patient2                       0           0
+## patient3                       0           0
+## patient4                       0           0
+## treatmentDPN:time48h           0          -1
+## treatmentOHT:time48h           1           1</code></pre>
+<div id="wald-test" class="section level3">
+<h3><span class="header-section-number">2.1.1</span> Wald test</h3>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>beta &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">coef</span>(mNB), <span class="dt">ncol =</span> <span class="dv">1</span>)</span>
+<span id="cb20-2"><a href="#cb20-2"></a>waldStats &lt;-<span class="st"> </span><span class="kw">c</span>()</span>
+<span id="cb20-3"><a href="#cb20-3"></a><span class="cf">for</span>(ll <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">ncol</span>(L)){</span>
+<span id="cb20-4"><a href="#cb20-4"></a>  curL &lt;-<span class="st"> </span>L[,ll,drop=<span class="ot">FALSE</span>]</span>
+<span id="cb20-5"><a href="#cb20-5"></a>  curWald &lt;-<span class="st"> </span><span class="kw">t</span>(curL) <span class="op">%*%</span><span class="st"> </span>beta <span class="op">%*%</span><span class="st"> </span><span class="kw">solve</span>(<span class="kw">t</span>(curL) <span class="op">%*%</span><span class="st"> </span><span class="kw">vcov</span>(mNB) <span class="op">%*%</span><span class="st"> </span>curL) <span class="op">%*%</span><span class="st"> </span><span class="kw">t</span>(beta) <span class="op">%*%</span><span class="st"> </span>curL</span>
+<span id="cb20-6"><a href="#cb20-6"></a>  waldStats[ll] &lt;-<span class="st"> </span>curWald</span>
+<span id="cb20-7"><a href="#cb20-7"></a>}</span>
+<span id="cb20-8"><a href="#cb20-8"></a></span>
+<span id="cb20-9"><a href="#cb20-9"></a>waldStats</span></code></pre></div>
+<pre><code>## [1] 1.64277658 3.75083592 3.66762230 2.75849551 0.13615681 0.07991173 0.46952521</code></pre>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>pvalues &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">-</span><span class="kw">pchisq</span>(waldStats, <span class="dt">df=</span><span class="dv">1</span>)</span>
+<span id="cb22-2"><a href="#cb22-2"></a>pvalues</span></code></pre></div>
+<pre><code>## [1] 0.19994494 0.05278111 0.05547928 0.09673917 0.71213195 0.77741707 0.49320567</code></pre>
+</div>
+<div id="likelihood-ratio-test" class="section level3">
+<h3><span class="header-section-number">2.1.2</span> Likelihood ratio test</h3>
+<p>Implementing these contrasts using a likelihood ratio test is possible, but is not trivial. It would require a reparameterization of our model using the contrasts of interest. In this reparameterization, one variable may correspond to one contrast. We may then compare a full to an alternative model, dropping this variable, using a likelihood ratio test. While it is important to know that this is possible, we will not implement the reparameterization ourselves as it is considered outside the scope of this course.</p>
+</div>
+</div>
+</div>
+<div id="residuals" class="section level1">
+<h1><span class="header-section-number">3</span> Residuals</h1>
+<div id="deviance-residuals" class="section level2">
+<h2><span class="header-section-number">3.1</span> Deviance residuals</h2>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="co">## residual deviance</span></span>
+<span id="cb24-2"><a href="#cb24-2"></a><span class="kw">sum</span>(<span class="dv">2</span><span class="op">*</span>(<span class="kw">dnbinom</span>(<span class="dt">x=</span>y, <span class="dt">mu=</span>y, <span class="dt">size=</span>mNB<span class="op">$</span>theta, <span class="dt">log=</span><span class="ot">TRUE</span>) <span class="op">-</span><span class="st"> </span><span class="kw">dnbinom</span>(<span class="dt">x=</span>y, <span class="dt">mu=</span><span class="kw">fitted</span>(mNB), <span class="dt">size=</span>mNB<span class="op">$</span>theta, <span class="dt">log=</span><span class="ot">TRUE</span>)))</span></code></pre></div>
+<pre><code>## [1] 23.5601</code></pre>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="co">## deviance residual</span></span>
+<span id="cb26-2"><a href="#cb26-2"></a>devResid &lt;-<span class="st"> </span><span class="kw">sign</span>(y<span class="op">-</span><span class="kw">fitted</span>(mNB)) <span class="op">*</span><span class="st"> </span><span class="kw">sqrt</span>(<span class="dv">2</span><span class="op">*</span>(<span class="kw">dnbinom</span>(<span class="dt">x=</span>y, <span class="dt">mu=</span>y, <span class="dt">size=</span>mNB<span class="op">$</span>theta, <span class="dt">log=</span><span class="ot">TRUE</span>) <span class="op">-</span><span class="st"> </span></span>
+<span id="cb26-3"><a href="#cb26-3"></a><span class="st">                      </span><span class="kw">dnbinom</span>(<span class="dt">x=</span>y, <span class="dt">mu=</span><span class="kw">fitted</span>(mNB), <span class="dt">size=</span>mNB<span class="op">$</span>theta, <span class="dt">log=</span><span class="ot">TRUE</span>)))</span>
+<span id="cb26-4"><a href="#cb26-4"></a></span>
+<span id="cb26-5"><a href="#cb26-5"></a><span class="kw">range</span>(devResid <span class="op">-</span><span class="st"> </span><span class="kw">resid</span>(mNB, <span class="dt">type=</span><span class="st">&quot;deviance&quot;</span>))</span></code></pre></div>
+<pre><code>## [1] -8.070651e-10  9.068435e-10</code></pre>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a><span class="kw">plot</span>(devResid, <span class="kw">resid</span>(mNB, <span class="dt">type=</span><span class="st">&quot;deviance&quot;</span>)) ; <span class="kw">abline</span>(<span class="dv">0</span>,<span class="dv">1</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</span></code></pre></div>
+<p><img src="sequencing_lab_oneGene_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+</div>
+<div id="pearson-residuals" class="section level2">
+<h2><span class="header-section-number">3.2</span> Pearson residuals</h2>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a>pearsResid &lt;-<span class="st"> </span>(y <span class="op">-</span><span class="st"> </span><span class="kw">fitted</span>(mNB)) <span class="op">/</span><span class="st"> </span><span class="kw">sqrt</span>(<span class="kw">fitted</span>(mNB) <span class="op">+</span><span class="st"> </span><span class="dv">1</span><span class="op">/</span>mNB<span class="op">$</span>theta <span class="op">*</span><span class="st"> </span><span class="kw">fitted</span>(mNB)<span class="op">^</span><span class="dv">2</span>)</span>
+<span id="cb29-2"><a href="#cb29-2"></a><span class="kw">range</span>(pearsResid <span class="op">-</span><span class="st"> </span><span class="kw">resid</span>(mNB, <span class="dt">type=</span><span class="st">&quot;pearson&quot;</span>))</span></code></pre></div>
+<pre><code>## [1] -9.888568e-10  7.026788e-10</code></pre>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="kw">plot</span>(<span class="dt">x=</span>pearsResid, <span class="dt">y=</span><span class="kw">resid</span>(mNB, <span class="dt">type=</span><span class="st">&quot;pearson&quot;</span>)) ; <span class="kw">abline</span>(<span class="dv">0</span>,<span class="dv">1</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</span></code></pre></div>
+<p><img src="sequencing_lab_oneGene_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+</div>
+<div id="goodness-of-fit" class="section level2">
+<h2><span class="header-section-number">3.3</span> Goodness-of-fit</h2>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a>X2 &lt;-<span class="st"> </span><span class="kw">sum</span>(pearsResid<span class="op">^</span><span class="dv">2</span>)</span>
+<span id="cb32-2"><a href="#cb32-2"></a><span class="dv">1</span><span class="op">-</span><span class="kw">pchisq</span>(X2, <span class="dt">df=</span><span class="kw">length</span>(y) <span class="op">-</span><span class="st"> </span><span class="kw">length</span>(<span class="kw">coef</span>(mNB)))</span></code></pre></div>
+<pre><code>## [1] 0.04729423</code></pre>
+</div>
+</div>
+<div id="re-analysis-upon-basic-normalization" class="section level1">
+<h1><span class="header-section-number">4</span> Re-analysis upon basic normalization</h1>
+<p>A very simple normalization would use an offset to account for sequencing depth. Verify if our hypothesis test results remain upon using this basic normalization.</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a>seqDepth &lt;-<span class="st"> </span><span class="kw">colSums</span>(<span class="kw">assays</span>(se)<span class="op">$</span>counts)</span></code></pre></div>
+<div id="statistical-inference-1" class="section level2">
+<h2><span class="header-section-number">4.1</span> Statistical inference</h2>
+<p>….</p>
+</div>
+</div>
+
+<div id="rmd-source-code">LS0tCnRpdGxlOiAnU2VxdWVuY2luZzogR0xNIGZvciBnZW5lIGV4cHJlc3Npb24nCmF1dGhvcjogIktvZW4gVmFuIGRlbiBCZXJnZSIKZGF0ZTogIkxhc3QgY29tcGlsZWQgb24gYHIgZm9ybWF0KFN5cy50aW1lKCksICclZCAlQiwgJVknKWAiCm91dHB1dDogCiAgcGRmX2RvY3VtZW50OgogICAgdG9jOiB0cnVlCiAgICBudW1iZXJfc2VjdGlvbnM6IHRydWUKICAgIGxhdGV4X2VuZ2luZTogeGVsYXRleAogIGh0bWxfZG9jdW1lbnQ6CiAgICB0b2M6IHRydWUKICAgIHRvY19mbG9hdDogdHJ1ZQotLS0KCmBgYHtyIGZ1bmN0aW9ucywgaW5jbHVkZT1GQUxTRX0KIyBBIGZ1bmN0aW9uIGZvciBjYXB0aW9uaW5nIGFuZCByZWZlcmVuY2luZyBpbWFnZXMKZmlnIDwtIGxvY2FsKHsKICAgIGkgPC0gMAogICAgcmVmIDwtIGxpc3QoKQogICAgbGlzdCgKICAgICAgICBjYXA9ZnVuY3Rpb24ocmVmTmFtZSwgdGV4dCkgewogICAgICAgICAgICBpIDw8LSBpICsgMQogICAgICAgICAgICByZWZbW3JlZk5hbWVdXSA8PC0gaQogICAgICAgICAgICBwYXN0ZSgiRmlndXJlICIsIGksICI6ICIsIHRleHQsIHNlcD0iIikKICAgICAgICB9LAogICAgICAgIHJlZj1mdW5jdGlvbihyZWZOYW1lKSB7CiAgICAgICAgICAgIHJlZltbcmVmTmFtZV1dCiAgICAgICAgfSkKfSkKYGBgIAoKYGBge3IsIGVjaG89RkFMU0UsIG1lc3NhZ2U9RkFMU0UsIGV2YWw9VFJVRX0Kc3VwcHJlc3NQYWNrYWdlU3RhcnR1cE1lc3NhZ2VzKHsKICBsaWJyYXJ5KGtuaXRyKQogIGxpYnJhcnkocm1hcmtkb3duKQogIGxpYnJhcnkoZ2dwbG90MikKfSkKYGBgCgoKYGBge3J9CnN1cHByZXNzUGFja2FnZVN0YXJ0dXBNZXNzYWdlcyhsaWJyYXJ5KFN1bW1hcml6ZWRFeHBlcmltZW50KSkKc2UgPC0gcmVhZFJEUygiZGF0YS9zZVBhcmF0aHlyb2lkLnJkcyIpCmBgYAoKCmBgYHtyfQojIyBleHRyYWN0IGRhdGEgZnJvbSBvbmUgZ2VuZQp5IDwtIGFzc2F5cyhzZSkkY291bnRzWzUsXQoKIyMgZXh0cmFjdCBjb3ZhcmlhdGVzIGZvciBlYWNoIHNhbXBsZQp0cmVhdG1lbnQgPC0gY29sRGF0YShzZSkkdHJlYXRtZW50CnRhYmxlKHRyZWF0bWVudCkKdGltZSA8LSBjb2xEYXRhKHNlKSR0aW1lCnRhYmxlKHRpbWUpCnBhdGllbnQgPC0gY29sRGF0YShzZSkkcGF0aWVudAp0YWJsZShwYXRpZW50KQoKdGFibGUocGF0aWVudCwgdHJlYXRtZW50LCB0aW1lKQoKYm94cGxvdCgoeS9jb2xTdW1zKGFzc2F5cyhzZSkkY291bnRzKSkgfiBpbnRlcmFjdGlvbih0cmVhdG1lbnQsIHRpbWUpKQojIyBkb3RwbG90IGZvciBlYWNoIHRyZWF0bWVudCwgbWF0Y2hpbmcgcGF0aWVudCBzYW1wbGVzCmRmIDwtIGRhdGEuZnJhbWUoeT15LAogICAgICAgICAgICAgICAgIHRyZWF0bWVudD10cmVhdG1lbnQsCiAgICAgICAgICAgICAgICAgdGltZT10aW1lLAogICAgICAgICAgICAgICAgIHBhdGllbnQ9cGF0aWVudCkKZ2dwbG90KGRmLCBhZXMoeD10aW1lLCB5PXkpKSArCiAgZ2VvbV9wb2ludCgpICsKICBnZW9tX2xpbmUoYWVzKGdyb3VwID0gcGF0aWVudCkpICsgCiAgZmFjZXRfZ3JpZCgufnRyZWF0bWVudCkgKwogIHRoZW1lX2NsYXNzaWMoKQpgYGAKCgojIFBvaXNzb24gR0xNCgpgYGB7cn0KbSA8LSBnbG0oeSB+IHRyZWF0bWVudCp0aW1lICsgcGF0aWVudCwKICAgICAgICAgZmFtaWx5ID0gInBvaXNzb24iKQpwbG90KG0pICMgRXh0cmEtUG9pc3NvbiB2YXJpYXRpb24/CmBgYAoKIyMgQ2hlY2sgb3ZlcmRpc3BlcnNpb24KCmBgYHtyfQplUGVhcnNvbiA8LSByZXNpZChtLCB0eXBlPSJwZWFyc29uIikKbiA8LSBsZW5ndGgoeSkKcCA8LSBsZW5ndGgoY29lZihtKSkKc3VtKGVQZWFyc29uXjIpIC8gKG4tcCkgIyBodWdlIG92ZXJkaXNwZXJzaW9uLgpgYGAKCiMgTmVnYXRpdmUgYmlub21pYWwgbW9kZWwKCmBgYHtyfQpsaWJyYXJ5KE1BU1MpCm1OQiA8LSBnbG0ubmIoeSB+IHRyZWF0bWVudCp0aW1lICsgcGF0aWVudCkKcGxvdChtTkIpCnN1bW1hcnkobU5CKQpgYGAKCgojIyBTdGF0aXN0aWNhbCBpbmZlcmVuY2UKCldlIHdpbGwgdGVzdCBzZXZlbiBkaWZmZXJlbnQgY29udHJhc3RzLgoKYGBge3J9CkwgPC0gbWF0cml4KDAsIG5yb3cgPSBsZW5ndGgoY29lZihtTkIpKSwgbmNvbCA9IDcpCnJvd25hbWVzKEwpIDwtIG5hbWVzKGNvZWYobU5CKSkKY29sbmFtZXMoTCkgPC0gYygiRFBOdnNDT04yNCIsICJEUE52c0NPTjQ4IiwKICAgICAgICAgICAgICAgICAiT0hUdnNDT04yNCIsICJPSFR2c0NPTjQ4IiwKICAgICAgICAgICAgICAgICAiRFBOdnNDT05JbnQiLCAiT0hUdnNDT05JbnQiLAogICAgICAgICAgICAgICAgICJPSFR2c0RQTkludCIpCiMgRFBOIHZzIGNvbnRyb2wgYXQgMjRoCkxbMiwiRFBOdnNDT04yNCJdIDwtIDEKIyBEUE4gdnMgY29udHJvbCBhdCA0OGgKTFtjKDIsOCksIkRQTnZzQ09ONDgiXSA8LSAxCiMgT0hUIHZzIGNvbnRyb2wgYXQgMjRoCkxbMywiT0hUdnNDT04yNCJdIDwtIDEKIyBPSFQgdnMgY29udHJvbCBhdCA0OGgKTFtjKDMsOSksIk9IVHZzQ09ONDgiXSA8LSAxCiMgRFBOIGNvbnRyb2wgaW50ZXJhY3Rpb24KTFs4LCJEUE52c0NPTkludCJdIDwtIDEKIyBPSFQgY29udHJvbCBpbnRlcmFjdGlvbgpMWzksIk9IVHZzQ09OSW50Il0gPC0gMQojIE9IVCBEUE4gaW50ZXJhY3Rpb24KTFtjKDksOCksIk9IVHZzRFBOSW50Il0gPC0gYygxLCAtMSkKCkwKYGBgCgoKIyMjIFdhbGQgdGVzdAoKYGBge3J9CmJldGEgPC0gbWF0cml4KGNvZWYobU5CKSwgbmNvbCA9IDEpCndhbGRTdGF0cyA8LSBjKCkKZm9yKGxsIGluIDE6bmNvbChMKSl7CiAgY3VyTCA8LSBMWyxsbCxkcm9wPUZBTFNFXQogIGN1cldhbGQgPC0gdChjdXJMKSAlKiUgYmV0YSAlKiUgc29sdmUodChjdXJMKSAlKiUgdmNvdihtTkIpICUqJSBjdXJMKSAlKiUgdChiZXRhKSAlKiUgY3VyTAogIHdhbGRTdGF0c1tsbF0gPC0gY3VyV2FsZAp9Cgp3YWxkU3RhdHMKCnB2YWx1ZXMgPC0gMS1wY2hpc3Eod2FsZFN0YXRzLCBkZj0xKQpwdmFsdWVzCmBgYAoKCiMjIyBMaWtlbGlob29kIHJhdGlvIHRlc3QKCkltcGxlbWVudGluZyB0aGVzZSBjb250cmFzdHMgdXNpbmcgYSBsaWtlbGlob29kIHJhdGlvIHRlc3QgaXMgcG9zc2libGUsIGJ1dCBpcyBub3QgdHJpdmlhbC4KSXQgd291bGQgcmVxdWlyZSBhIHJlcGFyYW1ldGVyaXphdGlvbiBvZiBvdXIgbW9kZWwgdXNpbmcgdGhlIGNvbnRyYXN0cyBvZiBpbnRlcmVzdC4gSW4gdGhpcyByZXBhcmFtZXRlcml6YXRpb24sIG9uZSB2YXJpYWJsZSBtYXkgY29ycmVzcG9uZCB0byBvbmUgY29udHJhc3QuIFdlIG1heSB0aGVuIGNvbXBhcmUgYSBmdWxsIHRvIGFuIGFsdGVybmF0aXZlIG1vZGVsLCBkcm9wcGluZyB0aGlzIHZhcmlhYmxlLCB1c2luZyBhIGxpa2VsaWhvb2QgcmF0aW8gdGVzdC4KV2hpbGUgaXQgaXMgaW1wb3J0YW50IHRvIGtub3cgdGhhdCB0aGlzIGlzIHBvc3NpYmxlLCB3ZSB3aWxsIG5vdCBpbXBsZW1lbnQgdGhlIHJlcGFyYW1ldGVyaXphdGlvbiBvdXJzZWx2ZXMgYXMgaXQgaXMgY29uc2lkZXJlZCBvdXRzaWRlIHRoZSBzY29wZSBvZiB0aGlzIGNvdXJzZS4KCiMgUmVzaWR1YWxzCgojIyBEZXZpYW5jZSByZXNpZHVhbHMKCmBgYHtyfQojIyByZXNpZHVhbCBkZXZpYW5jZQpzdW0oMiooZG5iaW5vbSh4PXksIG11PXksIHNpemU9bU5CJHRoZXRhLCBsb2c9VFJVRSkgLSBkbmJpbm9tKHg9eSwgbXU9Zml0dGVkKG1OQiksIHNpemU9bU5CJHRoZXRhLCBsb2c9VFJVRSkpKQoKIyMgZGV2aWFuY2UgcmVzaWR1YWwKZGV2UmVzaWQgPC0gc2lnbih5LWZpdHRlZChtTkIpKSAqIHNxcnQoMiooZG5iaW5vbSh4PXksIG11PXksIHNpemU9bU5CJHRoZXRhLCBsb2c9VFJVRSkgLSAKICAgICAgICAgICAgICAgICAgICAgIGRuYmlub20oeD15LCBtdT1maXR0ZWQobU5CKSwgc2l6ZT1tTkIkdGhldGEsIGxvZz1UUlVFKSkpCgpyYW5nZShkZXZSZXNpZCAtIHJlc2lkKG1OQiwgdHlwZT0iZGV2aWFuY2UiKSkKcGxvdChkZXZSZXNpZCwgcmVzaWQobU5CLCB0eXBlPSJkZXZpYW5jZSIpKSA7IGFibGluZSgwLDEsIGNvbD0icmVkIikKCmBgYAoKIyMgUGVhcnNvbiByZXNpZHVhbHMKCmBgYHtyfQpwZWFyc1Jlc2lkIDwtICh5IC0gZml0dGVkKG1OQikpIC8gc3FydChmaXR0ZWQobU5CKSArIDEvbU5CJHRoZXRhICogZml0dGVkKG1OQileMikKcmFuZ2UocGVhcnNSZXNpZCAtIHJlc2lkKG1OQiwgdHlwZT0icGVhcnNvbiIpKQpwbG90KHg9cGVhcnNSZXNpZCwgeT1yZXNpZChtTkIsIHR5cGU9InBlYXJzb24iKSkgOyBhYmxpbmUoMCwxLCBjb2w9InJlZCIpCmBgYAoKCiMjIEdvb2RuZXNzLW9mLWZpdAoKYGBge3J9ClgyIDwtIHN1bShwZWFyc1Jlc2lkXjIpCjEtcGNoaXNxKFgyLCBkZj1sZW5ndGgoeSkgLSBsZW5ndGgoY29lZihtTkIpKSkKYGBgCgojIFJlLWFuYWx5c2lzIHVwb24gYmFzaWMgbm9ybWFsaXphdGlvbgoKQSB2ZXJ5IHNpbXBsZSBub3JtYWxpemF0aW9uIHdvdWxkIHVzZSBhbiBvZmZzZXQgdG8gYWNjb3VudCBmb3Igc2VxdWVuY2luZyBkZXB0aC4KVmVyaWZ5IGlmIG91ciBoeXBvdGhlc2lzIHRlc3QgcmVzdWx0cyByZW1haW4gdXBvbiB1c2luZyB0aGlzIGJhc2ljIG5vcm1hbGl6YXRpb24uCgpgYGB7cn0Kc2VxRGVwdGggPC0gY29sU3Vtcyhhc3NheXMoc2UpJGNvdW50cykKYGBgCgojIyBTdGF0aXN0aWNhbCBpbmZlcmVuY2UKCi4uLi4gCgo=</div>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("sequencing_lab_oneGene.Rmd");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
