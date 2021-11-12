@@ -47,8 +47,40 @@ if(!"edgeR" %in% installed.packages()[,1]){
 ```
 
 
- - Implement FQ normalization yourself and compare results to default edgeR normalization.
- - Assess impact of blocking like in parathyroid study.
- - Compare a limma-voom to an edgeR analysis.
- - Assess quasipoisson vs NB for a single gene using van Hoet paper.
- 
+# Default `edgeR` analysis
+
+Analyze the data using `edgeR`, by using the code in the RNA-seq analysis intro lecture.
+Focus on the contrast comparing DPN to control at 48h.
+
+# Impact of blocking
+
+Assess the difference in number of DE genes when not blocking on patient, i.e., removing the `patient` effect of the model.
+Compare the p-value distributions between these two models.
+
+
+# Analyze using full-quantile normalization
+
+## Implement and apply full-quantile normalization
+
+```{r}
+### implement FQ normalization
+FQnorm <- function(counts){
+  ...
+}
+
+### normalize the data using FQ
+
+```
+
+
+## `edgeR` analysis using full-quantile normalized data
+
+Don't forgot to remove the `calcNormFactors` step as data have already been normalized!
+
+```{r}
+### use FQ-normalized data as input to the edgeR analysis
+```
+
+
+## Compare DE genes at 5% FDR
+

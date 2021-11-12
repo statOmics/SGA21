@@ -51,6 +51,8 @@ navbar:
         href: sequencing_preprocessing.sh
       - text: 3.2 GLM for one gene
         href: sequencing_lab_oneGene.html
+      - text: 3.3 Bulk RNA-seq homework
+        href: sequencing_hw.html
         
 
 right:
