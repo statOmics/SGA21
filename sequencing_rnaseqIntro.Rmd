@@ -338,6 +338,7 @@ for(cc in 1:ncol(combs)){
   \end{array}
   \right.
   $$
+ - Please [read this page](https://statomics.github.io/SGA21/sequencing_scalingNormalization.html) for an intuitive reasoning as to why offsets are preferred over count scaling.
   
 ## How to normalize?
 
