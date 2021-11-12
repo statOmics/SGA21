@@ -342,11 +342,11 @@ for(cc in 1:ncol(combs)){
   
 ## How to normalize?
 
-Many approaches are available for normalizing RNA-seq data, and we will review a couple of these. Most methods basically calculate an offset that is added to the GLM used to model gene expression. One notable method, full-quantile normalization, does not calculate an offset.
+Many approaches are available for normalizing RNA-seq data, and we will review a couple of these. Most methods calculate an offset that is used in the GLM used to model gene expression. One notable method, full-quantile normalization, does not calculate an offset, and rather normalizes counts directly, immediately enforcing the same sequencing depth for all samples.
  
 ### TMM method (default of `edgeR`)
 
-The trimmed mean of M-values (TMM) method introduced by [Robinson & Oshlack (2010)](https://genomebiology.biomedcentral.com/articles/10.1186/gb-2010-11-3-r25) is a normalization procedure that calculates a single normalization factor for each sample. As the name suggests, it is based on a trimmed mean of fold-changes ($M$-values) as the scaling factor. A trimmed mean is an average after removing a set of ``extreme'' values. 
+The trimmed mean of M-values (TMM) method introduced by [Robinson & Oshlack (2010)](https://genomebiology.biomedcentral.com/articles/10.1186/gb-2010-11-3-r25) is a normalization procedure that calculates a single normalization factor for each sample. As the name suggests, it is based on a trimmed mean of fold-changes ($M$-values) as the scaling factor. A trimmed mean is an average after removing a set of 'extreme' values. 
 Specifically, TMM calculates a normalization factor $F_i^{(r)}$ across genes $g$ for each sample $i$ as compared to a reference sample $r$,
 $$
 \log_2(F_i^{(r)}) = \frac{\sum_{g \in {\cal G}^*} w_{gi}^r M_{gi}^r}{\sum_{g \in {\cal G}^*} w_{gi}^r},
@@ -357,10 +357,15 @@ and $w_{gi}^r$ represents a precision weight calculated as
 $$
  w_{gi}^r = \frac{N_i - Y_{gi}}{N_i Y_{gi}} + \frac{N_r - Y_{gr}}{N_r Y_{gr}},
 $$
-and ${\cal G}^*$ represents the set of genes after trimming those with the most extreme average expression. The weights serve to account for the fact that fold-changes for genes with lower read counts are more variable.
+and ${\cal G}^*$ represents the set of genes after trimming those with the most extreme average expression and fold-change. The weights serve to account for the fact that fold-changes for genes with lower read counts are more variable.
 
-The procedure only takes genes into account where both $Y_{gi}>0$ and $Y_{gr}>0$. By default, TMM trims genes with the $30\%$ most extreme $M$-values and $5\%$ most extreme average gene expression, and chooses as reference $r$ the sample whose upper-quartile is closest to the across-sample average upper-quartile. The normalized counts are then given by $\tilde{Y}_{gi} = Y_{gi} / N_i^s$, where 
-$$N_i^s = \frac{N_i F_i^{(r)}}{\sum_{i=1}^n N_i F_i^{(r)}/n}.$$
+The procedure only takes genes into account where both $Y_{gi}>0$ and $Y_{gr}>0$. By default, TMM trims genes with the $30\%$ most extreme $M$-values and $5\%$ most extreme average gene expression, and chooses as reference $r$ the sample whose upper-quartile is closest to the across-sample average upper-quartile. The normalization factor is then used in conjunction with the library size to calculate an **effective library size**
+$$
+N_i^{eff} = N_i F_i^{(r)}
+$$
+which is used as offset in the GLM.
+The normalized counts may be given by $\tilde{Y}_{gi} = Y_{gi} / N_i^s$, with size factor 
+$$N_i^s = \frac{N_i F_i^{(r)}}{\frac{1}{n}\sum_{i=1}^n N_i F_i^{(r)}}.$$
 
 TMM normalization may be performed from the `calcNormFactors` function implemented in `edgeR`:
 
@@ -399,10 +404,10 @@ for(cc in 1:ncol(combs)){
 ## Median-of-ratios method (default of `DESeq2`)
 
 The median-of-ratios method is used in `DESeq2` as described in [Love *et al.* (2014)](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8).
-It assumes that the expected value $\mu_{gi} = E(Y_{gi})$ is proportional to the true expression of the gene, $q_{gi}$, scaled by a normalization factor $s_{i}$ for each sample,
+It assumes that the expected value $\mu_{gi} = E(Y_{gi})$ is proportional to the true expression of the gene, $q_{gi}$, scaled by a size factor $s_{i}$ for each sample,
 \[ \mu_{gi} = s_{i}q_{gi}. \]
 
-The normalization factor $s_{i}$ is then estimated using the median-of-ratios method compared to a synthetic reference sample $r$ defined based on geometric means of counts across samples
+The size factor $s_{i}$ is then estimated using the median-of-ratios method compared to a synthetic reference sample $r$ defined based on geometric means of counts across samples
 $$
 s_i = \text{median}_{\{{g:Y^{*}_{gr} \ne 0}\}} \frac{Y_{gi}}{Y^{*}_{gr}},
 $$
@@ -410,6 +415,14 @@ with
 \[ Y^{*}_{gr} = \left( \prod_{i=1}^n Y_{gi} \right)^{1/n}. \]
 
 We can then use the size factors $s_i$ as offsets to the GLM.
+
+**Question**. Do you see any issues with the procedure described as such?
+
+<details><summary> Answer. </summary><p>
+The procedure relies on genes being expressed in all samples.
+As sample size increases, the number of genes with this property steadily decreases.
+This will become crucial in single-cell RNA-seq data analysis.
+</p></details>
 
 Median-of-ratios normalization is implemented in the `DESeq2` package:
 
@@ -426,7 +439,7 @@ You may also want to check out the [StatQuest video on DESeq2 normalization](htt
 ## Full-quantile (FQ) normalization
 
 In full-quantile normalization, originally introduced in the context of microarrays by [Bolstad *et al.* (2003)](https://academic.oup.com/bioinformatics/article/19/2/185/372664), the samples are forced to each have a distribution identical to the distribution of the median/average of the quantiles across samples.
-In practice, we implement full-quantile normalization using the following procedure
+In practice, we can implement full-quantile normalization using the following procedure
 
  1. Given a data matrix $\mathbf{Y}_{G \times n}$ for $G$ genes (rows) and $n$ samples (columns),
  2. sort each column to get $\mathbf{Y}^S$,
@@ -436,9 +449,8 @@ In practice, we implement full-quantile normalization using the following proced
 ## Uncertainty in normalization
 
  - The offsets that are being cacluated for normalization purposes are estimates.
- - The downstream analyses incorporates these estimates as if they are known.
+ - The downstream analyses incorporates these estimates as if they are known, i.e., conditions on the estimates.
  - The analysis therefore **ignores the uncertainty** in their estimation.
- 
  
 ```{r, echo=FALSE, fig.cap=paste("Figure: Box 1 from Vallejos et al. (2017).")}
 # All defaults
@@ -451,7 +463,7 @@ include_graphics("./images_sequencing/normalizationUncertainty.png")
 There are two challenges to be overcome here:
 
  - First, we need to get the structure of our mean model right, this is, which covariates to include, and how to include them, such that we are capable of capturing important sources of variation in our experiment, in order to derive a correct interpretation of the data in terms of our research question.
- - Second, we need to be able to estimate the parameters of our model in an efficient way, while having limited information (i.e., we often only have a small number of replicates).
+ - Second, we need to be able to estimate the parameters of our model in an efficient way, while having limited information (i.e., we are often confronted with only a small number of replicates).
 
 ## Defining the model for the mean
 
@@ -462,22 +474,28 @@ Let's first check how the authors of the original study parameterized the mean m
 include_graphics("./images_sequencing/deAnalysis_para.png")
 ```
 
-The authors write that they are "employing treatment type, time point and sample ID as factors in the model". Concerning experimental variables, this suggests they have added covariates defining the treatment and time point for each sample. The sample ID in the text refers to the original tissue sample and therefore corresponds to the donor patient. While there is also a variable called `sample` in the `colData`, this is not what the authors refer to. Note the ambiguity here and since the authors didn't share their code, this is hard to check! But, more on reproducibility later.
+The authors write that they are "employing treatment type, time point and sample ID as factors in the model". Concerning experimental variables, this suggests they have added covariates defining the treatment and time point for each sample. The sample ID in the text refers to the original tissue sample and therefore corresponds to the donor patient. While there is also a variable called `sample` in the `colData`, this is not what the authors refer to. Note the ambiguity here and since the authors didn't share their code, this is hard to check! But, more on reproducibility later...
 
 **Question**. What are the authors assuming when using this structure for the mean model? Do you think that there are extensions or simplifications of the mean model that would be relevant?
 
 <details><summary> Answer. </summary><p>
 The authors are acknowledging the relatedness of samples derived from the same donor patient by adding it as a fixed effect to the model, which is great. This blocking strategy has been extensively discussed in the proteomics part of this course.
 However, by only adding a main effect for treatment and time, they are assuming that the effect of time is identical for all treatments, i.e., the average gene expression in-/decrease at 48h versus 24h is identical for the DPN, OHT or the control samples, which seems like a quite stringent assumption.
-We can make the model more flexible (but also more complex) by allowing for a `treatment * time` interaction.
+We can make the model more flexible by allowing for a `treatment * time` interaction.
 </p></details>
 
 ## Parameter estimation and empirical Bayes
 
- - Even in limited sample sizes, the parameters $\beta$ of the mean model may be estimated reasonably efficiently, and we have previously discussed the IRLS algorithm. 
+ - Even in limited sample size settings, the parameters $\beta$ of the mean model may be estimated reasonably efficiently, and we have previously discussed the IRLS algorithm to do so. 
  - However, estimating parameters for the variance (this is, the dispersion parameter $\phi$ from the negative binomial or the variance parameter $\sigma$ from the Gaussian) is typically quite a bit harder.
  - In genomics, we often take advantage of the parallel structure of the thousands of regression models (one for each gene) to **borrow information across genes** in a procedure called **empirical Bayes**, as also seen in the proteomics part of this course. 
- - In empirical Bayes, we basically take a semi-Bayesian approach to parameter estimation, where we use the data but also a prior distribution to derive our parameter estimate. However, what makes it empirical is that we are using the data to estimate this prior distribution, unlike in a fully Bayesian analysis where the prior distribution must be specified independently of the data. 
+ - In the Bayesian setting, we use not only the data, but also a prior distribution, to derive our parameter estimates. In a traditional Bayesian analysis, one assumes an *a priori* known prior distribution, which reflects our prior belief into all possible values of the parameter. This prior distribution is completely independent of the observed data and the idea is that one specifies the prior distribution before observing the data. One can then use the data and prior distribution to derive a **posterior distribution** for the parameter(s) $\theta$ of interest through Bayes rule
+ 
+ $$
+ p(\theta | \mathbf{Y}) = \frac{p(\mathbf{Y} | \theta) p(\theta)}{\int_{\theta \in \Theta} p(\mathbf{Y} | \theta) p(\theta) d\theta}.
+ $$
+ Here, the posterior distribution $p(\theta | \mathbf{Y})$ is calculated based on the data likelihood $p(\mathbf{Y} | \theta)$, prior distribution $p(\theta)$ and the 'marginal likelihood' $\int_{\theta \in \Theta} p(\mathbf{Y} | \theta) p(\theta) d\theta$, where $\Theta$ denotes the parameter space of $\theta$.
+ - In empirical Bayes, we basically take a semi-Bayesian approach to parameter estimation. Indeed, what makes it empirical is that we are using the data to estimate the prior distribution, unlike in a fully Bayesian analysis where the prior distribution must be specified independently of the data.
  - The basic assumption for this to make sense is that genes with similar means might have similar dispersion parameters (or variances), owing to the mean-variance trend. 
 
  ---
