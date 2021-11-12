@@ -696,6 +696,8 @@ summary(mQP)
 ```
 
 
+ - [ver Hoef *et al.* (2007)](https://digitalcommons.unl.edu/cgi/viewcontent.cgi?article=1141&context=usdeptcommercepub) provide a useful diagnostic to empirically check whether your data is more amenable to a quasi-Poisson versus a negative binomial distribution.
+
 # A final note
 
 In this lecture, we have introduced GLMs to model data that can be assumed to follow a distribution belonging to the exponential family.

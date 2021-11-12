@@ -197,5 +197,30 @@ seqDepth <- colSums(assays(se)$counts)
 
 ## Statistical inference
 
-.... 
+# Negative binomial model, corrected for sequencing depth
+
+```{r}
+library(MASS)
+mNBOffset <- glm.nb(y ~ treatment*time + patient +
+                offset(log(seqDepth)))
+plot(mNBOffset)
+summary(mNBOffset)
+```
+
+## Wald tests
+
+```{r}
+betaOffset <- matrix(coef(mNBOffset), ncol = 1)
+waldStatsOffset <- c()
+for(ll in 1:ncol(L)){
+  curL <- L[,ll,drop=FALSE]
+  curWald <- t(curL) %*% betaOffset %*% solve(t(curL) %*% vcov(mNBOffset) %*% curL) %*% t(betaOffset) %*% curL
+  waldStatsOffset[ll] <- curWald
+}
+
+waldStatsOffset
+
+pvaluesOffset <- 1-pchisq(waldStatsOffset, df=1)
+pvaluesOffset
+```
 
