@@ -36,7 +36,7 @@ navbar:
       - text: 3.4 SDA - Technical topics in DE analysis
         href: sequencing_technicalDE.html
 
-    - text: "tutorials"
+    - text: "Tutorials"
       icon: fa-laptop
       menu:
       - text: 1 Intro KPNA2

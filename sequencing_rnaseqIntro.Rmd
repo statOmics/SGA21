@@ -109,7 +109,7 @@ table(patient1, treatment1, time1)
 ```
 
 - We observe that the number of samples that we are observing here is larger than what is described in the paper. As also described in the [parathyroidSE vignette](https://www.bioconductor.org/packages/release/data/experiment/vignettes/parathyroidSE/inst/doc/parathyroidSE.pdf), some samples were spread over multiple sequencing runs (i.e., the same sample being sequenced repeatedly) and therefore constitute **technical replication**, rather than biological replication.
-- We have previously seen that technical replicates can be considered to be distributed according to a Poisson distribution. One important property of Poisson random variables is that a sum of Poisson random variables still follow a Poisson distribution. Indeed, if $X \sim Poi(\mu_X)$ and $Y \sim Poi(\mu_Y)$, then $ X + Y = Z \sim Poi(\mu_X + \mu_Y)$.
+- We have previously seen that technical replicates can be considered to be distributed according to a Poisson distribution. One important property of Poisson random variables is that a sum of Poisson random variables still follow a Poisson distribution. Indeed, if $X \sim Poi(\mu_X)$ and $Y \sim Poi(\mu_Y)$, then $X + Y = Z \sim Poi(\mu_X + \mu_Y)$.
 - For this reason, it is often suggested to sum technical replicates rather than, for example, averaging, which does not retain the Poisson property (try for yourself!). We'll therefore first sum the technical replicates.
 
 ```{r}
@@ -319,7 +319,7 @@ for(cc in 1:ncol(combs)){
 }
 ```
  
- - We see clear bias for some pairwise comparisons. For example, in the first plot comparing sample 8 versus sample 2, the log fold-changes are biased downwards. This means that, on average, a gene is lower expressed in sample 8 versus sample 2. Looking at the library sizes, we can indeed see that the library size for sample 2 is about $11 \times 10^6$ while it is only about $7 \times 10^6$ for sample 8! This is clear library size effect that we should take into account.
+ - We see clear bias for some pairwise comparisons. For example, in the first plot comparing sample 8 versus sample 2, the log fold-changes are biased downwards. This means that, on average, a gene is lower expressed in sample 8 versus sample 2. Looking at the library sizes, we can indeed see that the library size for sample 2 is about $11 \times 10^6$ while it is only about $7 \times 10^6$ for sample 8! This is a clear library size effect that we should take into account.
  
 ## Count scaling versus GLM offsets
 
