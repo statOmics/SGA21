@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021) (preloaded format=xelatex 2021.11.11)  12 NOV 2021 07:49
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021) (preloaded format=xelatex 2021.11.11)  12 NOV 2021 10:38
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -787,7 +787,17 @@ Overfull \hbox (32.86406pt too wide) in paragraph at lines 1264--1264
 LaTeX Warning: Float too large for page by 0.01822pt on input line 1264.
 
 [26] [27] [28] [29]
-Overfull \hbox (125.54485pt too wide) detected at line 1460
+Overfull \hbox (259.99498pt too wide) in paragraph at lines 1505--1505
+[]\TU/lmtt/m/n/10 ## [1] "Error in solve.default(C %*% Sigma %*% t(C)) : \n  system is computationally singular: reciprocal condition number = 1.88084e-17\n"[] 
+ []
+
+
+Overfull \hbox (233.74498pt too wide) in paragraph at lines 1505--1505
+[]\TU/lmtt/m/n/10 ## <simpleError in solve.default(C %*% Sigma %*% t(C)): system is computationally singular: reciprocal condition number = 1.88084e-17>[] 
+ []
+
+[30]
+Overfull \hbox (125.54485pt too wide) detected at line 1543
 [][][][] [][] [] [] [] [] [] [] [] [] []  [] [] [][][][][][][] [] [][][][][][] [] [] [][][][]
  []
 
@@ -798,24 +808,24 @@ Missing character: There is no 𝜇 (U+1D707) in font [lmroman10-bold]:mapping=t
 Missing character: There is no 𝜇 (U+1D707) in font [lmroman10-bold]:mapping=tex-text;!
 Missing character: There is no 𝜇 (U+1D707) in font [lmroman10-bold]:mapping=tex-text;!
 
-Underfull \hbox (badness 10000) in paragraph at lines 1519--1530
+Underfull \hbox (badness 10000) in paragraph at lines 1602--1613
 
  []
 
-[30] [31] [32] [33] [34]
+[31] [32] [33] [34] [35]
 File: ./images_sequencing/xkcd-1725-linear_regression_2x.png Graphic file (type bmp)
 <./images_sequencing/xkcd-1725-linear_regression_2x.png>
-[35] [36] (./sequencing_countData.aux)
+[36] [37] (./sequencing_countData.aux)
 Package rerunfilecheck Info: File `sequencing_countData.out' has not changed.
 (rerunfilecheck)             Checksum: 99011DF42AC0BEC7B3E8B7F22489B3AC;2455.
  ) 
 Here is how much of TeX's memory you used:
- 16472 strings out of 478472
- 300357 string characters out of 5860372
- 776128 words of memory out of 5000000
- 36540 multiletter control sequences out of 15000+600000
+ 16473 strings out of 478472
+ 300387 string characters out of 5860372
+ 775194 words of memory out of 5000000
+ 36541 multiletter control sequences out of 15000+600000
  409897 words of font info for 82 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  87i,8n,120p,466b,535s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on sequencing_countData.pdf (36 pages).
+Output written on sequencing_countData.pdf (37 pages).
