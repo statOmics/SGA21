@@ -51,6 +51,100 @@
     </style>
 
 
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
 
 
 <style type="text/css">
@@ -403,6 +497,9 @@ div.tocify {
     <li>
       <a href="sequencing_lab_oneGene.html">3.2 GLM for one gene</a>
     </li>
+    <li>
+      <a href="sequencing_hw.html">3.3 Bulk RNA-seq homework</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -431,14 +528,36 @@ div.tocify {
 </div>
 
 
-<ul>
-<li>Implement FQ normalization yourself and compare results to default edgeR normalization.</li>
-<li>Assess impact of blocking like in parathyroid study.</li>
-<li>Compare a limma-voom to an edgeR analysis.</li>
-<li>Assess quasipoisson vs NB for a single gene using van Hoet paper.</li>
-</ul>
+<div id="default-edger-analysis" class="section level1">
+<h1><span class="header-section-number">1</span> Default <code>edgeR</code> analysis</h1>
+<p>Analyze the data using <code>edgeR</code>, by using the code in the RNA-seq analysis intro lecture. Focus on the contrast comparing DPN to control at 48h.</p>
+</div>
+<div id="impact-of-blocking" class="section level1">
+<h1><span class="header-section-number">2</span> Impact of blocking</h1>
+<p>Assess the difference in number of DE genes when not blocking on patient, i.e., removing the <code>patient</code> effect of the model. Compare the p-value distributions between these two models.</p>
+</div>
+<div id="analyze-using-full-quantile-normalization" class="section level1">
+<h1><span class="header-section-number">3</span> Analyze using full-quantile normalization</h1>
+<div id="implement-and-apply-full-quantile-normalization" class="section level2">
+<h2><span class="header-section-number">3.1</span> Implement and apply full-quantile normalization</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="co">### implement FQ normalization</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a>FQnorm &lt;-<span class="st"> </span><span class="cf">function</span>(counts){</span>
+<span id="cb1-3"><a href="#cb1-3"></a>  ...</span>
+<span id="cb1-4"><a href="#cb1-4"></a>}</span>
+<span id="cb1-5"><a href="#cb1-5"></a></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="co">### normalize the data using FQ</span></span></code></pre></div>
+</div>
+<div id="edger-analysis-using-full-quantile-normalized-data" class="section level2">
+<h2><span class="header-section-number">3.2</span> <code>edgeR</code> analysis using full-quantile normalized data</h2>
+<p>Don’t forgot to remove the <code>calcNormFactors</code> step as data have already been normalized!</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">### use FQ-normalized data as input to the edgeR analysis</span></span></code></pre></div>
+</div>
+<div id="compare-de-genes-at-5-fdr" class="section level2">
+<h2><span class="header-section-number">3.3</span> Compare DE genes at 5% FDR</h2>
+</div>
+</div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAnU2VxdWVuY2luZzogQnVsayBSTkEtc2VxIGhvbWV3b3JrJwphdXRob3I6ICJLb2VuIFZhbiBkZW4gQmVyZ2UiCmRhdGU6ICI4LzYvMjAyMSIKb3V0cHV0OiAKICBwZGZfZG9jdW1lbnQ6CiAgICB0b2M6IHRydWUKICAgIG51bWJlcl9zZWN0aW9uczogdHJ1ZQogICAgbGF0ZXhfZW5naW5lOiB4ZWxhdGV4CiAgaHRtbF9kb2N1bWVudDoKICAgIHRvYzogdHJ1ZQogICAgdG9jX2Zsb2F0OiB0cnVlCi0tLQoKYGBge3IgZnVuY3Rpb25zLCBpbmNsdWRlPUZBTFNFfQojIEEgZnVuY3Rpb24gZm9yIGNhcHRpb25pbmcgYW5kIHJlZmVyZW5jaW5nIGltYWdlcwpmaWcgPC0gbG9jYWwoewogICAgaSA8LSAwCiAgICByZWYgPC0gbGlzdCgpCiAgICBsaXN0KAogICAgICAgIGNhcD1mdW5jdGlvbihyZWZOYW1lLCB0ZXh0KSB7CiAgICAgICAgICAgIGkgPDwtIGkgKyAxCiAgICAgICAgICAgIHJlZltbcmVmTmFtZV1dIDw8LSBpCiAgICAgICAgICAgIHBhc3RlKCJGaWd1cmUgIiwgaSwgIjogIiwgdGV4dCwgc2VwPSIiKQogICAgICAgIH0sCiAgICAgICAgcmVmPWZ1bmN0aW9uKHJlZk5hbWUpIHsKICAgICAgICAgICAgcmVmW1tyZWZOYW1lXV0KICAgICAgICB9KQp9KQpgYGAgCgpgYGB7ciwgZWNobz1GQUxTRSwgZXZhbD1UUlVFfQpzdXBwcmVzc1BhY2thZ2VTdGFydHVwTWVzc2FnZXMoewogIGxpYnJhcnkoa25pdHIpCiAgbGlicmFyeShybWFya2Rvd24pCiAgbGlicmFyeShnZ3Bsb3QyKQp9KQppZighIkJpb2NNYW5hZ2VyIiAlaW4lIGluc3RhbGxlZC5wYWNrYWdlcygpWywxXSl7CiAgaW5zdGFsbC5wYWNrYWdlcygiQmlvY01hbmFnZXIiKQp9CmlmKCEibGltbWEiICVpbiUgaW5zdGFsbGVkLnBhY2thZ2VzKClbLDFdKXsKICBCaW9jTWFuYWdlcjo6aW5zdGFsbCgibGltbWEiKQp9CmlmKCEiZWRnZVIiICVpbiUgaW5zdGFsbGVkLnBhY2thZ2VzKClbLDFdKXsKICBCaW9jTWFuYWdlcjo6aW5zdGFsbCgiZWRnZVIiKQp9CmBgYAoKCiAtIEltcGxlbWVudCBGUSBub3JtYWxpemF0aW9uIHlvdXJzZWxmIGFuZCBjb21wYXJlIHJlc3VsdHMgdG8gZGVmYXVsdCBlZGdlUiBub3JtYWxpemF0aW9uLgogLSBBc3Nlc3MgaW1wYWN0IG9mIGJsb2NraW5nIGxpa2UgaW4gcGFyYXRoeXJvaWQgc3R1ZHkuCiAtIENvbXBhcmUgYSBsaW1tYS12b29tIHRvIGFuIGVkZ2VSIGFuYWx5c2lzLgogLSBBc3Nlc3MgcXVhc2lwb2lzc29uIHZzIE5CIGZvciBhIHNpbmdsZSBnZW5lIHVzaW5nIHZhbiBIb2V0IHBhcGVyLgog</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAnU2VxdWVuY2luZzogQnVsayBSTkEtc2VxIGhvbWV3b3JrJwphdXRob3I6ICJLb2VuIFZhbiBkZW4gQmVyZ2UiCmRhdGU6ICI4LzYvMjAyMSIKb3V0cHV0OiAKICBwZGZfZG9jdW1lbnQ6CiAgICB0b2M6IHRydWUKICAgIG51bWJlcl9zZWN0aW9uczogdHJ1ZQogICAgbGF0ZXhfZW5naW5lOiB4ZWxhdGV4CiAgaHRtbF9kb2N1bWVudDoKICAgIHRvYzogdHJ1ZQogICAgdG9jX2Zsb2F0OiB0cnVlCi0tLQoKYGBge3IgZnVuY3Rpb25zLCBpbmNsdWRlPUZBTFNFfQojIEEgZnVuY3Rpb24gZm9yIGNhcHRpb25pbmcgYW5kIHJlZmVyZW5jaW5nIGltYWdlcwpmaWcgPC0gbG9jYWwoewogICAgaSA8LSAwCiAgICByZWYgPC0gbGlzdCgpCiAgICBsaXN0KAogICAgICAgIGNhcD1mdW5jdGlvbihyZWZOYW1lLCB0ZXh0KSB7CiAgICAgICAgICAgIGkgPDwtIGkgKyAxCiAgICAgICAgICAgIHJlZltbcmVmTmFtZV1dIDw8LSBpCiAgICAgICAgICAgIHBhc3RlKCJGaWd1cmUgIiwgaSwgIjogIiwgdGV4dCwgc2VwPSIiKQogICAgICAgIH0sCiAgICAgICAgcmVmPWZ1bmN0aW9uKHJlZk5hbWUpIHsKICAgICAgICAgICAgcmVmW1tyZWZOYW1lXV0KICAgICAgICB9KQp9KQpgYGAgCgpgYGB7ciwgZWNobz1GQUxTRSwgZXZhbD1UUlVFfQpzdXBwcmVzc1BhY2thZ2VTdGFydHVwTWVzc2FnZXMoewogIGxpYnJhcnkoa25pdHIpCiAgbGlicmFyeShybWFya2Rvd24pCiAgbGlicmFyeShnZ3Bsb3QyKQp9KQppZighIkJpb2NNYW5hZ2VyIiAlaW4lIGluc3RhbGxlZC5wYWNrYWdlcygpWywxXSl7CiAgaW5zdGFsbC5wYWNrYWdlcygiQmlvY01hbmFnZXIiKQp9CmlmKCEibGltbWEiICVpbiUgaW5zdGFsbGVkLnBhY2thZ2VzKClbLDFdKXsKICBCaW9jTWFuYWdlcjo6aW5zdGFsbCgibGltbWEiKQp9CmlmKCEiZWRnZVIiICVpbiUgaW5zdGFsbGVkLnBhY2thZ2VzKClbLDFdKXsKICBCaW9jTWFuYWdlcjo6aW5zdGFsbCgiZWRnZVIiKQp9CmBgYAoKCiMgRGVmYXVsdCBgZWRnZVJgIGFuYWx5c2lzCgpBbmFseXplIHRoZSBkYXRhIHVzaW5nIGBlZGdlUmAsIGJ5IHVzaW5nIHRoZSBjb2RlIGluIHRoZSBSTkEtc2VxIGFuYWx5c2lzIGludHJvIGxlY3R1cmUuCkZvY3VzIG9uIHRoZSBjb250cmFzdCBjb21wYXJpbmcgRFBOIHRvIGNvbnRyb2wgYXQgNDhoLgoKIyBJbXBhY3Qgb2YgYmxvY2tpbmcKCkFzc2VzcyB0aGUgZGlmZmVyZW5jZSBpbiBudW1iZXIgb2YgREUgZ2VuZXMgd2hlbiBub3QgYmxvY2tpbmcgb24gcGF0aWVudCwgaS5lLiwgcmVtb3ZpbmcgdGhlIGBwYXRpZW50YCBlZmZlY3Qgb2YgdGhlIG1vZGVsLgpDb21wYXJlIHRoZSBwLXZhbHVlIGRpc3RyaWJ1dGlvbnMgYmV0d2VlbiB0aGVzZSB0d28gbW9kZWxzLgoKCiMgQW5hbHl6ZSB1c2luZyBmdWxsLXF1YW50aWxlIG5vcm1hbGl6YXRpb24KCiMjIEltcGxlbWVudCBhbmQgYXBwbHkgZnVsbC1xdWFudGlsZSBub3JtYWxpemF0aW9uCgpgYGB7cn0KIyMjIGltcGxlbWVudCBGUSBub3JtYWxpemF0aW9uCkZRbm9ybSA8LSBmdW5jdGlvbihjb3VudHMpewogIC4uLgp9CgojIyMgbm9ybWFsaXplIHRoZSBkYXRhIHVzaW5nIEZRCgpgYGAKCgojIyBgZWRnZVJgIGFuYWx5c2lzIHVzaW5nIGZ1bGwtcXVhbnRpbGUgbm9ybWFsaXplZCBkYXRhCgpEb24ndCBmb3Jnb3QgdG8gcmVtb3ZlIHRoZSBgY2FsY05vcm1GYWN0b3JzYCBzdGVwIGFzIGRhdGEgaGF2ZSBhbHJlYWR5IGJlZW4gbm9ybWFsaXplZCEKCmBgYHtyfQojIyMgdXNlIEZRLW5vcm1hbGl6ZWQgZGF0YSBhcyBpbnB1dCB0byB0aGUgZWRnZVIgYW5hbHlzaXMKYGBgCgoKIyMgQ29tcGFyZSBERSBnZW5lcyBhdCA1JSBGRFIKCg==</div>
 
 
 </div>
