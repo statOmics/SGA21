@@ -494,9 +494,10 @@ We can make the model more flexible by allowing for a `treatment * time` interac
  $$
  p(\theta | \mathbf{Y}) = \frac{p(\mathbf{Y} | \theta) p(\theta)}{\int_{\theta \in \Theta} p(\mathbf{Y} | \theta) p(\theta) d\theta}.
  $$
- Here, the posterior distribution $p(\theta | \mathbf{Y})$ is calculated based on the data likelihood $p(\mathbf{Y} | \theta)$, prior distribution $p(\theta)$ and the 'marginal likelihood' $\int_{\theta \in \Theta} p(\mathbf{Y} | \theta) p(\theta) d\theta$, where $\Theta$ denotes the parameter space of $\theta$.
- - In empirical Bayes, we basically take a semi-Bayesian approach to parameter estimation. Indeed, what makes it empirical is that we are using the data to estimate the prior distribution, unlike in a fully Bayesian analysis where the prior distribution must be specified independently of the data.
- - The basic assumption for this to make sense is that genes with similar means might have similar dispersion parameters (or variances), owing to the mean-variance trend. 
+ Here, the posterior distribution $p(\theta | \mathbf{Y})$ is calculated using the data likelihood $p(\mathbf{Y} | \theta)$, prior distribution $p(\theta)$ and the 'marginal likelihood' $\int_{\theta \in \Theta} p(\mathbf{Y} | \theta) p(\theta) d\theta$, where $\Theta$ denotes the parameter space of $\theta$. We can see that the posterior probability for a specific value of the parameter $\theta$ will be high if both the data likelihood as well as prior probability are high.
+ - In empirical Bayes, we basically take a semi-Bayesian approach to parameter estimation. Indeed, we do not assume a known prior distribution, but estimate it empirically using the data. This empirically estimated prior $\hat{p}(\theta)$ is then used to calculate the posterior distribution.
+ - While in some settings one can easily calculate the posterior distribution, sometimes it can be a hard problem. In such cases, it may be useful to restrict ourselves to calculating the **maximum a posteriori (MAP)** estimate, which corresponds to the mode of the posterior distribution. This can be considered to be analogous to point estimation in the frequentist setting.
+ - In our setting, we use genes with a similar average expression to moderate the dispersion estimate for a particular gene. The basic assumption for this to make sense is that genes with similar means might have similar dispersion parameters (or variances), owing to the mean-variance trend. 
 
  ---
  
@@ -527,6 +528,8 @@ dge <- estimateDisp(dge, design) # estimate dispersion estimates
 plotBCV(dge)
 fit <- glmFit(dge, design)
 head(fit$coefficients)
+
+
 ```
 
 # Challenge IV: Statistical inference across many genes
