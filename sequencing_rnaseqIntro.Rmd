@@ -153,9 +153,9 @@ table(patient, treatment, time) # agrees with paper.
 ```
 
  - After summing the technical replicates and appropriately updating the sample information, we again create a `SummarizedExperiment` object, which is essentially a data container that contains all relevant information about your experiment. Please see the [vignette](https://bioconductor.org/packages/release/bioc/vignettes/SummarizedExperiment/inst/doc/SummarizedExperiment.html) for more information on how to use this class.
- - By directly matching columns (samples) and rows (genes) to their relevant metadata, the `SummarizedExperiment` class avoids mistakes by mis-matching columns and rows with each other (provided you haven't mismatched them when you creat the object).
- - The `SummarizedExperiment` class is modular and extendable, and extensions exist for example for the analysis of single-cell RNA-seq data.
- - Due to their convenient organization and widely supported usage within Bioconductor, we will typically work with such containers in the analysis of RNA-seq data.
+ - By directly matching columns (samples) and rows (genes) to their relevant metadata, the `SummarizedExperiment` class avoids mistakes by mis-matching columns and rows with each other (provided you haven't mismatched them when you create the object).
+ - The `SummarizedExperiment` class is modular and extendable, and extensions exist for example for the analysis of single-cell RNA-seq data, i.e., the `SingleCellExperiment` class.
+ - Due to their convenient organization and widely supported usage within Bioconductor, we will typically work with such classes in the analysis of RNA-seq data.
  
 ## Independent filtering
 
@@ -236,7 +236,6 @@ par(mfrow=c(3,2), mar=c(2,2,2,1))
 for(kk in 1:length(idList)){
   # extract counts for each condition
   curCounts <- assays(se)$counts[,idList[[kk]]]
-  curFracs <- sweep(curCounts, 2, FUN="/", STATS=colSums(curCounts))
   plot(x = rowMeans(curCounts)+1,
        y = rowVars(curCounts)+1,
        pch = 16, cex=1/2,
@@ -376,7 +375,7 @@ dge$samples #normalization factors added to colData
 
 Let's check how our MD-plots look like after normalization. Note that, we can rewrite the GLM as
 $$ \log\left( \frac{\mu_{gi}}{N_i^s} \right) = \mathbf{X}_i^T \beta_g $$
-and so $\frac{\mu_{gi}}{N_i^s}$ can be considered as an 'offset-corrected count'.
+and so $\frac{\mu_{gi}}{N_i^s}$ can be considered as an 'offset-corrected average count'.
 
 We see that all MD-plots are now nicely centered around a log-fold-change of zero!
 
@@ -436,6 +435,17 @@ sizeFactors(dds)
 
 You may also want to check out the [StatQuest video on DESeq2 normalization](https://www.youtube.com/watch?v=UFB993xufUU).
 
+### Comparing TMM with DESeq2 normalization
+
+We can compare the size factors for both normalizations to verify if they agree on the normalization factors. Note we need to scale the effective library sizes from `edgeR` to enforce a similar scale as the size factors from `DESeq2`. While below we are using an arithmetic mean, a geometric mean may be used as well, which will be more robust to outlying effective library sizes.
+
+```{r}
+plot(effLibSize / mean(effLibSize), sizeFactors(dds),
+     xlab = "edgeR size factor",
+     ylab = "DESeq2 size factor")
+```
+
+
 ## Full-quantile (FQ) normalization
 
 In full-quantile normalization, originally introduced in the context of microarrays by [Bolstad *et al.* (2003)](https://academic.oup.com/bioinformatics/article/19/2/185/372664), the samples are forced to each have a distribution identical to the distribution of the median/average of the quantiles across samples.
@@ -490,11 +500,11 @@ We can make the model more flexible by allowing for a `treatment * time` interac
  - However, estimating parameters for the variance (this is, the dispersion parameter $\phi$ from the negative binomial or the variance parameter $\sigma$ from the Gaussian) is typically quite a bit harder.
  - In genomics, we often take advantage of the parallel structure of the thousands of regression models (one for each gene) to **borrow information across genes** in a procedure called **empirical Bayes**, as also seen in the proteomics part of this course. 
  - In the Bayesian setting, we use not only the data, but also a prior distribution, to derive our parameter estimates. In a traditional Bayesian analysis, one assumes an *a priori* known prior distribution, which reflects our prior belief into all possible values of the parameter. This prior distribution is completely independent of the observed data and the idea is that one specifies the prior distribution before observing the data. One can then use the data and prior distribution to derive a **posterior distribution** for the parameter(s) $\theta$ of interest through Bayes rule
- 
  $$
  p(\theta | \mathbf{Y}) = \frac{p(\mathbf{Y} | \theta) p(\theta)}{\int_{\theta \in \Theta} p(\mathbf{Y} | \theta) p(\theta) d\theta}.
  $$
- Here, the posterior distribution $p(\theta | \mathbf{Y})$ is calculated using the data likelihood $p(\mathbf{Y} | \theta)$, prior distribution $p(\theta)$ and the 'marginal likelihood' $\int_{\theta \in \Theta} p(\mathbf{Y} | \theta) p(\theta) d\theta$, where $\Theta$ denotes the parameter space of $\theta$. We can see that the posterior probability for a specific value of the parameter $\theta$ will be high if both the data likelihood as well as prior probability are high.
+    Here, the posterior distribution $p(\theta | \mathbf{Y})$ is calculated using the data likelihood $p(\mathbf{Y} | \theta)$, prior distribution $p(\theta)$ and the 'marginal likelihood' $\int_{\theta \in \Theta} p(\mathbf{Y} | \theta) p(\theta) d\theta$, where $\Theta$ denotes the parameter space of $\theta$. We can see that the posterior probability for a specific value of the parameter $\theta$ will be high if both the data likelihood as well as prior probability are high.
+    
  - In empirical Bayes, we basically take a semi-Bayesian approach to parameter estimation. Indeed, we do not assume a known prior distribution, but estimate it empirically using the data. This empirically estimated prior $\hat{p}(\theta)$ is then used to calculate the posterior distribution.
  - While in some settings one can easily calculate the posterior distribution, sometimes it can be a hard problem. In such cases, it may be useful to restrict ourselves to calculating the **maximum a posteriori (MAP)** estimate, which corresponds to the mode of the posterior distribution. This can be considered to be analogous to point estimation in the frequentist setting.
  - In our setting, we use genes with a similar average expression to moderate the dispersion estimate for a particular gene. The basic assumption for this to make sense is that genes with similar means might have similar dispersion parameters (or variances), owing to the mean-variance trend. 
@@ -519,9 +529,6 @@ Let's fit the model using `edgeR`.
 ```{r}
 design <- model.matrix(~ treatment*time + patient, data=colData(se))
 
-# independent filtering
-keep <- filterByExpr(se, design = design)
-se <- se[keep,]
 
 dge <- calcNormFactors(se)
 dge <- estimateDisp(dge, design) # estimate dispersion estimates
