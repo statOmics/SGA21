@@ -1063,19 +1063,21 @@ RSS(\boldsymbol{\beta})&amp;=&amp;(\mathbf{Y}-\mathbf{X\beta})^T(\mathbf{Y}-\mat
 <h3><span class="header-section-number">3.3.4</span> fit robust linear model</h3>
 <div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1"></a><span class="kw">library</span>(MASS)</span>
 <span id="cb69-2"><a href="#cb69-2"></a>mEst &lt;-<span class="st"> </span><span class="kw">rlm</span>(ysim <span class="op">~</span><span class="st"> </span>xsim)</span></code></pre></div>
+<pre><code>## Warning in rlm.default(x, y, weights, method = method, wt.method = wt.method, :
+## &#39;rlm&#39; failed to converge in 20 steps</code></pre>
 <div id="plot-results" class="section level4">
 <h4><span class="header-section-number">3.3.4.1</span> plot results</h4>
-<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1"></a><span class="kw">plot</span>(xsim, ysim)</span>
-<span id="cb70-2"><a href="#cb70-2"></a><span class="kw">abline</span>(ols, <span class="dt">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb70-3"><a href="#cb70-3"></a><span class="kw">abline</span>(mEst, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb70-4"><a href="#cb70-4"></a><span class="kw">legend</span>(<span class="st">&quot;topleft&quot;</span>,</span>
-<span id="cb70-5"><a href="#cb70-5"></a>  <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;OLS&quot;</span>, <span class="st">&quot;M-estimation&quot;</span>),</span>
-<span id="cb70-6"><a href="#cb70-6"></a>  <span class="dt">lwd =</span> <span class="dv">2</span>,</span>
-<span id="cb70-7"><a href="#cb70-7"></a>  <span class="dt">col =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1"></a><span class="kw">plot</span>(xsim, ysim)</span>
+<span id="cb71-2"><a href="#cb71-2"></a><span class="kw">abline</span>(ols, <span class="dt">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb71-3"><a href="#cb71-3"></a><span class="kw">abline</span>(mEst, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb71-4"><a href="#cb71-4"></a><span class="kw">legend</span>(<span class="st">&quot;topleft&quot;</span>,</span>
+<span id="cb71-5"><a href="#cb71-5"></a>  <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;OLS&quot;</span>, <span class="st">&quot;M-estimation&quot;</span>),</span>
+<span id="cb71-6"><a href="#cb71-6"></a>  <span class="dt">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb71-7"><a href="#cb71-7"></a>  <span class="dt">col =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>)</span></code></pre></div>
 <p><img src="technicalDetailsProteomics_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
-<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1"></a><span class="kw">round</span>(mEst<span class="op">$</span>w,<span class="dv">3</span>)</span></code></pre></div>
-<pre><code>##  [1] 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000
-## [13] 1.000 1.000 1.000 1.000 1.000 1.000 1.000 0.236</code></pre>
+<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1"></a><span class="kw">round</span>(mEst<span class="op">$</span>w,<span class="dv">3</span>)</span></code></pre></div>
+<pre><code>##  [1] 1.000 0.557 1.000 1.000 0.552 1.000 1.000 1.000 1.000 1.000 1.000 1.000
+## [13] 1.000 0.493 1.000 1.000 0.938 1.000 1.000 0.126</code></pre>
 <p>The plot clearly shows that the outlier has a high impact on the slope estimate. This is because the outlier is at a high leverage point, i.e. far from the average covariate pattern.</p>
 </div>
 </div>
@@ -1083,75 +1085,75 @@ RSS(\boldsymbol{\beta})&amp;=&amp;(\mathbf{Y}-\mathbf{X\beta})^T(\mathbf{Y}-\mat
 <h3><span class="header-section-number">3.3.5</span> Implement it yourself</h3>
 <div id="start-from-ols-fit" class="section level4">
 <h4><span class="header-section-number">3.3.5.1</span> start from ols fit</h4>
-<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1"></a>lmMod &lt;-<span class="st"> </span>ols</span></code></pre></div>
+<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1"></a>lmMod &lt;-<span class="st"> </span>ols</span></code></pre></div>
 </div>
 <div id="use-robust-variance-estimator-to-calculate-the-z" class="section level4">
 <h4><span class="header-section-number">3.3.5.2</span> Use robust variance estimator to calculate the z</h4>
-<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1"></a>res &lt;-<span class="st"> </span>lmMod<span class="op">$</span>res</span>
-<span id="cb74-2"><a href="#cb74-2"></a>stdev &lt;-<span class="st"> </span><span class="kw">mad</span>(res)</span>
-<span id="cb74-3"><a href="#cb74-3"></a>stdev</span></code></pre></div>
-<pre><code>## [1] 1.338554</code></pre>
-<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1"></a><span class="kw">median</span>(<span class="kw">abs</span>(res<span class="op">-</span><span class="kw">median</span>(res)))<span class="op">*</span><span class="fl">1.4826</span></span></code></pre></div>
-<pre><code>## [1] 1.338554</code></pre>
-<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1"></a>z &lt;-<span class="st"> </span>res<span class="op">/</span>stdev</span></code></pre></div>
+<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1"></a>res &lt;-<span class="st"> </span>lmMod<span class="op">$</span>res</span>
+<span id="cb75-2"><a href="#cb75-2"></a>stdev &lt;-<span class="st"> </span><span class="kw">mad</span>(res)</span>
+<span id="cb75-3"><a href="#cb75-3"></a>stdev</span></code></pre></div>
+<pre><code>## [1] 1.444622</code></pre>
+<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1"></a><span class="kw">median</span>(<span class="kw">abs</span>(res<span class="op">-</span><span class="kw">median</span>(res)))<span class="op">*</span><span class="fl">1.4826</span></span></code></pre></div>
+<pre><code>## [1] 1.444622</code></pre>
+<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1"></a>z &lt;-<span class="st"> </span>res<span class="op">/</span>stdev</span></code></pre></div>
 </div>
 <div id="calculate-weights-use-psi.huber-function" class="section level4">
 <h4><span class="header-section-number">3.3.5.3</span> Calculate weights use psi.huber function</h4>
-<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1"></a>w &lt;-<span class="st"> </span><span class="kw">psi.huber</span>(z)</span>
-<span id="cb79-2"><a href="#cb79-2"></a><span class="kw">plot</span>(xsim, ysim)</span></code></pre></div>
+<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1"></a>w &lt;-<span class="st"> </span><span class="kw">psi.huber</span>(z)</span>
+<span id="cb80-2"><a href="#cb80-2"></a><span class="kw">plot</span>(xsim, ysim)</span></code></pre></div>
 <p><img src="technicalDetailsProteomics_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
-<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1"></a><span class="kw">plot</span>(xsim, lmMod<span class="op">$</span>res, <span class="dt">cex =</span> w, <span class="dt">pch =</span> <span class="dv">19</span>, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>)</span>
-<span id="cb80-2"><a href="#cb80-2"></a><span class="kw">points</span>(xsim,lmMod<span class="op">$</span>res, <span class="dt">cex =</span> <span class="fl">1.5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1"></a><span class="kw">plot</span>(xsim, lmMod<span class="op">$</span>res, <span class="dt">cex =</span> w, <span class="dt">pch =</span> <span class="dv">19</span>, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>)</span>
+<span id="cb81-2"><a href="#cb81-2"></a><span class="kw">points</span>(xsim,lmMod<span class="op">$</span>res, <span class="dt">cex =</span> <span class="fl">1.5</span>)</span></code></pre></div>
 <p><img src="technicalDetailsProteomics_files/figure-html/unnamed-chunk-29-2.png" width="672" /></p>
 </div>
 <div id="perform-a-weighted-regression-use-lm-with-weightsw" class="section level4">
 <h4><span class="header-section-number">3.3.5.4</span> Perform a weighted regression use lm with weights=w</h4>
-<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1"></a>lmMod &lt;-<span class="st"> </span><span class="kw">lm</span>(ysim<span class="op">~</span>xsim, <span class="dt">weights =</span> w)</span></code></pre></div>
+<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1"></a>lmMod &lt;-<span class="st"> </span><span class="kw">lm</span>(ysim<span class="op">~</span>xsim, <span class="dt">weights =</span> w)</span></code></pre></div>
 </div>
 <div id="plot-results-1" class="section level4">
 <h4><span class="header-section-number">3.3.5.5</span> Plot results</h4>
-<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1"></a><span class="kw">plot</span>(xsim, ysim)</span>
-<span id="cb82-2"><a href="#cb82-2"></a><span class="kw">abline</span>(ols, <span class="dt">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb82-3"><a href="#cb82-3"></a><span class="kw">abline</span>(mEst, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb82-4"><a href="#cb82-4"></a><span class="kw">abline</span>(lmMod, <span class="dt">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb82-5"><a href="#cb82-5"></a><span class="kw">legend</span>(<span class="st">&quot;topleft&quot;</span>,</span>
-<span id="cb82-6"><a href="#cb82-6"></a>  <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;OLS&quot;</span>,<span class="st">&quot;M-estimation&quot;</span>,<span class="st">&quot;Our Impl&quot;</span>),</span>
-<span id="cb82-7"><a href="#cb82-7"></a>  <span class="dt">lwd =</span> <span class="dv">2</span>,</span>
-<span id="cb82-8"><a href="#cb82-8"></a>  <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1"></a><span class="kw">plot</span>(xsim, ysim)</span>
+<span id="cb83-2"><a href="#cb83-2"></a><span class="kw">abline</span>(ols, <span class="dt">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb83-3"><a href="#cb83-3"></a><span class="kw">abline</span>(mEst, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb83-4"><a href="#cb83-4"></a><span class="kw">abline</span>(lmMod, <span class="dt">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb83-5"><a href="#cb83-5"></a><span class="kw">legend</span>(<span class="st">&quot;topleft&quot;</span>,</span>
+<span id="cb83-6"><a href="#cb83-6"></a>  <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;OLS&quot;</span>,<span class="st">&quot;M-estimation&quot;</span>,<span class="st">&quot;Our Impl&quot;</span>),</span>
+<span id="cb83-7"><a href="#cb83-7"></a>  <span class="dt">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb83-8"><a href="#cb83-8"></a>  <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue&quot;</span>))</span></code></pre></div>
 <p><img src="technicalDetailsProteomics_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
 </div>
 <div id="repeat-this-many-times" class="section level4">
 <h4><span class="header-section-number">3.3.5.6</span> Repeat this many times</h4>
-<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1"></a>lmMod &lt;-<span class="st"> </span>ols</span>
-<span id="cb83-2"><a href="#cb83-2"></a><span class="cf">for</span> (k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">3</span>)</span>
-<span id="cb83-3"><a href="#cb83-3"></a>{</span>
-<span id="cb83-4"><a href="#cb83-4"></a><span class="co">######repeat this part several times until convergence</span></span>
-<span id="cb83-5"><a href="#cb83-5"></a><span class="co">#use robust variance estimator to calculate the z</span></span>
-<span id="cb83-6"><a href="#cb83-6"></a>res &lt;-<span class="st"> </span>lmMod<span class="op">$</span>res</span>
-<span id="cb83-7"><a href="#cb83-7"></a>stdev &lt;-<span class="st"> </span><span class="kw">mad</span>(res)</span>
-<span id="cb83-8"><a href="#cb83-8"></a><span class="kw">median</span>(<span class="kw">abs</span>(res<span class="op">-</span><span class="kw">median</span>(res)))<span class="op">*</span><span class="fl">1.4826</span></span>
-<span id="cb83-9"><a href="#cb83-9"></a></span>
-<span id="cb83-10"><a href="#cb83-10"></a>z &lt;-<span class="st"> </span>res<span class="op">/</span>stdev</span>
-<span id="cb83-11"><a href="#cb83-11"></a></span>
-<span id="cb83-12"><a href="#cb83-12"></a><span class="co">#calculate weights</span></span>
-<span id="cb83-13"><a href="#cb83-13"></a><span class="co">#use psi.huber function</span></span>
-<span id="cb83-14"><a href="#cb83-14"></a>w &lt;-<span class="st"> </span><span class="kw">psi.huber</span>(z)</span>
-<span id="cb83-15"><a href="#cb83-15"></a></span>
-<span id="cb83-16"><a href="#cb83-16"></a><span class="co">#perform a weighted regression use lm with weights=w</span></span>
-<span id="cb83-17"><a href="#cb83-17"></a>lmMod &lt;-<span class="st"> </span><span class="kw">lm</span>(ysim <span class="op">~</span><span class="st"> </span>xsim, <span class="dt">weights =</span> w)</span>
-<span id="cb83-18"><a href="#cb83-18"></a></span>
-<span id="cb83-19"><a href="#cb83-19"></a><span class="co">#plot results</span></span>
-<span id="cb83-20"><a href="#cb83-20"></a><span class="kw">plot</span>(xsim,ysim)</span>
-<span id="cb83-21"><a href="#cb83-21"></a><span class="kw">abline</span>(ols, <span class="dt">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb83-22"><a href="#cb83-22"></a><span class="kw">abline</span>(mEst, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb83-23"><a href="#cb83-23"></a><span class="kw">abline</span>(lmMod, <span class="dt">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb83-24"><a href="#cb83-24"></a><span class="kw">legend</span>(<span class="st">&quot;topleft&quot;</span>,</span>
-<span id="cb83-25"><a href="#cb83-25"></a>  <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;OLS&quot;</span>,<span class="st">&quot;M-estimation&quot;</span>,<span class="st">&quot;Our Impl&quot;</span>),</span>
-<span id="cb83-26"><a href="#cb83-26"></a>  <span class="dt">lwd =</span> <span class="dv">2</span>,</span>
-<span id="cb83-27"><a href="#cb83-27"></a>  <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue&quot;</span>)</span>
-<span id="cb83-28"><a href="#cb83-28"></a>  )</span>
-<span id="cb83-29"><a href="#cb83-29"></a><span class="co">####################################</span></span>
-<span id="cb83-30"><a href="#cb83-30"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1"></a>lmMod &lt;-<span class="st"> </span>ols</span>
+<span id="cb84-2"><a href="#cb84-2"></a><span class="cf">for</span> (k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">3</span>)</span>
+<span id="cb84-3"><a href="#cb84-3"></a>{</span>
+<span id="cb84-4"><a href="#cb84-4"></a><span class="co">######repeat this part several times until convergence</span></span>
+<span id="cb84-5"><a href="#cb84-5"></a><span class="co">#use robust variance estimator to calculate the z</span></span>
+<span id="cb84-6"><a href="#cb84-6"></a>res &lt;-<span class="st"> </span>lmMod<span class="op">$</span>res</span>
+<span id="cb84-7"><a href="#cb84-7"></a>stdev &lt;-<span class="st"> </span><span class="kw">mad</span>(res)</span>
+<span id="cb84-8"><a href="#cb84-8"></a><span class="kw">median</span>(<span class="kw">abs</span>(res<span class="op">-</span><span class="kw">median</span>(res)))<span class="op">*</span><span class="fl">1.4826</span></span>
+<span id="cb84-9"><a href="#cb84-9"></a></span>
+<span id="cb84-10"><a href="#cb84-10"></a>z &lt;-<span class="st"> </span>res<span class="op">/</span>stdev</span>
+<span id="cb84-11"><a href="#cb84-11"></a></span>
+<span id="cb84-12"><a href="#cb84-12"></a><span class="co">#calculate weights</span></span>
+<span id="cb84-13"><a href="#cb84-13"></a><span class="co">#use psi.huber function</span></span>
+<span id="cb84-14"><a href="#cb84-14"></a>w &lt;-<span class="st"> </span><span class="kw">psi.huber</span>(z)</span>
+<span id="cb84-15"><a href="#cb84-15"></a></span>
+<span id="cb84-16"><a href="#cb84-16"></a><span class="co">#perform a weighted regression use lm with weights=w</span></span>
+<span id="cb84-17"><a href="#cb84-17"></a>lmMod &lt;-<span class="st"> </span><span class="kw">lm</span>(ysim <span class="op">~</span><span class="st"> </span>xsim, <span class="dt">weights =</span> w)</span>
+<span id="cb84-18"><a href="#cb84-18"></a></span>
+<span id="cb84-19"><a href="#cb84-19"></a><span class="co">#plot results</span></span>
+<span id="cb84-20"><a href="#cb84-20"></a><span class="kw">plot</span>(xsim,ysim)</span>
+<span id="cb84-21"><a href="#cb84-21"></a><span class="kw">abline</span>(ols, <span class="dt">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb84-22"><a href="#cb84-22"></a><span class="kw">abline</span>(mEst, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb84-23"><a href="#cb84-23"></a><span class="kw">abline</span>(lmMod, <span class="dt">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb84-24"><a href="#cb84-24"></a><span class="kw">legend</span>(<span class="st">&quot;topleft&quot;</span>,</span>
+<span id="cb84-25"><a href="#cb84-25"></a>  <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;OLS&quot;</span>,<span class="st">&quot;M-estimation&quot;</span>,<span class="st">&quot;Our Impl&quot;</span>),</span>
+<span id="cb84-26"><a href="#cb84-26"></a>  <span class="dt">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb84-27"><a href="#cb84-27"></a>  <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue&quot;</span>)</span>
+<span id="cb84-28"><a href="#cb84-28"></a>  )</span>
+<span id="cb84-29"><a href="#cb84-29"></a><span class="co">####################################</span></span>
+<span id="cb84-30"><a href="#cb84-30"></a>}</span></code></pre></div>
 <p><img src="technicalDetailsProteomics_files/figure-html/unnamed-chunk-32-1.png" width="672" /><img src="technicalDetailsProteomics_files/figure-html/unnamed-chunk-32-2.png" width="672" /><img src="technicalDetailsProteomics_files/figure-html/unnamed-chunk-32-3.png" width="672" /></p>
 </div>
 </div>
@@ -1232,102 +1234,102 @@ g(\boldsymbol{\theta}\vert\mathbf{Y})=\frac{f(Y\vert \boldsymbol{\theta})g(\bold
 <li>estimating the prior parameters <span class="math inline">\(s_0\)</span> and <span class="math inline">\(df_0\)</span></li>
 <li>replacing the estimated protein-wise variances (<span class="math inline">\(s_p^2\)</span>) with the maximum a-posteriori variance <span class="math display">\[\tilde{s}_p = \frac{d_p s^2_p + d_0 s_0^2}{d_p+d_0}\]</span></li>
 </ol>
-<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1"></a>sd &lt;-<span class="st"> </span><span class="kw">sapply</span>(</span>
-<span id="cb84-2"><a href="#cb84-2"></a>  <span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>msqrobModels,</span>
-<span id="cb84-3"><a href="#cb84-3"></a>  getSigma) <span class="op">%&gt;%</span></span>
-<span id="cb84-4"><a href="#cb84-4"></a><span class="st">  </span>na.exclude</span>
-<span id="cb84-5"><a href="#cb84-5"></a>sdPost &lt;-<span class="st"> </span><span class="kw">sapply</span>(</span>
-<span id="cb84-6"><a href="#cb84-6"></a>  <span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>msqrobModels,</span>
-<span id="cb84-7"><a href="#cb84-7"></a>  getSigmaPosterior) <span class="op">%&gt;%</span></span>
-<span id="cb84-8"><a href="#cb84-8"></a><span class="st">  </span>na.exclude</span>
-<span id="cb84-9"><a href="#cb84-9"></a></span>
-<span id="cb84-10"><a href="#cb84-10"></a>p1 &lt;-<span class="st"> </span><span class="kw">qplot</span>(sd,sdPost) <span class="op">+</span></span>
-<span id="cb84-11"><a href="#cb84-11"></a><span class="st">  </span><span class="kw">geom_abline</span>()</span>
-<span id="cb84-12"><a href="#cb84-12"></a>p1</span></code></pre></div>
+<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1"></a>sd &lt;-<span class="st"> </span><span class="kw">sapply</span>(</span>
+<span id="cb85-2"><a href="#cb85-2"></a>  <span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>msqrobModels,</span>
+<span id="cb85-3"><a href="#cb85-3"></a>  getSigma) <span class="op">%&gt;%</span></span>
+<span id="cb85-4"><a href="#cb85-4"></a><span class="st">  </span>na.exclude</span>
+<span id="cb85-5"><a href="#cb85-5"></a>sdPost &lt;-<span class="st"> </span><span class="kw">sapply</span>(</span>
+<span id="cb85-6"><a href="#cb85-6"></a>  <span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>msqrobModels,</span>
+<span id="cb85-7"><a href="#cb85-7"></a>  getSigmaPosterior) <span class="op">%&gt;%</span></span>
+<span id="cb85-8"><a href="#cb85-8"></a><span class="st">  </span>na.exclude</span>
+<span id="cb85-9"><a href="#cb85-9"></a></span>
+<span id="cb85-10"><a href="#cb85-10"></a>p1 &lt;-<span class="st"> </span><span class="kw">qplot</span>(sd,sdPost) <span class="op">+</span></span>
+<span id="cb85-11"><a href="#cb85-11"></a><span class="st">  </span><span class="kw">geom_abline</span>()</span>
+<span id="cb85-12"><a href="#cb85-12"></a>p1</span></code></pre></div>
 <p><img src="technicalDetailsProteomics_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
 <div id="how-do-we-get-to-the-posterior-standard-deviation" class="section level3">
 <h3><span class="header-section-number">4.5.1</span> How do we get to the posterior standard deviation?</h3>
-<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1"></a>hlp &lt;-<span class="st"> </span>limma<span class="op">::</span><span class="kw">squeezeVar</span>(</span>
-<span id="cb85-2"><a href="#cb85-2"></a>  <span class="dt">var =</span> <span class="kw">sapply</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>msqrobModels, getVar),</span>
-<span id="cb85-3"><a href="#cb85-3"></a>  <span class="dt">df =</span> <span class="kw">sapply</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>msqrobModels, getDF)</span>
-<span id="cb85-4"><a href="#cb85-4"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1"></a>hlp &lt;-<span class="st"> </span>limma<span class="op">::</span><span class="kw">squeezeVar</span>(</span>
+<span id="cb86-2"><a href="#cb86-2"></a>  <span class="dt">var =</span> <span class="kw">sapply</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>msqrobModels, getVar),</span>
+<span id="cb86-3"><a href="#cb86-3"></a>  <span class="dt">df =</span> <span class="kw">sapply</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>msqrobModels, getDF)</span>
+<span id="cb86-4"><a href="#cb86-4"></a>  )</span></code></pre></div>
 <div id="degrees-of-freedom-of-prior" class="section level4">
 <h4><span class="header-section-number">4.5.1.1</span> Degrees of freedom of prior</h4>
-<div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1"></a>hlp<span class="op">$</span>df.prior</span></code></pre></div>
+<div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1"></a>hlp<span class="op">$</span>df.prior</span></code></pre></div>
 <pre><code>## [1] 3.385413</code></pre>
-<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1"></a>model &lt;-<span class="st"> </span><span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>msqrobModels[[<span class="dv">2</span>]]</span>
-<span id="cb88-2"><a href="#cb88-2"></a><span class="kw">getDfPosterior</span>(model) <span class="op">-</span><span class="st"> </span><span class="kw">getDF</span>(model)</span></code></pre></div>
+<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1"></a>model &lt;-<span class="st"> </span><span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>msqrobModels[[<span class="dv">2</span>]]</span>
+<span id="cb89-2"><a href="#cb89-2"></a><span class="kw">getDfPosterior</span>(model) <span class="op">-</span><span class="st"> </span><span class="kw">getDF</span>(model)</span></code></pre></div>
 <pre><code>## [1] 3.385413</code></pre>
 </div>
 <div id="posterior-variance" class="section level4">
 <h4><span class="header-section-number">4.5.1.2</span> posterior variance</h4>
 <p><span class="math display">\[\tilde s_p=\sqrt{\frac{d_p\times s^2_p + d_0 s_0^2}{d_p+d_0}} \]</span></p>
-<div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1"></a>hlp<span class="op">$</span>var.prior</span></code></pre></div>
+<div class="sourceCode" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1"></a>hlp<span class="op">$</span>var.prior</span></code></pre></div>
 <pre><code>## [1] 0.2489859</code></pre>
-<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1"></a>varPost &lt;-<span class="st"> </span>(<span class="kw">getVar</span>(model) <span class="op">*</span><span class="st"> </span><span class="kw">getDF</span>(model) <span class="op">+</span><span class="st"> </span>hlp<span class="op">$</span>df.prior <span class="op">*</span><span class="st"> </span>hlp<span class="op">$</span>var.prior)<span class="op">/</span>(<span class="kw">getDF</span>(model)<span class="op">+</span>hlp<span class="op">$</span>df.prior)</span>
-<span id="cb92-2"><a href="#cb92-2"></a><span class="kw">sqrt</span>(varPost)</span></code></pre></div>
+<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1"></a>varPost &lt;-<span class="st"> </span>(<span class="kw">getVar</span>(model) <span class="op">*</span><span class="st"> </span><span class="kw">getDF</span>(model) <span class="op">+</span><span class="st"> </span>hlp<span class="op">$</span>df.prior <span class="op">*</span><span class="st"> </span>hlp<span class="op">$</span>var.prior)<span class="op">/</span>(<span class="kw">getDF</span>(model)<span class="op">+</span>hlp<span class="op">$</span>df.prior)</span>
+<span id="cb93-2"><a href="#cb93-2"></a><span class="kw">sqrt</span>(varPost)</span></code></pre></div>
 <pre><code>## [1] 0.6607153</code></pre>
-<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1"></a><span class="kw">getSigmaPosterior</span>(model)</span></code></pre></div>
+<div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1"></a><span class="kw">getSigmaPosterior</span>(model)</span></code></pre></div>
 <pre><code>## [1] 0.6607153</code></pre>
 <p>Hence, standard deviations are shrunken towards prior standard deviation! Large standard deviations become smaller and smaller standard deviations become larger!</p>
-<div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1"></a>p1 <span class="op">+</span></span>
-<span id="cb96-2"><a href="#cb96-2"></a><span class="st">  </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> hlp<span class="op">$</span>var.prior<span class="op">^</span>.<span class="dv">5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1"></a>p1 <span class="op">+</span></span>
+<span id="cb97-2"><a href="#cb97-2"></a><span class="st">  </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> hlp<span class="op">$</span>var.prior<span class="op">^</span>.<span class="dv">5</span>)</span></code></pre></div>
 <p><img src="technicalDetailsProteomics_files/figure-html/unnamed-chunk-37-1.png" width="672" /></p>
 </div>
 </div>
 <div id="illustration-via-simulation" class="section level3">
 <h3><span class="header-section-number">4.5.2</span> Illustration via Simulation</h3>
 <p>Suppose that the standard deviations for all proteins are the same and are equal to 1. We simulate proteins with the same mean as the fitted mean in the experiment but with standard deviation of 1.</p>
-<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1"></a>nCoefs &lt;-<span class="st"> </span><span class="kw">getCoef</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>msqrobModels[[<span class="dv">2</span>]]) <span class="op">%&gt;%</span><span class="st"> </span>length</span>
-<span id="cb97-2"><a href="#cb97-2"></a>coefs &lt;-</span>
-<span id="cb97-3"><a href="#cb97-3"></a><span class="kw">sapply</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>msqrobModels,</span>
-<span id="cb97-4"><a href="#cb97-4"></a>    <span class="cf">function</span>(x) <span class="kw">getCoef</span>(x)[<span class="dv">1</span><span class="op">:</span>nCoefs]</span>
-<span id="cb97-5"><a href="#cb97-5"></a>  ) <span class="op">%&gt;%</span></span>
-<span id="cb97-6"><a href="#cb97-6"></a><span class="st">  </span>t <span class="op">%&gt;%</span></span>
-<span id="cb97-7"><a href="#cb97-7"></a><span class="st">  </span>na.exclude</span>
-<span id="cb97-8"><a href="#cb97-8"></a></span>
-<span id="cb97-9"><a href="#cb97-9"></a></span>
-<span id="cb97-10"><a href="#cb97-10"></a>p &lt;-<span class="st"> </span><span class="kw">nrow</span>(coefs)</span>
-<span id="cb97-11"><a href="#cb97-11"></a>n &lt;-<span class="st"> </span><span class="kw">ncol</span>(pe[[<span class="dv">1</span>]])</span>
-<span id="cb97-12"><a href="#cb97-12"></a>f0_equalVar &lt;-<span class="st"> </span><span class="kw">sapply</span>(<span class="dv">1</span><span class="op">:</span>p,</span>
-<span id="cb97-13"><a href="#cb97-13"></a>  <span class="dt">FUN=</span><span class="cf">function</span>(i, n, betas, sd, design) {</span>
-<span id="cb97-14"><a href="#cb97-14"></a>  <span class="kw">rnorm</span>(n, <span class="dt">mean =</span> design <span class="op">%*%</span><span class="st"> </span>betas[i,], <span class="dt">sd =</span> sd)},</span>
-<span id="cb97-15"><a href="#cb97-15"></a>  <span class="dt">n =</span> n,</span>
-<span id="cb97-16"><a href="#cb97-16"></a>  <span class="dt">betas =</span> coefs,</span>
-<span id="cb97-17"><a href="#cb97-17"></a>  <span class="dt">sd =</span> <span class="dv">1</span>,</span>
-<span id="cb97-18"><a href="#cb97-18"></a>  <span class="dt">design =</span> X</span>
-<span id="cb97-19"><a href="#cb97-19"></a>  ) <span class="op">%&gt;%</span></span>
-<span id="cb97-20"><a href="#cb97-20"></a><span class="st">  </span>t</span>
-<span id="cb97-21"><a href="#cb97-21"></a><span class="kw">colnames</span>(f0_equalVar) &lt;-<span class="st"> </span><span class="kw">colnames</span>(pe[[<span class="dv">1</span>]])</span>
-<span id="cb97-22"><a href="#cb97-22"></a>sims &lt;-<span class="st"> </span><span class="kw">readQFeatures</span>(f0_equalVar <span class="op">%&gt;%</span><span class="st"> </span>as.data.frame, <span class="dt">ecol =</span> <span class="dv">1</span><span class="op">:</span>n, <span class="dt">name =</span> <span class="st">&quot;sim_equalVar&quot;</span>)</span>
-<span id="cb97-23"><a href="#cb97-23"></a><span class="kw">colData</span>(sims) &lt;-<span class="st"> </span><span class="kw">colData</span>(pe)</span>
-<span id="cb97-24"><a href="#cb97-24"></a>sims &lt;-<span class="st"> </span><span class="kw">msqrob</span>(<span class="dt">object =</span> sims, <span class="dt">i =</span> <span class="st">&quot;sim_equalVar&quot;</span>, <span class="dt">formula =</span> <span class="op">~</span><span class="st"> </span>location<span class="op">*</span>tissue <span class="op">+</span><span class="st"> </span>patient)</span>
-<span id="cb97-25"><a href="#cb97-25"></a></span>
-<span id="cb97-26"><a href="#cb97-26"></a>sd0 &lt;-<span class="st"> </span><span class="kw">sapply</span>(</span>
-<span id="cb97-27"><a href="#cb97-27"></a>  <span class="kw">rowData</span>(sims[[<span class="st">&quot;sim_equalVar&quot;</span>]])<span class="op">$</span>msqrobModels,</span>
-<span id="cb97-28"><a href="#cb97-28"></a>  getSigma) <span class="op">%&gt;%</span></span>
-<span id="cb97-29"><a href="#cb97-29"></a><span class="st">  </span>na.exclude</span>
-<span id="cb97-30"><a href="#cb97-30"></a>sdPost0 &lt;-<span class="st"> </span><span class="kw">sapply</span>(</span>
-<span id="cb97-31"><a href="#cb97-31"></a>  <span class="kw">rowData</span>(sims[[<span class="st">&quot;sim_equalVar&quot;</span>]])<span class="op">$</span>msqrobModels,</span>
-<span id="cb97-32"><a href="#cb97-32"></a>  getSigmaPosterior) <span class="op">%&gt;%</span></span>
-<span id="cb97-33"><a href="#cb97-33"></a><span class="st">  </span>na.exclude</span>
-<span id="cb97-34"><a href="#cb97-34"></a></span>
-<span id="cb97-35"><a href="#cb97-35"></a><span class="kw">qplot</span>(sd0,sdPost0) <span class="op">+</span></span>
-<span id="cb97-36"><a href="#cb97-36"></a><span class="st">  </span><span class="kw">geom_abline</span>() <span class="op">+</span></span>
-<span id="cb97-37"><a href="#cb97-37"></a><span class="st">  </span><span class="kw">ylim</span>(<span class="kw">range</span>(sd0))</span></code></pre></div>
+<div class="sourceCode" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1"></a>nCoefs &lt;-<span class="st"> </span><span class="kw">getCoef</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>msqrobModels[[<span class="dv">2</span>]]) <span class="op">%&gt;%</span><span class="st"> </span>length</span>
+<span id="cb98-2"><a href="#cb98-2"></a>coefs &lt;-</span>
+<span id="cb98-3"><a href="#cb98-3"></a><span class="kw">sapply</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>msqrobModels,</span>
+<span id="cb98-4"><a href="#cb98-4"></a>    <span class="cf">function</span>(x) <span class="kw">getCoef</span>(x)[<span class="dv">1</span><span class="op">:</span>nCoefs]</span>
+<span id="cb98-5"><a href="#cb98-5"></a>  ) <span class="op">%&gt;%</span></span>
+<span id="cb98-6"><a href="#cb98-6"></a><span class="st">  </span>t <span class="op">%&gt;%</span></span>
+<span id="cb98-7"><a href="#cb98-7"></a><span class="st">  </span>na.exclude</span>
+<span id="cb98-8"><a href="#cb98-8"></a></span>
+<span id="cb98-9"><a href="#cb98-9"></a></span>
+<span id="cb98-10"><a href="#cb98-10"></a>p &lt;-<span class="st"> </span><span class="kw">nrow</span>(coefs)</span>
+<span id="cb98-11"><a href="#cb98-11"></a>n &lt;-<span class="st"> </span><span class="kw">ncol</span>(pe[[<span class="dv">1</span>]])</span>
+<span id="cb98-12"><a href="#cb98-12"></a>f0_equalVar &lt;-<span class="st"> </span><span class="kw">sapply</span>(<span class="dv">1</span><span class="op">:</span>p,</span>
+<span id="cb98-13"><a href="#cb98-13"></a>  <span class="dt">FUN=</span><span class="cf">function</span>(i, n, betas, sd, design) {</span>
+<span id="cb98-14"><a href="#cb98-14"></a>  <span class="kw">rnorm</span>(n, <span class="dt">mean =</span> design <span class="op">%*%</span><span class="st"> </span>betas[i,], <span class="dt">sd =</span> sd)},</span>
+<span id="cb98-15"><a href="#cb98-15"></a>  <span class="dt">n =</span> n,</span>
+<span id="cb98-16"><a href="#cb98-16"></a>  <span class="dt">betas =</span> coefs,</span>
+<span id="cb98-17"><a href="#cb98-17"></a>  <span class="dt">sd =</span> <span class="dv">1</span>,</span>
+<span id="cb98-18"><a href="#cb98-18"></a>  <span class="dt">design =</span> X</span>
+<span id="cb98-19"><a href="#cb98-19"></a>  ) <span class="op">%&gt;%</span></span>
+<span id="cb98-20"><a href="#cb98-20"></a><span class="st">  </span>t</span>
+<span id="cb98-21"><a href="#cb98-21"></a><span class="kw">colnames</span>(f0_equalVar) &lt;-<span class="st"> </span><span class="kw">colnames</span>(pe[[<span class="dv">1</span>]])</span>
+<span id="cb98-22"><a href="#cb98-22"></a>sims &lt;-<span class="st"> </span><span class="kw">readQFeatures</span>(f0_equalVar <span class="op">%&gt;%</span><span class="st"> </span>as.data.frame, <span class="dt">ecol =</span> <span class="dv">1</span><span class="op">:</span>n, <span class="dt">name =</span> <span class="st">&quot;sim_equalVar&quot;</span>)</span>
+<span id="cb98-23"><a href="#cb98-23"></a><span class="kw">colData</span>(sims) &lt;-<span class="st"> </span><span class="kw">colData</span>(pe)</span>
+<span id="cb98-24"><a href="#cb98-24"></a>sims &lt;-<span class="st"> </span><span class="kw">msqrob</span>(<span class="dt">object =</span> sims, <span class="dt">i =</span> <span class="st">&quot;sim_equalVar&quot;</span>, <span class="dt">formula =</span> <span class="op">~</span><span class="st"> </span>location<span class="op">*</span>tissue <span class="op">+</span><span class="st"> </span>patient)</span>
+<span id="cb98-25"><a href="#cb98-25"></a></span>
+<span id="cb98-26"><a href="#cb98-26"></a>sd0 &lt;-<span class="st"> </span><span class="kw">sapply</span>(</span>
+<span id="cb98-27"><a href="#cb98-27"></a>  <span class="kw">rowData</span>(sims[[<span class="st">&quot;sim_equalVar&quot;</span>]])<span class="op">$</span>msqrobModels,</span>
+<span id="cb98-28"><a href="#cb98-28"></a>  getSigma) <span class="op">%&gt;%</span></span>
+<span id="cb98-29"><a href="#cb98-29"></a><span class="st">  </span>na.exclude</span>
+<span id="cb98-30"><a href="#cb98-30"></a>sdPost0 &lt;-<span class="st"> </span><span class="kw">sapply</span>(</span>
+<span id="cb98-31"><a href="#cb98-31"></a>  <span class="kw">rowData</span>(sims[[<span class="st">&quot;sim_equalVar&quot;</span>]])<span class="op">$</span>msqrobModels,</span>
+<span id="cb98-32"><a href="#cb98-32"></a>  getSigmaPosterior) <span class="op">%&gt;%</span></span>
+<span id="cb98-33"><a href="#cb98-33"></a><span class="st">  </span>na.exclude</span>
+<span id="cb98-34"><a href="#cb98-34"></a></span>
+<span id="cb98-35"><a href="#cb98-35"></a><span class="kw">qplot</span>(sd0,sdPost0) <span class="op">+</span></span>
+<span id="cb98-36"><a href="#cb98-36"></a><span class="st">  </span><span class="kw">geom_abline</span>() <span class="op">+</span></span>
+<span id="cb98-37"><a href="#cb98-37"></a><span class="st">  </span><span class="kw">ylim</span>(<span class="kw">range</span>(sd0))</span></code></pre></div>
 <p><img src="technicalDetailsProteomics_files/figure-html/unnamed-chunk-38-1.png" width="672" /></p>
 <ul>
 <li>We observe a large variability in the individual protein level standard deviation estimates.</li>
-<li>We simulated proteins with standard deviation of 1, but the protein estimates vary from 0.21, … , 1.87.</li>
+<li>We simulated proteins with standard deviation of 1, but the protein estimates vary from 0.22, … , 1.86.</li>
 <li>Large uncertainty on the estimation of variances in small samples</li>
 <li>The empirical Bayes method, however, recognises that all proteins are simulated with the same variance.</li>
 <li>Hence, it can borrow tremendous strength across proteins to stabilize the variance estimation</li>
 <li>Here, it shrinks all protein variance to the prior variance, which is indeed very close to 1, the value we have adopted in the simulation.</li>
 </ul>
 <p>Note, that the prior degree of freedom also is set to infinity:</p>
-<div class="sourceCode" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1"></a><span class="kw">getDF</span>(<span class="kw">rowData</span>(sims[[<span class="st">&quot;sim_equalVar&quot;</span>]])<span class="op">$</span>msqrobModels[[<span class="dv">1</span>]])</span></code></pre></div>
-<pre><code>## [1] 5.530671</code></pre>
-<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1"></a><span class="kw">getDfPosterior</span>(<span class="kw">rowData</span>(sims[[<span class="st">&quot;sim_equalVar&quot;</span>]])<span class="op">$</span>msqrobModels[[<span class="dv">1</span>]])</span></code></pre></div>
+<div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1"></a><span class="kw">getDF</span>(<span class="kw">rowData</span>(sims[[<span class="st">&quot;sim_equalVar&quot;</span>]])<span class="op">$</span>msqrobModels[[<span class="dv">1</span>]])</span></code></pre></div>
+<pre><code>## [1] 6</code></pre>
+<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1"></a><span class="kw">getDfPosterior</span>(<span class="kw">rowData</span>(sims[[<span class="st">&quot;sim_equalVar&quot;</span>]])<span class="op">$</span>msqrobModels[[<span class="dv">1</span>]])</span></code></pre></div>
 <pre><code>## [1] Inf</code></pre>
 <p>which imposes shrinkage to the prior standard deviation!</p>
 <p>The empirical Bayes method can thus indeed recognise the common variance that is shared across proteins!</p>
@@ -1345,58 +1347,58 @@ g(\boldsymbol{\theta}\vert\mathbf{Y})=\frac{f(Y\vert \boldsymbol{\theta})g(\bold
 <ol style="list-style-type: decimal">
 <li>Extract <span class="math inline">\(\hat \sigma\)</span> and <span class="math inline">\(\beta\)</span>’s</li>
 </ol>
-<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1"></a>sd &lt;-<span class="st"> </span><span class="kw">sapply</span>(</span>
-<span id="cb102-2"><a href="#cb102-2"></a>  <span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>msqrobModels,</span>
-<span id="cb102-3"><a href="#cb102-3"></a>  getSigma) <span class="op">%&gt;%</span></span>
-<span id="cb102-4"><a href="#cb102-4"></a><span class="st">  </span>na.exclude</span>
-<span id="cb102-5"><a href="#cb102-5"></a></span>
-<span id="cb102-6"><a href="#cb102-6"></a>coefs &lt;-</span>
-<span id="cb102-7"><a href="#cb102-7"></a><span class="kw">sapply</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>msqrobModels,</span>
-<span id="cb102-8"><a href="#cb102-8"></a>    <span class="cf">function</span>(x) <span class="kw">getCoef</span>(x)[<span class="dv">1</span><span class="op">:</span>nCoefs]</span>
-<span id="cb102-9"><a href="#cb102-9"></a>  ) <span class="op">%&gt;%</span></span>
-<span id="cb102-10"><a href="#cb102-10"></a><span class="st">  </span>t <span class="op">%&gt;%</span></span>
-<span id="cb102-11"><a href="#cb102-11"></a><span class="st">  </span>na.exclude</span></code></pre></div>
+<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1"></a>sd &lt;-<span class="st"> </span><span class="kw">sapply</span>(</span>
+<span id="cb103-2"><a href="#cb103-2"></a>  <span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>msqrobModels,</span>
+<span id="cb103-3"><a href="#cb103-3"></a>  getSigma) <span class="op">%&gt;%</span></span>
+<span id="cb103-4"><a href="#cb103-4"></a><span class="st">  </span>na.exclude</span>
+<span id="cb103-5"><a href="#cb103-5"></a></span>
+<span id="cb103-6"><a href="#cb103-6"></a>coefs &lt;-</span>
+<span id="cb103-7"><a href="#cb103-7"></a><span class="kw">sapply</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>msqrobModels,</span>
+<span id="cb103-8"><a href="#cb103-8"></a>    <span class="cf">function</span>(x) <span class="kw">getCoef</span>(x)[<span class="dv">1</span><span class="op">:</span>nCoefs]</span>
+<span id="cb103-9"><a href="#cb103-9"></a>  ) <span class="op">%&gt;%</span></span>
+<span id="cb103-10"><a href="#cb103-10"></a><span class="st">  </span>t <span class="op">%&gt;%</span></span>
+<span id="cb103-11"><a href="#cb103-11"></a><span class="st">  </span>na.exclude</span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>Set <span class="math inline">\(\beta_\text{tissue}\)</span> equal to 0. No FC between atrium and ventriculum left.</li>
 </ol>
-<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1"></a>coefs0 &lt;-<span class="st"> </span>coefs</span>
-<span id="cb103-2"><a href="#cb103-2"></a>coefs0[,<span class="dv">3</span>] &lt;-<span class="st"> </span><span class="dv">0</span></span></code></pre></div>
+<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1"></a>coefs0 &lt;-<span class="st"> </span>coefs</span>
+<span id="cb104-2"><a href="#cb104-2"></a>coefs0[,<span class="dv">3</span>] &lt;-<span class="st"> </span><span class="dv">0</span></span></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li>Simulate protein expressions for each protein from a Normal distribution under <span class="math inline">\(H_0\)</span> for left heart region (no FC between atrium and ventriculum left) and sd the sd for the protein.</li>
 </ol>
-<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1"></a><span class="kw">set.seed</span>(<span class="dv">104</span>)</span>
-<span id="cb104-2"><a href="#cb104-2"></a>f0 &lt;-<span class="st"> </span><span class="kw">sapply</span>(<span class="dv">1</span><span class="op">:</span>p,</span>
-<span id="cb104-3"><a href="#cb104-3"></a>  <span class="cf">function</span>(i, betas, sd, design)</span>
-<span id="cb104-4"><a href="#cb104-4"></a>  <span class="kw">rnorm</span>(n, <span class="dt">mean =</span> design <span class="op">%*%</span><span class="st"> </span>betas[i,], <span class="dt">sd =</span> sd[i]),</span>
-<span id="cb104-5"><a href="#cb104-5"></a>  <span class="dt">betas =</span> coefs0,</span>
-<span id="cb104-6"><a href="#cb104-6"></a>  <span class="dt">sd =</span> sd,</span>
-<span id="cb104-7"><a href="#cb104-7"></a>  <span class="dt">design =</span> X</span>
-<span id="cb104-8"><a href="#cb104-8"></a>  ) <span class="op">%&gt;%</span></span>
-<span id="cb104-9"><a href="#cb104-9"></a><span class="st">  </span>t</span>
-<span id="cb104-10"><a href="#cb104-10"></a><span class="kw">colnames</span>(f0) &lt;-<span class="st"> </span><span class="kw">colnames</span>(pe[[<span class="dv">1</span>]])</span></code></pre></div>
+<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1"></a><span class="kw">set.seed</span>(<span class="dv">104</span>)</span>
+<span id="cb105-2"><a href="#cb105-2"></a>f0 &lt;-<span class="st"> </span><span class="kw">sapply</span>(<span class="dv">1</span><span class="op">:</span>p,</span>
+<span id="cb105-3"><a href="#cb105-3"></a>  <span class="cf">function</span>(i, betas, sd, design)</span>
+<span id="cb105-4"><a href="#cb105-4"></a>  <span class="kw">rnorm</span>(n, <span class="dt">mean =</span> design <span class="op">%*%</span><span class="st"> </span>betas[i,], <span class="dt">sd =</span> sd[i]),</span>
+<span id="cb105-5"><a href="#cb105-5"></a>  <span class="dt">betas =</span> coefs0,</span>
+<span id="cb105-6"><a href="#cb105-6"></a>  <span class="dt">sd =</span> sd,</span>
+<span id="cb105-7"><a href="#cb105-7"></a>  <span class="dt">design =</span> X</span>
+<span id="cb105-8"><a href="#cb105-8"></a>  ) <span class="op">%&gt;%</span></span>
+<span id="cb105-9"><a href="#cb105-9"></a><span class="st">  </span>t</span>
+<span id="cb105-10"><a href="#cb105-10"></a><span class="kw">colnames</span>(f0) &lt;-<span class="st"> </span><span class="kw">colnames</span>(pe[[<span class="dv">1</span>]])</span></code></pre></div>
 <ol start="4" style="list-style-type: decimal">
 <li>Setup QFeatures object and perform MSqRob analysis</li>
 </ol>
-<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1"></a>sims &lt;-<span class="st"> </span><span class="kw">readQFeatures</span>(f0 <span class="op">%&gt;%</span><span class="st"> </span>as.data.frame, <span class="dt">ecol =</span> <span class="dv">1</span><span class="op">:</span>n, <span class="dt">name =</span> <span class="st">&quot;sim0&quot;</span>)</span>
-<span id="cb105-2"><a href="#cb105-2"></a><span class="kw">colData</span>(sims) &lt;-<span class="st"> </span><span class="kw">colData</span>(pe)</span>
-<span id="cb105-3"><a href="#cb105-3"></a>sims &lt;-<span class="st"> </span><span class="kw">msqrob</span>(<span class="dt">object =</span> sims, <span class="dt">i =</span> <span class="st">&quot;sim0&quot;</span>, <span class="dt">formula =</span> <span class="op">~</span><span class="st"> </span>location<span class="op">*</span>tissue <span class="op">+</span><span class="st"> </span>patient)</span>
-<span id="cb105-4"><a href="#cb105-4"></a>sims &lt;-<span class="st"> </span><span class="kw">hypothesisTest</span>(<span class="dt">object =</span> sims, <span class="dt">i =</span> <span class="st">&quot;sim0&quot;</span>, <span class="dt">contrast =</span> L)</span></code></pre></div>
+<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1"></a>sims &lt;-<span class="st"> </span><span class="kw">readQFeatures</span>(f0 <span class="op">%&gt;%</span><span class="st"> </span>as.data.frame, <span class="dt">ecol =</span> <span class="dv">1</span><span class="op">:</span>n, <span class="dt">name =</span> <span class="st">&quot;sim0&quot;</span>)</span>
+<span id="cb106-2"><a href="#cb106-2"></a><span class="kw">colData</span>(sims) &lt;-<span class="st"> </span><span class="kw">colData</span>(pe)</span>
+<span id="cb106-3"><a href="#cb106-3"></a>sims &lt;-<span class="st"> </span><span class="kw">msqrob</span>(<span class="dt">object =</span> sims, <span class="dt">i =</span> <span class="st">&quot;sim0&quot;</span>, <span class="dt">formula =</span> <span class="op">~</span><span class="st"> </span>location<span class="op">*</span>tissue <span class="op">+</span><span class="st"> </span>patient)</span>
+<span id="cb106-4"><a href="#cb106-4"></a>sims &lt;-<span class="st"> </span><span class="kw">hypothesisTest</span>(<span class="dt">object =</span> sims, <span class="dt">i =</span> <span class="st">&quot;sim0&quot;</span>, <span class="dt">contrast =</span> L)</span></code></pre></div>
 <div id="evaluate-pvalues-under-h_0" class="section level3">
 <h3><span class="header-section-number">5.1.1</span> Evaluate pvalues under H_0</h3>
-<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1"></a>volcano &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">rowData</span>(sims[[<span class="st">&quot;sim0&quot;</span>]])<span class="op">$</span>tissueV,</span>
-<span id="cb106-2"><a href="#cb106-2"></a>                 <span class="kw">aes</span>(<span class="dt">x =</span> logFC, <span class="dt">y =</span> <span class="op">-</span><span class="kw">log10</span>(pval), <span class="dt">color =</span> pval <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>)) <span class="op">+</span></span>
-<span id="cb106-3"><a href="#cb106-3"></a><span class="st"> </span><span class="kw">geom_point</span>(<span class="dt">cex =</span> <span class="fl">2.5</span>) <span class="op">+</span></span>
-<span id="cb106-4"><a href="#cb106-4"></a><span class="st"> </span><span class="kw">scale_color_manual</span>(<span class="dt">values =</span> <span class="kw">alpha</span>(<span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="op">+</span><span class="st"> </span><span class="kw">theme_minimal</span>()</span>
-<span id="cb106-5"><a href="#cb106-5"></a>volcano</span></code></pre></div>
+<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1"></a>volcano &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">rowData</span>(sims[[<span class="st">&quot;sim0&quot;</span>]])<span class="op">$</span>tissueV,</span>
+<span id="cb107-2"><a href="#cb107-2"></a>                 <span class="kw">aes</span>(<span class="dt">x =</span> logFC, <span class="dt">y =</span> <span class="op">-</span><span class="kw">log10</span>(pval), <span class="dt">color =</span> pval <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>)) <span class="op">+</span></span>
+<span id="cb107-3"><a href="#cb107-3"></a><span class="st"> </span><span class="kw">geom_point</span>(<span class="dt">cex =</span> <span class="fl">2.5</span>) <span class="op">+</span></span>
+<span id="cb107-4"><a href="#cb107-4"></a><span class="st"> </span><span class="kw">scale_color_manual</span>(<span class="dt">values =</span> <span class="kw">alpha</span>(<span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="op">+</span><span class="st"> </span><span class="kw">theme_minimal</span>()</span>
+<span id="cb107-5"><a href="#cb107-5"></a>volcano</span></code></pre></div>
 <p><img src="technicalDetailsProteomics_files/figure-html/unnamed-chunk-44-1.png" width="672" /></p>
 <p>Number of false positives without multiple testing?</p>
-<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1"></a><span class="kw">rowData</span>(sims[[<span class="st">&quot;sim0&quot;</span>]])<span class="op">$</span>tissueV <span class="op">%&gt;%</span></span>
-<span id="cb107-2"><a href="#cb107-2"></a><span class="st">  </span><span class="kw">filter</span>(pval <span class="op">&lt;</span><span class="fl">0.05</span>) <span class="op">%&gt;%</span></span>
-<span id="cb107-3"><a href="#cb107-3"></a><span class="st">  </span>nrow</span></code></pre></div>
+<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1"></a><span class="kw">rowData</span>(sims[[<span class="st">&quot;sim0&quot;</span>]])<span class="op">$</span>tissueV <span class="op">%&gt;%</span></span>
+<span id="cb108-2"><a href="#cb108-2"></a><span class="st">  </span><span class="kw">filter</span>(pval <span class="op">&lt;</span><span class="fl">0.05</span>) <span class="op">%&gt;%</span></span>
+<span id="cb108-3"><a href="#cb108-3"></a><span class="st">  </span>nrow</span></code></pre></div>
 <pre><code>## [1] 115</code></pre>
-<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1"></a><span class="kw">mean</span>(<span class="kw">rowData</span>(sims[[<span class="st">&quot;sim0&quot;</span>]])<span class="op">$</span>tissueV<span class="op">$</span>pval <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>)    </span></code></pre></div>
+<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1"></a><span class="kw">mean</span>(<span class="kw">rowData</span>(sims[[<span class="st">&quot;sim0&quot;</span>]])<span class="op">$</span>tissueV<span class="op">$</span>pval <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>)    </span></code></pre></div>
 <pre><code>## [1] 0.05665025</code></pre>
-<div class="sourceCode" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1"></a><span class="kw">hist</span>(<span class="kw">rowData</span>(sims[[<span class="st">&quot;sim0&quot;</span>]])<span class="op">$</span>tissueV<span class="op">$</span>pval,<span class="dt">main =</span> <span class="st">&quot;simulation H0&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="#cb112-1"></a><span class="kw">hist</span>(<span class="kw">rowData</span>(sims[[<span class="st">&quot;sim0&quot;</span>]])<span class="op">$</span>tissueV<span class="op">$</span>pval,<span class="dt">main =</span> <span class="st">&quot;simulation H0&quot;</span>)</span></code></pre></div>
 <p><img src="technicalDetailsProteomics_files/figure-html/unnamed-chunk-45-1.png" width="672" /></p>
 <ul>
 <li>The p-values are uniform!</li>
@@ -1408,7 +1410,7 @@ g(\boldsymbol{\theta}\vert\mathbf{Y})=\frac{f(Y\vert \boldsymbol{\theta})g(\bold
 </div>
 <div id="pvalue-distribution-in-real-experiment" class="section level2">
 <h2><span class="header-section-number">5.2</span> Pvalue distribution in real experiment</h2>
-<div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="#cb112-1"></a><span class="kw">hist</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>tissueV<span class="op">$</span>pval, <span class="dt">main =</span> <span class="st">&quot;realData&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1"></a><span class="kw">hist</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>tissueV<span class="op">$</span>pval, <span class="dt">main =</span> <span class="st">&quot;realData&quot;</span>)</span></code></pre></div>
 <p><img src="technicalDetailsProteomics_files/figure-html/unnamed-chunk-46-1.png" width="672" /></p>
 <ul>
 <li>A mixture of null proteins (non-DE): uniform, and, DE proteins: enrichment of p-values at low p-values</li>
@@ -1442,37 +1444,37 @@ g(\boldsymbol{\theta}\vert\mathbf{Y})=\frac{f(Y\vert \boldsymbol{\theta})g(\bold
 <div id="bonferroni-in-practise" class="section level4">
 <h4><span class="header-section-number">6.1.1.1</span> Bonferroni in practise</h4>
 <p>Via R functions</p>
-<div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1"></a>padj &lt;-<span class="st"> </span><span class="kw">p.adjust</span>(</span>
-<span id="cb113-2"><a href="#cb113-2"></a>  <span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>tissueV<span class="op">$</span>pval,</span>
-<span id="cb113-3"><a href="#cb113-3"></a>  <span class="dt">method =</span> <span class="st">&quot;bonferroni&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb114"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb114-1"><a href="#cb114-1"></a>padj &lt;-<span class="st"> </span><span class="kw">p.adjust</span>(</span>
+<span id="cb114-2"><a href="#cb114-2"></a>  <span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>tissueV<span class="op">$</span>pval,</span>
+<span id="cb114-3"><a href="#cb114-3"></a>  <span class="dt">method =</span> <span class="st">&quot;bonferroni&quot;</span>)</span></code></pre></div>
 <p>Own Implementation: adjust and make sure that p-value is smaller than 1.</p>
-<div class="sourceCode" id="cb114"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb114-1"><a href="#cb114-1"></a>m &lt;-<span class="st"> </span><span class="kw">sum</span>(<span class="op">!</span><span class="kw">is.na</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>tissueV<span class="op">$</span>pval))</span>
-<span id="cb114-2"><a href="#cb114-2"></a>padjSelf &lt;-<span class="st">  </span><span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>tissueV<span class="op">$</span>pval <span class="op">*</span><span class="st"> </span>m</span>
-<span id="cb114-3"><a href="#cb114-3"></a>padjSelf[padjSelf <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>] &lt;-<span class="st"> </span><span class="dv">1</span></span>
-<span id="cb114-4"><a href="#cb114-4"></a></span>
-<span id="cb114-5"><a href="#cb114-5"></a><span class="kw">range</span>(padj <span class="op">-</span><span class="st"> </span>padjSelf, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1"></a>m &lt;-<span class="st"> </span><span class="kw">sum</span>(<span class="op">!</span><span class="kw">is.na</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>tissueV<span class="op">$</span>pval))</span>
+<span id="cb115-2"><a href="#cb115-2"></a>padjSelf &lt;-<span class="st">  </span><span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>tissueV<span class="op">$</span>pval <span class="op">*</span><span class="st"> </span>m</span>
+<span id="cb115-3"><a href="#cb115-3"></a>padjSelf[padjSelf <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>] &lt;-<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb115-4"><a href="#cb115-4"></a></span>
+<span id="cb115-5"><a href="#cb115-5"></a><span class="kw">range</span>(padj <span class="op">-</span><span class="st"> </span>padjSelf, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
 <pre><code>## [1] 0 0</code></pre>
 </div>
 <div id="illustration-in-simulation-under-h_0-and-heart-case-study" class="section level4">
 <h4><span class="header-section-number">6.1.1.2</span> Illustration in simulation under <span class="math inline">\(H_0\)</span> and heart case study</h4>
-<div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="#cb116-1"></a>volcano &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">rowData</span>(sims[[<span class="st">&quot;sim0&quot;</span>]])<span class="op">$</span>tissueV,</span>
-<span id="cb116-2"><a href="#cb116-2"></a>                 <span class="kw">aes</span>(<span class="dt">x =</span> logFC, <span class="dt">y =</span> <span class="op">-</span><span class="kw">log10</span>(pval), <span class="dt">color =</span> <span class="kw">p.adjust</span>(pval,<span class="st">&quot;bonferroni&quot;</span>) <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>)) <span class="op">+</span></span>
-<span id="cb116-3"><a href="#cb116-3"></a><span class="st"> </span><span class="kw">geom_point</span>(<span class="dt">cex =</span> <span class="fl">2.5</span>) <span class="op">+</span></span>
-<span id="cb116-4"><a href="#cb116-4"></a><span class="st"> </span><span class="kw">scale_color_manual</span>(<span class="dt">values =</span> <span class="kw">alpha</span>(<span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="op">+</span></span>
-<span id="cb116-5"><a href="#cb116-5"></a><span class="st"> </span><span class="kw">theme_minimal</span>() <span class="op">+</span></span>
-<span id="cb116-6"><a href="#cb116-6"></a><span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;simulated heart data under H0&quot;</span>)</span>
-<span id="cb116-7"><a href="#cb116-7"></a>volcano</span></code></pre></div>
-<p><img src="technicalDetailsProteomics_files/figure-html/unnamed-chunk-49-1.png" width="672" /></p>
-<ul>
-<li>No false positives are returned for simulation under H_0. List is correct according to FWER.</li>
-</ul>
-<div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1"></a>volcano &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>tissueV,</span>
+<div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1"></a>volcano &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">rowData</span>(sims[[<span class="st">&quot;sim0&quot;</span>]])<span class="op">$</span>tissueV,</span>
 <span id="cb117-2"><a href="#cb117-2"></a>                 <span class="kw">aes</span>(<span class="dt">x =</span> logFC, <span class="dt">y =</span> <span class="op">-</span><span class="kw">log10</span>(pval), <span class="dt">color =</span> <span class="kw">p.adjust</span>(pval,<span class="st">&quot;bonferroni&quot;</span>) <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>)) <span class="op">+</span></span>
 <span id="cb117-3"><a href="#cb117-3"></a><span class="st"> </span><span class="kw">geom_point</span>(<span class="dt">cex =</span> <span class="fl">2.5</span>) <span class="op">+</span></span>
 <span id="cb117-4"><a href="#cb117-4"></a><span class="st"> </span><span class="kw">scale_color_manual</span>(<span class="dt">values =</span> <span class="kw">alpha</span>(<span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="op">+</span></span>
 <span id="cb117-5"><a href="#cb117-5"></a><span class="st"> </span><span class="kw">theme_minimal</span>() <span class="op">+</span></span>
-<span id="cb117-6"><a href="#cb117-6"></a><span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;real heart data&quot;</span>)</span>
+<span id="cb117-6"><a href="#cb117-6"></a><span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;simulated heart data under H0&quot;</span>)</span>
 <span id="cb117-7"><a href="#cb117-7"></a>volcano</span></code></pre></div>
+<p><img src="technicalDetailsProteomics_files/figure-html/unnamed-chunk-49-1.png" width="672" /></p>
+<ul>
+<li>No false positives are returned for simulation under H_0. List is correct according to FWER.</li>
+</ul>
+<div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="#cb118-1"></a>volcano &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>tissueV,</span>
+<span id="cb118-2"><a href="#cb118-2"></a>                 <span class="kw">aes</span>(<span class="dt">x =</span> logFC, <span class="dt">y =</span> <span class="op">-</span><span class="kw">log10</span>(pval), <span class="dt">color =</span> <span class="kw">p.adjust</span>(pval,<span class="st">&quot;bonferroni&quot;</span>) <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>)) <span class="op">+</span></span>
+<span id="cb118-3"><a href="#cb118-3"></a><span class="st"> </span><span class="kw">geom_point</span>(<span class="dt">cex =</span> <span class="fl">2.5</span>) <span class="op">+</span></span>
+<span id="cb118-4"><a href="#cb118-4"></a><span class="st"> </span><span class="kw">scale_color_manual</span>(<span class="dt">values =</span> <span class="kw">alpha</span>(<span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="op">+</span></span>
+<span id="cb118-5"><a href="#cb118-5"></a><span class="st"> </span><span class="kw">theme_minimal</span>() <span class="op">+</span></span>
+<span id="cb118-6"><a href="#cb118-6"></a><span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;real heart data&quot;</span>)</span>
+<span id="cb118-7"><a href="#cb118-7"></a>volcano</span></code></pre></div>
 <pre><code>## Warning: Removed 1263 rows containing missing values (geom_point).</code></pre>
 <p><img src="technicalDetailsProteomics_files/figure-html/unnamed-chunk-50-1.png" width="672" /></p>
 <ul>
@@ -1516,59 +1518,59 @@ g(\boldsymbol{\theta}\vert\mathbf{Y})=\frac{f(Y\vert \boldsymbol{\theta})g(\bold
 <div id="holm-example" class="section level4">
 <h4><span class="header-section-number">6.1.2.1</span> Holm example</h4>
 <p>With R functions:</p>
-<div class="sourceCode" id="cb119"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb119-1"><a href="#cb119-1"></a>padj &lt;-<span class="st"> </span><span class="kw">p.adjust</span>(</span>
-<span id="cb119-2"><a href="#cb119-2"></a>  <span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>tissueV<span class="op">$</span>pval,</span>
-<span id="cb119-3"><a href="#cb119-3"></a>  <span class="dt">method =</span> <span class="st">&quot;holm&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb120-1"><a href="#cb120-1"></a>padj &lt;-<span class="st"> </span><span class="kw">p.adjust</span>(</span>
+<span id="cb120-2"><a href="#cb120-2"></a>  <span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>tissueV<span class="op">$</span>pval,</span>
+<span id="cb120-3"><a href="#cb120-3"></a>  <span class="dt">method =</span> <span class="st">&quot;holm&quot;</span>)</span></code></pre></div>
 <p>Own implementation</p>
 <ol style="list-style-type: decimal">
 <li>Order p-values</li>
 </ol>
-<div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb120-1"><a href="#cb120-1"></a>padjSelf &lt;-<span class="st">  </span><span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>tissueV<span class="op">$</span>pval</span>
-<span id="cb120-2"><a href="#cb120-2"></a>ord &lt;-<span class="st"> </span><span class="kw">order</span>(padjSelf)</span>
-<span id="cb120-3"><a href="#cb120-3"></a>pOrd &lt;-<span class="st"> </span>padjSelf[ord]</span>
-<span id="cb120-4"><a href="#cb120-4"></a>m &lt;-<span class="st"> </span><span class="kw">sum</span>(<span class="op">!</span><span class="kw">is.na</span>(padjSelf))</span></code></pre></div>
+<div class="sourceCode" id="cb121"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb121-1"><a href="#cb121-1"></a>padjSelf &lt;-<span class="st">  </span><span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>tissueV<span class="op">$</span>pval</span>
+<span id="cb121-2"><a href="#cb121-2"></a>ord &lt;-<span class="st"> </span><span class="kw">order</span>(padjSelf)</span>
+<span id="cb121-3"><a href="#cb121-3"></a>pOrd &lt;-<span class="st"> </span>padjSelf[ord]</span>
+<span id="cb121-4"><a href="#cb121-4"></a>m &lt;-<span class="st"> </span><span class="kw">sum</span>(<span class="op">!</span><span class="kw">is.na</span>(padjSelf))</span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>Adjust ordered p-values and ensure that value is not larger than 1</li>
 </ol>
-<div class="sourceCode" id="cb121"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb121-1"><a href="#cb121-1"></a>pOrd[<span class="dv">1</span><span class="op">:</span>m] &lt;-<span class="st"> </span>pOrd[<span class="dv">1</span><span class="op">:</span>m]<span class="op">*</span>(m <span class="op">-</span><span class="st"> </span>(<span class="dv">1</span><span class="op">:</span>m) <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)</span>
-<span id="cb121-2"><a href="#cb121-2"></a>pOrd[pOrd<span class="op">&gt;</span><span class="dv">1</span>] &lt;-<span class="st"> </span><span class="dv">1</span></span></code></pre></div>
+<div class="sourceCode" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb122-1"><a href="#cb122-1"></a>pOrd[<span class="dv">1</span><span class="op">:</span>m] &lt;-<span class="st"> </span>pOrd[<span class="dv">1</span><span class="op">:</span>m]<span class="op">*</span>(m <span class="op">-</span><span class="st"> </span>(<span class="dv">1</span><span class="op">:</span>m) <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)</span>
+<span id="cb122-2"><a href="#cb122-2"></a>pOrd[pOrd<span class="op">&gt;</span><span class="dv">1</span>] &lt;-<span class="st"> </span><span class="dv">1</span></span></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li>Monotonicity</li>
 </ol>
-<div class="sourceCode" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb122-1"><a href="#cb122-1"></a>pmax &lt;-<span class="st"> </span>pOrd[<span class="dv">1</span>]</span>
-<span id="cb122-2"><a href="#cb122-2"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="op">:</span>m)</span>
-<span id="cb122-3"><a href="#cb122-3"></a>{</span>
-<span id="cb122-4"><a href="#cb122-4"></a>  <span class="cf">if</span> (pOrd[i] <span class="op">&gt;</span><span class="st"> </span>pmax)</span>
-<span id="cb122-5"><a href="#cb122-5"></a>    pmax &lt;-<span class="st"> </span>pOrd[i] <span class="cf">else</span></span>
-<span id="cb122-6"><a href="#cb122-6"></a>    pOrd[i] &lt;-<span class="st"> </span>pmax</span>
-<span id="cb122-7"><a href="#cb122-7"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb123"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb123-1"><a href="#cb123-1"></a>pmax &lt;-<span class="st"> </span>pOrd[<span class="dv">1</span>]</span>
+<span id="cb123-2"><a href="#cb123-2"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="op">:</span>m)</span>
+<span id="cb123-3"><a href="#cb123-3"></a>{</span>
+<span id="cb123-4"><a href="#cb123-4"></a>  <span class="cf">if</span> (pOrd[i] <span class="op">&gt;</span><span class="st"> </span>pmax)</span>
+<span id="cb123-5"><a href="#cb123-5"></a>    pmax &lt;-<span class="st"> </span>pOrd[i] <span class="cf">else</span></span>
+<span id="cb123-6"><a href="#cb123-6"></a>    pOrd[i] &lt;-<span class="st"> </span>pmax</span>
+<span id="cb123-7"><a href="#cb123-7"></a>}</span></code></pre></div>
 <ol start="4" style="list-style-type: decimal">
 <li>Put adjusted p-values in original order</li>
 </ol>
-<div class="sourceCode" id="cb123"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb123-1"><a href="#cb123-1"></a>padjSelf[ord] &lt;-<span class="st"> </span>pOrd</span>
-<span id="cb123-2"><a href="#cb123-2"></a><span class="kw">range</span>(padj <span class="op">-</span><span class="st"> </span>padjSelf, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb124-1"><a href="#cb124-1"></a>padjSelf[ord] &lt;-<span class="st"> </span>pOrd</span>
+<span id="cb124-2"><a href="#cb124-2"></a><span class="kw">range</span>(padj <span class="op">-</span><span class="st"> </span>padjSelf, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
 <pre><code>## [1] 0 0</code></pre>
 </div>
 <div id="illustration-in-simulation-under-h_0-and-heart-case-study-1" class="section level4">
 <h4><span class="header-section-number">6.1.2.2</span> Illustration in simulation under <span class="math inline">\(H_0\)</span> and heart case study</h4>
-<div class="sourceCode" id="cb125"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb125-1"><a href="#cb125-1"></a>volcano &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">rowData</span>(sims[[<span class="st">&quot;sim0&quot;</span>]])<span class="op">$</span>tissueV,</span>
-<span id="cb125-2"><a href="#cb125-2"></a>                 <span class="kw">aes</span>(<span class="dt">x =</span> logFC, <span class="dt">y =</span> <span class="op">-</span><span class="kw">log10</span>(pval), <span class="dt">color =</span> <span class="kw">p.adjust</span>(pval,<span class="st">&quot;holm&quot;</span>) <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>)) <span class="op">+</span></span>
-<span id="cb125-3"><a href="#cb125-3"></a><span class="st"> </span><span class="kw">geom_point</span>(<span class="dt">cex =</span> <span class="fl">2.5</span>) <span class="op">+</span></span>
-<span id="cb125-4"><a href="#cb125-4"></a><span class="st"> </span><span class="kw">scale_color_manual</span>(<span class="dt">values =</span> <span class="kw">alpha</span>(<span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="op">+</span></span>
-<span id="cb125-5"><a href="#cb125-5"></a><span class="st"> </span><span class="kw">theme_minimal</span>() <span class="op">+</span></span>
-<span id="cb125-6"><a href="#cb125-6"></a><span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;simulated heart data under H0&quot;</span>)</span>
-<span id="cb125-7"><a href="#cb125-7"></a>volcano</span></code></pre></div>
-<p><img src="technicalDetailsProteomics_files/figure-html/unnamed-chunk-56-1.png" width="672" /></p>
-<ul>
-<li>No false positives are returned for simulation under H_0. List is correct according to FWER.</li>
-</ul>
-<div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb126-1"><a href="#cb126-1"></a>volcano &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>tissueV,</span>
+<div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb126-1"><a href="#cb126-1"></a>volcano &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">rowData</span>(sims[[<span class="st">&quot;sim0&quot;</span>]])<span class="op">$</span>tissueV,</span>
 <span id="cb126-2"><a href="#cb126-2"></a>                 <span class="kw">aes</span>(<span class="dt">x =</span> logFC, <span class="dt">y =</span> <span class="op">-</span><span class="kw">log10</span>(pval), <span class="dt">color =</span> <span class="kw">p.adjust</span>(pval,<span class="st">&quot;holm&quot;</span>) <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>)) <span class="op">+</span></span>
 <span id="cb126-3"><a href="#cb126-3"></a><span class="st"> </span><span class="kw">geom_point</span>(<span class="dt">cex =</span> <span class="fl">2.5</span>) <span class="op">+</span></span>
 <span id="cb126-4"><a href="#cb126-4"></a><span class="st"> </span><span class="kw">scale_color_manual</span>(<span class="dt">values =</span> <span class="kw">alpha</span>(<span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="op">+</span></span>
 <span id="cb126-5"><a href="#cb126-5"></a><span class="st"> </span><span class="kw">theme_minimal</span>() <span class="op">+</span></span>
-<span id="cb126-6"><a href="#cb126-6"></a><span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;real heart data&quot;</span>)</span>
+<span id="cb126-6"><a href="#cb126-6"></a><span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;simulated heart data under H0&quot;</span>)</span>
 <span id="cb126-7"><a href="#cb126-7"></a>volcano</span></code></pre></div>
+<p><img src="technicalDetailsProteomics_files/figure-html/unnamed-chunk-56-1.png" width="672" /></p>
+<ul>
+<li>No false positives are returned for simulation under H_0. List is correct according to FWER.</li>
+</ul>
+<div class="sourceCode" id="cb127"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb127-1"><a href="#cb127-1"></a>volcano &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>tissueV,</span>
+<span id="cb127-2"><a href="#cb127-2"></a>                 <span class="kw">aes</span>(<span class="dt">x =</span> logFC, <span class="dt">y =</span> <span class="op">-</span><span class="kw">log10</span>(pval), <span class="dt">color =</span> <span class="kw">p.adjust</span>(pval,<span class="st">&quot;holm&quot;</span>) <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>)) <span class="op">+</span></span>
+<span id="cb127-3"><a href="#cb127-3"></a><span class="st"> </span><span class="kw">geom_point</span>(<span class="dt">cex =</span> <span class="fl">2.5</span>) <span class="op">+</span></span>
+<span id="cb127-4"><a href="#cb127-4"></a><span class="st"> </span><span class="kw">scale_color_manual</span>(<span class="dt">values =</span> <span class="kw">alpha</span>(<span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="op">+</span></span>
+<span id="cb127-5"><a href="#cb127-5"></a><span class="st"> </span><span class="kw">theme_minimal</span>() <span class="op">+</span></span>
+<span id="cb127-6"><a href="#cb127-6"></a><span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;real heart data&quot;</span>)</span>
+<span id="cb127-7"><a href="#cb127-7"></a>volcano</span></code></pre></div>
 <pre><code>## Warning: Removed 1263 rows containing missing values (geom_point).</code></pre>
 <p><img src="technicalDetailsProteomics_files/figure-html/unnamed-chunk-57-1.png" width="672" /></p>
 <ul>
@@ -1593,67 +1595,67 @@ FDR(p_0) &amp;=&amp; \text{E}\left[\frac{FP}{(FP + TP)}\right]\\
 <ol style="list-style-type: decimal">
 <li>Order pvalues</li>
 </ol>
-<div class="sourceCode" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb128-1"><a href="#cb128-1"></a>pvals &lt;-<span class="st"> </span><span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>tissueV<span class="op">$</span>pval</span>
-<span id="cb128-2"><a href="#cb128-2"></a>naInd &lt;-<span class="st"> </span><span class="kw">is.na</span>(pvals)</span>
-<span id="cb128-3"><a href="#cb128-3"></a>pHlp &lt;-<span class="st"> </span>pvals[<span class="op">!</span>naInd]</span>
-<span id="cb128-4"><a href="#cb128-4"></a>ord &lt;-<span class="st"> </span>pHlp <span class="op">%&gt;%</span><span class="st"> </span>order</span>
-<span id="cb128-5"><a href="#cb128-5"></a>pHlp &lt;-<span class="st"> </span>pHlp[ord]</span></code></pre></div>
+<div class="sourceCode" id="cb129"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb129-1"><a href="#cb129-1"></a>pvals &lt;-<span class="st"> </span><span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>tissueV<span class="op">$</span>pval</span>
+<span id="cb129-2"><a href="#cb129-2"></a>naInd &lt;-<span class="st"> </span><span class="kw">is.na</span>(pvals)</span>
+<span id="cb129-3"><a href="#cb129-3"></a>pHlp &lt;-<span class="st"> </span>pvals[<span class="op">!</span>naInd]</span>
+<span id="cb129-4"><a href="#cb129-4"></a>ord &lt;-<span class="st"> </span>pHlp <span class="op">%&gt;%</span><span class="st"> </span>order</span>
+<span id="cb129-5"><a href="#cb129-5"></a>pHlp &lt;-<span class="st"> </span>pHlp[ord]</span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>Adjust ordered p-values</li>
 </ol>
-<div class="sourceCode" id="cb129"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb129-1"><a href="#cb129-1"></a>pHlp &lt;-<span class="st"> </span>pHlp<span class="op">*</span><span class="kw">length</span>(pHlp)<span class="op">/</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(pHlp))</span></code></pre></div>
+<div class="sourceCode" id="cb130"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb130-1"><a href="#cb130-1"></a>pHlp &lt;-<span class="st"> </span>pHlp<span class="op">*</span><span class="kw">length</span>(pHlp)<span class="op">/</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(pHlp))</span></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li>Ensure adjust p-values are smaller are equal than 1</li>
 </ol>
-<div class="sourceCode" id="cb130"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb130-1"><a href="#cb130-1"></a>pHlp[pHlp<span class="op">&gt;</span><span class="dv">1</span>] &lt;-<span class="st"> </span><span class="dv">1</span></span></code></pre></div>
+<div class="sourceCode" id="cb131"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb131-1"><a href="#cb131-1"></a>pHlp[pHlp<span class="op">&gt;</span><span class="dv">1</span>] &lt;-<span class="st"> </span><span class="dv">1</span></span></code></pre></div>
 <ol start="4" style="list-style-type: decimal">
 <li>Monotonicity constraint</li>
 </ol>
-<div class="sourceCode" id="cb131"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb131-1"><a href="#cb131-1"></a>pmin &lt;-<span class="st"> </span>pHlp[<span class="kw">length</span>(pHlp)]</span>
-<span id="cb131-2"><a href="#cb131-2"></a><span class="cf">for</span> (j <span class="cf">in</span> (<span class="kw">length</span>(pHlp)<span class="op">-</span><span class="dv">1</span>)<span class="op">:</span><span class="dv">1</span>)</span>
-<span id="cb131-3"><a href="#cb131-3"></a>{</span>
-<span id="cb131-4"><a href="#cb131-4"></a>  <span class="cf">if</span> (pHlp[j] <span class="op">&lt;</span><span class="st"> </span>pmin)</span>
-<span id="cb131-5"><a href="#cb131-5"></a>    pmin &lt;-<span class="st"> </span>pHlp[j] <span class="cf">else</span></span>
-<span id="cb131-6"><a href="#cb131-6"></a>    pHlp[j] &lt;-<span class="st"> </span>pmin   </span>
-<span id="cb131-7"><a href="#cb131-7"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb132"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb132-1"><a href="#cb132-1"></a>pmin &lt;-<span class="st"> </span>pHlp[<span class="kw">length</span>(pHlp)]</span>
+<span id="cb132-2"><a href="#cb132-2"></a><span class="cf">for</span> (j <span class="cf">in</span> (<span class="kw">length</span>(pHlp)<span class="op">-</span><span class="dv">1</span>)<span class="op">:</span><span class="dv">1</span>)</span>
+<span id="cb132-3"><a href="#cb132-3"></a>{</span>
+<span id="cb132-4"><a href="#cb132-4"></a>  <span class="cf">if</span> (pHlp[j] <span class="op">&lt;</span><span class="st"> </span>pmin)</span>
+<span id="cb132-5"><a href="#cb132-5"></a>    pmin &lt;-<span class="st"> </span>pHlp[j] <span class="cf">else</span></span>
+<span id="cb132-6"><a href="#cb132-6"></a>    pHlp[j] &lt;-<span class="st"> </span>pmin   </span>
+<span id="cb132-7"><a href="#cb132-7"></a>}</span></code></pre></div>
 <ol start="5" style="list-style-type: decimal">
 <li>Put p-values back in original order</li>
 </ol>
-<div class="sourceCode" id="cb132"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb132-1"><a href="#cb132-1"></a>pHlp[ord] &lt;-<span class="st"> </span>pHlp</span>
-<span id="cb132-2"><a href="#cb132-2"></a>pAdj &lt;-<span class="st"> </span>pvals</span>
-<span id="cb132-3"><a href="#cb132-3"></a>pAdj[<span class="op">!</span>naInd] &lt;-<span class="st"> </span>pHlp</span>
-<span id="cb132-4"><a href="#cb132-4"></a></span>
-<span id="cb132-5"><a href="#cb132-5"></a><span class="kw">head</span>(pAdj)</span></code></pre></div>
+<div class="sourceCode" id="cb133"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb133-1"><a href="#cb133-1"></a>pHlp[ord] &lt;-<span class="st"> </span>pHlp</span>
+<span id="cb133-2"><a href="#cb133-2"></a>pAdj &lt;-<span class="st"> </span>pvals</span>
+<span id="cb133-3"><a href="#cb133-3"></a>pAdj[<span class="op">!</span>naInd] &lt;-<span class="st"> </span>pHlp</span>
+<span id="cb133-4"><a href="#cb133-4"></a></span>
+<span id="cb133-5"><a href="#cb133-5"></a><span class="kw">head</span>(pAdj)</span></code></pre></div>
 <pre><code>## [1]        NA 0.8351039        NA        NA 0.9062353        NA</code></pre>
-<div class="sourceCode" id="cb134"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb134-1"><a href="#cb134-1"></a><span class="kw">head</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>tissueV)</span></code></pre></div>
+<div class="sourceCode" id="cb135"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb135-1"><a href="#cb135-1"></a><span class="kw">head</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>tissueV)</span></code></pre></div>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["logFC"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["se"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["df"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["t"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["pval"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["adjPval"],"name":[6],"type":["dbl"],"align":["right"]}],"data":[{"1":"NA","2":"NA","3":"NA","4":"NA","5":"NA","6":"NA","_rn_":"A0M8Q6"},{"1":"0.20946392","2":"0.5601628","3":"7.914824","4":"0.3739340","5":"0.7182716","6":"0.8351039","_rn_":"A0PJW6"},{"1":"NA","2":"NA","3":"NA","4":"NA","5":"NA","6":"NA","_rn_":"A0PJZ3"},{"1":"NA","2":"NA","3":"NA","4":"NA","5":"NA","6":"NA","_rn_":"A0PK00"},{"1":"0.07123672","2":"0.3206733","3":"9.293515","4":"0.2221474","5":"0.8290044","6":"0.9062353","_rn_":"A1A4S6"},{"1":"NA","2":"NA","3":"NA","4":"NA","5":"NA","6":"NA","_rn_":"A1A5D9"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
-<div class="sourceCode" id="cb135"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb135-1"><a href="#cb135-1"></a><span class="kw">range</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>tissueV<span class="op">$</span>adjPval <span class="op">-</span><span class="st"> </span>pAdj,<span class="dt">na.rm=</span><span class="ot">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb136"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb136-1"><a href="#cb136-1"></a><span class="kw">range</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>tissueV<span class="op">$</span>adjPval <span class="op">-</span><span class="st"> </span>pAdj,<span class="dt">na.rm=</span><span class="ot">TRUE</span>)</span></code></pre></div>
 <pre><code>## [1] -2.220446e-16  2.220446e-16</code></pre>
 <div id="illustration-in-simulation-under-h_0-and-heart-case-study-2" class="section level4">
 <h4><span class="header-section-number">6.2.0.1</span> Illustration in simulation under <span class="math inline">\(H_0\)</span> and heart case study</h4>
-<div class="sourceCode" id="cb137"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb137-1"><a href="#cb137-1"></a>volcano &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">rowData</span>(sims[[<span class="st">&quot;sim0&quot;</span>]])<span class="op">$</span>tissueV,</span>
-<span id="cb137-2"><a href="#cb137-2"></a>                 <span class="kw">aes</span>(<span class="dt">x =</span> logFC, <span class="dt">y =</span> <span class="op">-</span><span class="kw">log10</span>(pval), <span class="dt">color =</span> adjPval <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>)) <span class="op">+</span></span>
-<span id="cb137-3"><a href="#cb137-3"></a><span class="st"> </span><span class="kw">geom_point</span>(<span class="dt">cex =</span> <span class="fl">2.5</span>) <span class="op">+</span></span>
-<span id="cb137-4"><a href="#cb137-4"></a><span class="st"> </span><span class="kw">scale_color_manual</span>(<span class="dt">values =</span> <span class="kw">alpha</span>(<span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="op">+</span></span>
-<span id="cb137-5"><a href="#cb137-5"></a><span class="st"> </span><span class="kw">theme_minimal</span>() <span class="op">+</span></span>
-<span id="cb137-6"><a href="#cb137-6"></a><span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;simulated heart data under H0&quot;</span>)</span>
-<span id="cb137-7"><a href="#cb137-7"></a>volcano</span></code></pre></div>
+<div class="sourceCode" id="cb138"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb138-1"><a href="#cb138-1"></a>volcano &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">rowData</span>(sims[[<span class="st">&quot;sim0&quot;</span>]])<span class="op">$</span>tissueV,</span>
+<span id="cb138-2"><a href="#cb138-2"></a>                 <span class="kw">aes</span>(<span class="dt">x =</span> logFC, <span class="dt">y =</span> <span class="op">-</span><span class="kw">log10</span>(pval), <span class="dt">color =</span> adjPval <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>)) <span class="op">+</span></span>
+<span id="cb138-3"><a href="#cb138-3"></a><span class="st"> </span><span class="kw">geom_point</span>(<span class="dt">cex =</span> <span class="fl">2.5</span>) <span class="op">+</span></span>
+<span id="cb138-4"><a href="#cb138-4"></a><span class="st"> </span><span class="kw">scale_color_manual</span>(<span class="dt">values =</span> <span class="kw">alpha</span>(<span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="op">+</span></span>
+<span id="cb138-5"><a href="#cb138-5"></a><span class="st"> </span><span class="kw">theme_minimal</span>() <span class="op">+</span></span>
+<span id="cb138-6"><a href="#cb138-6"></a><span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;simulated heart data under H0&quot;</span>)</span>
+<span id="cb138-7"><a href="#cb138-7"></a>volcano</span></code></pre></div>
 <p><img src="technicalDetailsProteomics_files/figure-html/unnamed-chunk-63-1.png" width="672" /></p>
 <ul>
 <li>No false positives are returned for simulation under H_0. List is correct according to FWER.</li>
 <li>It can be shown that the FDR-method controls the FWER when <span class="math inline">\(H_0\)</span> is true for all features.</li>
 </ul>
-<div class="sourceCode" id="cb138"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb138-1"><a href="#cb138-1"></a>volcano &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>tissueV,</span>
-<span id="cb138-2"><a href="#cb138-2"></a>                 <span class="kw">aes</span>(<span class="dt">x =</span> logFC, <span class="dt">y =</span> <span class="op">-</span><span class="kw">log10</span>(pval), <span class="dt">color =</span> adjPval <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>)) <span class="op">+</span></span>
-<span id="cb138-3"><a href="#cb138-3"></a><span class="st"> </span><span class="kw">geom_point</span>(<span class="dt">cex =</span> <span class="fl">2.5</span>) <span class="op">+</span></span>
-<span id="cb138-4"><a href="#cb138-4"></a><span class="st"> </span><span class="kw">scale_color_manual</span>(<span class="dt">values =</span> <span class="kw">alpha</span>(<span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="op">+</span></span>
-<span id="cb138-5"><a href="#cb138-5"></a><span class="st"> </span><span class="kw">theme_minimal</span>() <span class="op">+</span></span>
-<span id="cb138-6"><a href="#cb138-6"></a><span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;real heart data&quot;</span>)</span>
-<span id="cb138-7"><a href="#cb138-7"></a>volcano</span></code></pre></div>
+<div class="sourceCode" id="cb139"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb139-1"><a href="#cb139-1"></a>volcano &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">rowData</span>(pe[[<span class="st">&quot;proteinRobust&quot;</span>]])<span class="op">$</span>tissueV,</span>
+<span id="cb139-2"><a href="#cb139-2"></a>                 <span class="kw">aes</span>(<span class="dt">x =</span> logFC, <span class="dt">y =</span> <span class="op">-</span><span class="kw">log10</span>(pval), <span class="dt">color =</span> adjPval <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>)) <span class="op">+</span></span>
+<span id="cb139-3"><a href="#cb139-3"></a><span class="st"> </span><span class="kw">geom_point</span>(<span class="dt">cex =</span> <span class="fl">2.5</span>) <span class="op">+</span></span>
+<span id="cb139-4"><a href="#cb139-4"></a><span class="st"> </span><span class="kw">scale_color_manual</span>(<span class="dt">values =</span> <span class="kw">alpha</span>(<span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="fl">0.5</span>)) <span class="op">+</span></span>
+<span id="cb139-5"><a href="#cb139-5"></a><span class="st"> </span><span class="kw">theme_minimal</span>() <span class="op">+</span></span>
+<span id="cb139-6"><a href="#cb139-6"></a><span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;real heart data&quot;</span>)</span>
+<span id="cb139-7"><a href="#cb139-7"></a>volcano</span></code></pre></div>
 <pre><code>## Warning: Removed 1263 rows containing missing values (geom_point).</code></pre>
 <p><img src="technicalDetailsProteomics_files/figure-html/unnamed-chunk-64-1.png" width="672" /></p>
 <p>The FDR method allows us to return much longer DA protein lists at the expense of a few false positives. The FDR controls the fraction of false positives in the list that you return on average on the significance level that is adopted. So if you use <span class="math inline">\(\alpha=0.05\)</span> we expect on average 5% of false positives in the list that we return.</p>
