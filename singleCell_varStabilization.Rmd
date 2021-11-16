@@ -59,11 +59,5 @@ Since for all random variables in our simulation $n$ is equal, in our case we ha
 The variance on estimating the mean thus increases with the mean.
 </p></details>
 
-# VST for scRNA-seq data based on a negative binomial distribution
-
-## Pearson residuals
-
-As
-
 
 

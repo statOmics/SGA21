@@ -113,13 +113,15 @@ source("https://raw.githubusercontent.com/statOmics/SGA21/master/install.R")
 2. Working with count data and generalized linear models.
    
    - Lecture: [Working with count data and GLMs](./sequencing_countData.html) [[PDF](./sequencing_countData.pdf)].
-   - Tutorial: Embedded within the lecture: Analysis of bike-sharing data.
+   - Tutorial I: Embedded within the lecture: Analysis of bike-sharing data.
+   - Tutorial II: [GLM for one gene](sequencing_lab_oneGene.html).
 
 \newline
 
 3. Analysis of RNA-seq data.
 
    - Lecture + Tutorial: [Four major challenges in the analysis of RNA-seq datasets](./sequencing_rnaseqIntro.html) [[PDF](./sequencing_rnaseqIntro.pdf)].
+   - [Why we use offsets rather than count scaling](sequencing_scalingNormalization.html).
 
 \newline
    

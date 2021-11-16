@@ -1,6 +1,6 @@
 ---
 title: 'Sequencing: Bulk RNA-seq homework'
-author: "Koen Van den Berge"
+author: "Add your names here"
 date: "8/6/2021"
 output: 
   pdf_document:
@@ -50,15 +50,15 @@ if(!"edgeR" %in% installed.packages()[,1]){
 # Default `edgeR` analysis
 
 Analyze the data using `edgeR`, by using the code in the RNA-seq analysis intro lecture.
-Focus on the contrast comparing DPN to control at 48h.
+**In all analyses, focus on the contrast comparing DPN treatment to control at 48h.**
 
 # Impact of blocking
 
 Assess the difference in number of DE genes when not blocking on patient, i.e., removing the `patient` effect of the model.
-Compare the p-value distributions between these two models.
+Compare the p-value distributions between these two models (i.e., with and without blocking).
 
 
-# Analyze using full-quantile normalization
+# Analyze dataset using full-quantile normalization
 
 ## Implement and apply full-quantile normalization
 
@@ -72,15 +72,26 @@ FQnorm <- function(counts){
 
 ```
 
+## Visualize effect of FQ normalization
+
+Visualize the distributions of `log1p`-transformed counts (use the `density` function) to compare sample-specific count distributions before and after FQ normalization.
+What's the impact of FQ normalization on the differences in distribution between samples?
 
 ## `edgeR` analysis using full-quantile normalized data
 
-Don't forgot to remove the `calcNormFactors` step as data have already been normalized!
+Don't forget to remove the `calcNormFactors` step in the `edgeR` analysis as data have already been normalized when using FQ-normalized counts as input!
 
 ```{r}
 ### use FQ-normalized data as input to the edgeR analysis
 ```
 
-
 ## Compare DE genes at 5% FDR
+
+```{r}
+### Get list of DE genes using TMM and FQ normalization
+
+### Compare list using, e.g., a Venn diagram
+```
+
+
 
