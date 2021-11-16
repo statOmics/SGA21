@@ -193,6 +193,7 @@ We will use [scDblFinder](https://bioconductor.org/packages/3.14/bioc/html/scDbl
 
 ```{r}
 ## perform doublet detection
+library(scDblFinder)
 set.seed(211103)
 sampleID <- unlist(lapply(strsplit(colData(sce)$cell.id, split="_"), "[[", 1))
 table(sampleID)
@@ -298,16 +299,28 @@ sce <- runPCA(sce, ncomponents=30, subset_row=hvg)
 plotPCA(sce, colour_by = "cluster")
 ```
 
-## A (non-linear) generalization of PCA for exponential family distributions.
+### PCA without feature selection
 
-```{r, eval=FALSE}
+```{r}
+set.seed(1234)
+sceNoFS <- runPCA(sce, ncomponents=30, subset_row=1:nrow(sce))
+plotPCA(sceNoFS, colour_by = "cluster")
+rm(sceNoFS)
+```
+
+
+## A generalization of PCA for exponential family distributions.
+
+```{r, eval=TRUE}
 library(glmpca)
 set.seed(211103)
-poipca <- glmpca(assays(sce)$counts,
+poipca <- glmpca(assays(sce)$counts[hvg,],
                  L=2, fam="poi",
                  minibatch="stochastic")
-reducedDim(sce, "PoiPCA") <- poipca$x
-plot
+reducedDim(sce, "PoiPCA") <- poipca$factors
+plotReducedDim(sce, 
+               dimred="PoiPCA",
+               colour_by = "cluster")
 ```
 
 
@@ -316,7 +329,8 @@ plot
 
 ```{r}
 sce <- runUMAP(sce, dimred = 'PCA', external_neighbors=TRUE)
-plotUMAP(sce)
+plotUMAP(sce,
+         colour_by = "cluster")
 ```
 
 # Clustering
