@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Koen Van den Berge" />
+<meta name="author" content="Add your names here" />
 
 
 <title>Sequencing: Bulk RNA-seq homework</title>
@@ -522,7 +522,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Sequencing: Bulk RNA-seq homework</h1>
-<h4 class="author">Koen Van den Berge</h4>
+<h4 class="author">Add your names here</h4>
 <h4 class="date">8/6/2021</h4>
 
 </div>
@@ -530,14 +530,14 @@ div.tocify {
 
 <div id="default-edger-analysis" class="section level1">
 <h1><span class="header-section-number">1</span> Default <code>edgeR</code> analysis</h1>
-<p>Analyze the data using <code>edgeR</code>, by using the code in the RNA-seq analysis intro lecture. Focus on the contrast comparing DPN to control at 48h.</p>
+<p>Analyze the data using <code>edgeR</code>, by using the code in the RNA-seq analysis intro lecture. <strong>In all analyses, focus on the contrast comparing DPN treatment to control at 48h.</strong></p>
 </div>
 <div id="impact-of-blocking" class="section level1">
 <h1><span class="header-section-number">2</span> Impact of blocking</h1>
-<p>Assess the difference in number of DE genes when not blocking on patient, i.e., removing the <code>patient</code> effect of the model. Compare the p-value distributions between these two models.</p>
+<p>Assess the difference in number of DE genes when not blocking on patient, i.e., removing the <code>patient</code> effect of the model. Compare the p-value distributions between these two models (i.e., with and without blocking).</p>
 </div>
-<div id="analyze-using-full-quantile-normalization" class="section level1">
-<h1><span class="header-section-number">3</span> Analyze using full-quantile normalization</h1>
+<div id="analyze-dataset-using-full-quantile-normalization" class="section level1">
+<h1><span class="header-section-number">3</span> Analyze dataset using full-quantile normalization</h1>
 <div id="implement-and-apply-full-quantile-normalization" class="section level2">
 <h2><span class="header-section-number">3.1</span> Implement and apply full-quantile normalization</h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="co">### implement FQ normalization</span></span>
@@ -547,17 +547,24 @@ div.tocify {
 <span id="cb1-5"><a href="#cb1-5"></a></span>
 <span id="cb1-6"><a href="#cb1-6"></a><span class="co">### normalize the data using FQ</span></span></code></pre></div>
 </div>
+<div id="visualize-effect-of-fq-normalization" class="section level2">
+<h2><span class="header-section-number">3.2</span> Visualize effect of FQ normalization</h2>
+<p>Visualize the distributions of <code>log1p</code>-transformed counts (use the <code>density</code> function) to compare sample-specific count distributions before and after FQ normalization. What’s the impact of FQ normalization on the differences in distribution between samples?</p>
+</div>
 <div id="edger-analysis-using-full-quantile-normalized-data" class="section level2">
-<h2><span class="header-section-number">3.2</span> <code>edgeR</code> analysis using full-quantile normalized data</h2>
-<p>Don’t forgot to remove the <code>calcNormFactors</code> step as data have already been normalized!</p>
+<h2><span class="header-section-number">3.3</span> <code>edgeR</code> analysis using full-quantile normalized data</h2>
+<p>Don’t forget to remove the <code>calcNormFactors</code> step in the <code>edgeR</code> analysis as data have already been normalized when using FQ-normalized counts as input!</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">### use FQ-normalized data as input to the edgeR analysis</span></span></code></pre></div>
 </div>
 <div id="compare-de-genes-at-5-fdr" class="section level2">
-<h2><span class="header-section-number">3.3</span> Compare DE genes at 5% FDR</h2>
+<h2><span class="header-section-number">3.4</span> Compare DE genes at 5% FDR</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">### Get list of DE genes using TMM and FQ normalization</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="co">### Compare list using, e.g., a Venn diagram</span></span></code></pre></div>
 </div>
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAnU2VxdWVuY2luZzogQnVsayBSTkEtc2VxIGhvbWV3b3JrJwphdXRob3I6ICJLb2VuIFZhbiBkZW4gQmVyZ2UiCmRhdGU6ICI4LzYvMjAyMSIKb3V0cHV0OiAKICBwZGZfZG9jdW1lbnQ6CiAgICB0b2M6IHRydWUKICAgIG51bWJlcl9zZWN0aW9uczogdHJ1ZQogICAgbGF0ZXhfZW5naW5lOiB4ZWxhdGV4CiAgaHRtbF9kb2N1bWVudDoKICAgIHRvYzogdHJ1ZQogICAgdG9jX2Zsb2F0OiB0cnVlCi0tLQoKYGBge3IgZnVuY3Rpb25zLCBpbmNsdWRlPUZBTFNFfQojIEEgZnVuY3Rpb24gZm9yIGNhcHRpb25pbmcgYW5kIHJlZmVyZW5jaW5nIGltYWdlcwpmaWcgPC0gbG9jYWwoewogICAgaSA8LSAwCiAgICByZWYgPC0gbGlzdCgpCiAgICBsaXN0KAogICAgICAgIGNhcD1mdW5jdGlvbihyZWZOYW1lLCB0ZXh0KSB7CiAgICAgICAgICAgIGkgPDwtIGkgKyAxCiAgICAgICAgICAgIHJlZltbcmVmTmFtZV1dIDw8LSBpCiAgICAgICAgICAgIHBhc3RlKCJGaWd1cmUgIiwgaSwgIjogIiwgdGV4dCwgc2VwPSIiKQogICAgICAgIH0sCiAgICAgICAgcmVmPWZ1bmN0aW9uKHJlZk5hbWUpIHsKICAgICAgICAgICAgcmVmW1tyZWZOYW1lXV0KICAgICAgICB9KQp9KQpgYGAgCgpgYGB7ciwgZWNobz1GQUxTRSwgZXZhbD1UUlVFfQpzdXBwcmVzc1BhY2thZ2VTdGFydHVwTWVzc2FnZXMoewogIGxpYnJhcnkoa25pdHIpCiAgbGlicmFyeShybWFya2Rvd24pCiAgbGlicmFyeShnZ3Bsb3QyKQp9KQppZighIkJpb2NNYW5hZ2VyIiAlaW4lIGluc3RhbGxlZC5wYWNrYWdlcygpWywxXSl7CiAgaW5zdGFsbC5wYWNrYWdlcygiQmlvY01hbmFnZXIiKQp9CmlmKCEibGltbWEiICVpbiUgaW5zdGFsbGVkLnBhY2thZ2VzKClbLDFdKXsKICBCaW9jTWFuYWdlcjo6aW5zdGFsbCgibGltbWEiKQp9CmlmKCEiZWRnZVIiICVpbiUgaW5zdGFsbGVkLnBhY2thZ2VzKClbLDFdKXsKICBCaW9jTWFuYWdlcjo6aW5zdGFsbCgiZWRnZVIiKQp9CmBgYAoKCiMgRGVmYXVsdCBgZWRnZVJgIGFuYWx5c2lzCgpBbmFseXplIHRoZSBkYXRhIHVzaW5nIGBlZGdlUmAsIGJ5IHVzaW5nIHRoZSBjb2RlIGluIHRoZSBSTkEtc2VxIGFuYWx5c2lzIGludHJvIGxlY3R1cmUuCkZvY3VzIG9uIHRoZSBjb250cmFzdCBjb21wYXJpbmcgRFBOIHRvIGNvbnRyb2wgYXQgNDhoLgoKIyBJbXBhY3Qgb2YgYmxvY2tpbmcKCkFzc2VzcyB0aGUgZGlmZmVyZW5jZSBpbiBudW1iZXIgb2YgREUgZ2VuZXMgd2hlbiBub3QgYmxvY2tpbmcgb24gcGF0aWVudCwgaS5lLiwgcmVtb3ZpbmcgdGhlIGBwYXRpZW50YCBlZmZlY3Qgb2YgdGhlIG1vZGVsLgpDb21wYXJlIHRoZSBwLXZhbHVlIGRpc3RyaWJ1dGlvbnMgYmV0d2VlbiB0aGVzZSB0d28gbW9kZWxzLgoKCiMgQW5hbHl6ZSB1c2luZyBmdWxsLXF1YW50aWxlIG5vcm1hbGl6YXRpb24KCiMjIEltcGxlbWVudCBhbmQgYXBwbHkgZnVsbC1xdWFudGlsZSBub3JtYWxpemF0aW9uCgpgYGB7cn0KIyMjIGltcGxlbWVudCBGUSBub3JtYWxpemF0aW9uCkZRbm9ybSA8LSBmdW5jdGlvbihjb3VudHMpewogIC4uLgp9CgojIyMgbm9ybWFsaXplIHRoZSBkYXRhIHVzaW5nIEZRCgpgYGAKCgojIyBgZWRnZVJgIGFuYWx5c2lzIHVzaW5nIGZ1bGwtcXVhbnRpbGUgbm9ybWFsaXplZCBkYXRhCgpEb24ndCBmb3Jnb3QgdG8gcmVtb3ZlIHRoZSBgY2FsY05vcm1GYWN0b3JzYCBzdGVwIGFzIGRhdGEgaGF2ZSBhbHJlYWR5IGJlZW4gbm9ybWFsaXplZCEKCmBgYHtyfQojIyMgdXNlIEZRLW5vcm1hbGl6ZWQgZGF0YSBhcyBpbnB1dCB0byB0aGUgZWRnZVIgYW5hbHlzaXMKYGBgCgoKIyMgQ29tcGFyZSBERSBnZW5lcyBhdCA1JSBGRFIKCg==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAnU2VxdWVuY2luZzogQnVsayBSTkEtc2VxIGhvbWV3b3JrJwphdXRob3I6ICJBZGQgeW91ciBuYW1lcyBoZXJlIgpkYXRlOiAiOC82LzIwMjEiCm91dHB1dDogCiAgcGRmX2RvY3VtZW50OgogICAgdG9jOiB0cnVlCiAgICBudW1iZXJfc2VjdGlvbnM6IHRydWUKICAgIGxhdGV4X2VuZ2luZTogeGVsYXRleAogIGh0bWxfZG9jdW1lbnQ6CiAgICB0b2M6IHRydWUKICAgIHRvY19mbG9hdDogdHJ1ZQotLS0KCmBgYHtyIGZ1bmN0aW9ucywgaW5jbHVkZT1GQUxTRX0KIyBBIGZ1bmN0aW9uIGZvciBjYXB0aW9uaW5nIGFuZCByZWZlcmVuY2luZyBpbWFnZXMKZmlnIDwtIGxvY2FsKHsKICAgIGkgPC0gMAogICAgcmVmIDwtIGxpc3QoKQogICAgbGlzdCgKICAgICAgICBjYXA9ZnVuY3Rpb24ocmVmTmFtZSwgdGV4dCkgewogICAgICAgICAgICBpIDw8LSBpICsgMQogICAgICAgICAgICByZWZbW3JlZk5hbWVdXSA8PC0gaQogICAgICAgICAgICBwYXN0ZSgiRmlndXJlICIsIGksICI6ICIsIHRleHQsIHNlcD0iIikKICAgICAgICB9LAogICAgICAgIHJlZj1mdW5jdGlvbihyZWZOYW1lKSB7CiAgICAgICAgICAgIHJlZltbcmVmTmFtZV1dCiAgICAgICAgfSkKfSkKYGBgIAoKYGBge3IsIGVjaG89RkFMU0UsIGV2YWw9VFJVRX0Kc3VwcHJlc3NQYWNrYWdlU3RhcnR1cE1lc3NhZ2VzKHsKICBsaWJyYXJ5KGtuaXRyKQogIGxpYnJhcnkocm1hcmtkb3duKQogIGxpYnJhcnkoZ2dwbG90MikKfSkKaWYoISJCaW9jTWFuYWdlciIgJWluJSBpbnN0YWxsZWQucGFja2FnZXMoKVssMV0pewogIGluc3RhbGwucGFja2FnZXMoIkJpb2NNYW5hZ2VyIikKfQppZighImxpbW1hIiAlaW4lIGluc3RhbGxlZC5wYWNrYWdlcygpWywxXSl7CiAgQmlvY01hbmFnZXI6Omluc3RhbGwoImxpbW1hIikKfQppZighImVkZ2VSIiAlaW4lIGluc3RhbGxlZC5wYWNrYWdlcygpWywxXSl7CiAgQmlvY01hbmFnZXI6Omluc3RhbGwoImVkZ2VSIikKfQpgYGAKCgojIERlZmF1bHQgYGVkZ2VSYCBhbmFseXNpcwoKQW5hbHl6ZSB0aGUgZGF0YSB1c2luZyBgZWRnZVJgLCBieSB1c2luZyB0aGUgY29kZSBpbiB0aGUgUk5BLXNlcSBhbmFseXNpcyBpbnRybyBsZWN0dXJlLgoqKkluIGFsbCBhbmFseXNlcywgZm9jdXMgb24gdGhlIGNvbnRyYXN0IGNvbXBhcmluZyBEUE4gdHJlYXRtZW50IHRvIGNvbnRyb2wgYXQgNDhoLioqCgojIEltcGFjdCBvZiBibG9ja2luZwoKQXNzZXNzIHRoZSBkaWZmZXJlbmNlIGluIG51bWJlciBvZiBERSBnZW5lcyB3aGVuIG5vdCBibG9ja2luZyBvbiBwYXRpZW50LCBpLmUuLCByZW1vdmluZyB0aGUgYHBhdGllbnRgIGVmZmVjdCBvZiB0aGUgbW9kZWwuCkNvbXBhcmUgdGhlIHAtdmFsdWUgZGlzdHJpYnV0aW9ucyBiZXR3ZWVuIHRoZXNlIHR3byBtb2RlbHMgKGkuZS4sIHdpdGggYW5kIHdpdGhvdXQgYmxvY2tpbmcpLgoKCiMgQW5hbHl6ZSBkYXRhc2V0IHVzaW5nIGZ1bGwtcXVhbnRpbGUgbm9ybWFsaXphdGlvbgoKIyMgSW1wbGVtZW50IGFuZCBhcHBseSBmdWxsLXF1YW50aWxlIG5vcm1hbGl6YXRpb24KCmBgYHtyfQojIyMgaW1wbGVtZW50IEZRIG5vcm1hbGl6YXRpb24KRlFub3JtIDwtIGZ1bmN0aW9uKGNvdW50cyl7CiAgLi4uCn0KCiMjIyBub3JtYWxpemUgdGhlIGRhdGEgdXNpbmcgRlEKCmBgYAoKIyMgVmlzdWFsaXplIGVmZmVjdCBvZiBGUSBub3JtYWxpemF0aW9uCgpWaXN1YWxpemUgdGhlIGRpc3RyaWJ1dGlvbnMgb2YgYGxvZzFwYC10cmFuc2Zvcm1lZCBjb3VudHMgKHVzZSB0aGUgYGRlbnNpdHlgIGZ1bmN0aW9uKSB0byBjb21wYXJlIHNhbXBsZS1zcGVjaWZpYyBjb3VudCBkaXN0cmlidXRpb25zIGJlZm9yZSBhbmQgYWZ0ZXIgRlEgbm9ybWFsaXphdGlvbi4KV2hhdCdzIHRoZSBpbXBhY3Qgb2YgRlEgbm9ybWFsaXphdGlvbiBvbiB0aGUgZGlmZmVyZW5jZXMgaW4gZGlzdHJpYnV0aW9uIGJldHdlZW4gc2FtcGxlcz8KCiMjIGBlZGdlUmAgYW5hbHlzaXMgdXNpbmcgZnVsbC1xdWFudGlsZSBub3JtYWxpemVkIGRhdGEKCkRvbid0IGZvcmdldCB0byByZW1vdmUgdGhlIGBjYWxjTm9ybUZhY3RvcnNgIHN0ZXAgaW4gdGhlIGBlZGdlUmAgYW5hbHlzaXMgYXMgZGF0YSBoYXZlIGFscmVhZHkgYmVlbiBub3JtYWxpemVkIHdoZW4gdXNpbmcgRlEtbm9ybWFsaXplZCBjb3VudHMgYXMgaW5wdXQhCgpgYGB7cn0KIyMjIHVzZSBGUS1ub3JtYWxpemVkIGRhdGEgYXMgaW5wdXQgdG8gdGhlIGVkZ2VSIGFuYWx5c2lzCmBgYAoKIyMgQ29tcGFyZSBERSBnZW5lcyBhdCA1JSBGRFIKCmBgYHtyfQojIyMgR2V0IGxpc3Qgb2YgREUgZ2VuZXMgdXNpbmcgVE1NIGFuZCBGUSBub3JtYWxpemF0aW9uCgojIyMgQ29tcGFyZSBsaXN0IHVzaW5nLCBlLmcuLCBhIFZlbm4gZGlhZ3JhbQpgYGAKCgoK</div>
 
 
 </div>
