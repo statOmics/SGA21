@@ -74,22 +74,40 @@ group <- dds$condition
 ## A dependent test statistic
 
 ```{r}
+## filter based on difference in means
 filterStatEffectSize <- abs(rowMeans(simCounts[,group == "A"]) - rowMeans(simCounts[,group == "B"]))
+## calculate t-test results for each gene
 testStat <- genefilter::rowttests(simCounts, group)
 
-## unconditional distribution
+## unconditional distribution of test statistics prior to filtering
 plot(density(testStat$statistic, na.rm=TRUE),
      xlab = "Test statistic",
      main = "Unconditional distribution")
 
-## conditional distribution: very different!
+# filter out ~20% of genes with lowest effect sizes
 mean(filterStatEffectSize > 1)
 hist(filterStatEffectSize, breaks=40)
 abline(v=1, col="red")
 keepEffectSize <- filterStatEffectSize > 1
+## conditional distribution: very different!
 plot(density(testStat$statistic[keepEffectSize], na.rm=TRUE),
      xlab = "Test statistic",
      main = "Conditional distribution")
+
+
+## in same plot
+plot(density(testStat$statistic, na.rm=TRUE),
+     xlab = "Test statistic",
+     col = "orange",
+     main = "Test statistics before and after filtering on mean difference",
+     lwd = 2)
+lines(density(testStat$statistic[keepEffectSize], na.rm=TRUE),
+     xlab = "Test statistic",
+     main = "Conditional distribution",
+     col = "steelblue",
+     lwd = 2)
+legend("topright", c("Unconditional", "Conditional"),
+       col=c("orange", "steelblue"), lwd=2, bty='n')
 ```
 
 
@@ -97,7 +115,8 @@ plot(density(testStat$statistic[keepEffectSize], na.rm=TRUE),
 
 ```{r}
 filterStatGlobalMean <- rowMeans(simCounts)
-mean(filterStatGlobalMean > 5) # we remove a similar fraction
+# we remove a similar fraction of ~20% genes
+mean(filterStatGlobalMean > 5) 
 keepGlobalMean <- filterStatGlobalMean > 5
 
 ## unconditional distribution
@@ -109,6 +128,21 @@ plot(density(testStat$statistic, na.rm=TRUE),
 plot(density(testStat$statistic[keepGlobalMean], na.rm=TRUE),
      xlab = "Test statistic",
      main = "Conditional distribution")
+
+
+## in same plot
+plot(density(testStat$statistic, na.rm=TRUE),
+     xlab = "Test statistic",
+     col = "orange",
+     main = "Test statistics before and after filtering on global mean",
+     lwd = 2)
+lines(density(testStat$statistic[keepGlobalMean], na.rm=TRUE),
+     xlab = "Test statistic",
+     main = "Conditional distribution",
+     col = "steelblue",
+     lwd = 2)
+legend("topright", c("Unconditional", "Conditional"),
+       col=c("orange", "steelblue"), lwd=2, bty='n')
 ```
 
 
@@ -146,7 +180,7 @@ summary(m)
 
  ---
  
-We find that one of the coefficients is `NA`! This is obviously not because we're dealing with `NA` values in the data as we've just simulated the response variable. What's going on?
+We find that one of the coefficients is `NA`! This is obviously not because we're dealing with `NA` values in the data as we've just simulated the response variable ourselves. What's going on?
 
 One of the parameters, in this case the parameter distinguishing cancer from healthy patients **cannot be estimated as it is a linear combination of other parameters**. In our case, estimating the diseased effect would use information that is already used to estimate the patient-level intercepts. In other words, **once you know the patient, you immediately also know the disease status**, so estimating the diseased vs healthy effect on top of the patient effect provides no additional information if we have already estimated the patient-level effects. This concept is called aliasing, and is a common technical issue in 'omics experiments with complex experimental designs. 
 
@@ -178,7 +212,6 @@ Since one of our parameters is a linear combination of other parameters, it cann
 
 We will have to carefully construct our design matrix in order to account for all important sources of variation while still allowing us to answer the research question of interest. The aliasing exploration above has made it clear we may drop the `disease` main effect, so let's start by constructing this design matrix.
 
-
 ```{r}
 X <- model.matrix(~ patient + time + disease:time)
 
@@ -202,7 +235,7 @@ m2 <- glm(y ~ -1 + X,
 summary(m2)
 ```
 
-We see that all coefficients can now be estimated. The `timeafter` effect may be interpreted as the time effect for healthy patients, while the `timeafter:diseasecancer` effect may be interpreted as the difference in the time effect for cancer patients, with the time effect for healthy patients, i.e., it is the relevant interaction effect we are interested in. 
+We see that all coefficients can now be estimated. The `timeafter` effect may be interpreted as the time effect for healthy patients, while the `timeafter:diseasecancer` effect may be interpreted as the difference in the time effect for cancer patients as compared to healthy patients, i.e., it is the relevant interaction effect we are interested in. 
 
 **Question**. Taking this further, suppose that we can safely assume that there is no interaction effect between disease status and time. How would you now test for differential expression between healthy and cancer patients at the first timepoint? Specify the experimental design and contrast used.
 
@@ -233,7 +266,7 @@ In the proteomics module, we have previously introduced the powerful linear mode
 
 ## limma-voom: extending limma for RNA-seq data
 
- - Count models such as `edgeR` and `DESeq2` automatically account for the mean-variance relationship of the data, given that the observed mean-variance relationship is close to the one assumed by the distribution. However, they are also more complex, both computationally as well as statistically and conceptually.
+ - Count models such as `edgeR` and `DESeq2` automatically account for the mean-variance relationship of the data by assuming a proper count distribution, given that the observed mean-variance relationship is close to the one assumed by the distribution. However, they are also more complex, both computationally as well as statistically and conceptually.
  - limma-voom ([Law *et al.* (2014)](https://genomebiology.biomedcentral.com/articles/10.1186/gb-2014-15-2-r29)) is a method that unlocks Gaussian linear models to analyze count data in the context of RNA-seq, by first estimating the mean-variance relationship of the dataset at hand, and subsequently incorporating it in the analysis through observation-level weights in a linear regression model.
  
 ```{r, echo=FALSE, fig.cap=paste("Figure 1 from Law *et al.* (2014).")}
@@ -252,5 +285,74 @@ include_graphics("./images_sequencing/limmaVoomMeanVariance.png")
 include_graphics("./images_sequencing/limmaVoomWeights.png")
 ```
 
+## limma-voom analysis of parathyroid data
 
-**Add limma-voom analysis of RNA-seq data**
+`limma` has an extensive user's guide which can be accessed via `limma::limmaUsersGuide()`.
+
+```{r}
+library(limma)
+library(edgeR)
+se <- readRDS("data/seParathyroid.rds")
+se
+design <- model.matrix(~treatment*time+patient, 
+                       data=colData(se))
+
+keep <- filterByExpr(se, design)
+table(keep)
+filtCounts <- assays(se)$counts[keep,]
+
+dge <- DGEList(counts=filtCounts)
+
+# normalize just as in edgeR
+dge <- calcNormFactors(dge)
+# fit the mean-variance trend used to calculate weights
+v <- voom(dge, design, plot=TRUE)
+# this mean-variance trend is then automatically incorporated into the usual limma pipeline
+fit <- lmFit(v, design)
+fit <- eBayes(fit)
+tt <- topTable(fit, coef=(ncol(design-1):ncol(design)), number=nrow(dge)) # test interaction effects
+head(tt) #similar as in edgeR, we find no DE
+```
+
+### Testing contrasts using limma-voom
+
+When working with limma-voom, we cannot immediately test a contrast using a contrast matrix just like we did in `edgeR`.
+Instead, we will reparametrize our model according to the contrasts, such that each parameter corresponds to a specific contrast, using the `contrasts.fit` function.
+
+```{r}
+# contrast matrix we used before
+L <- matrix(0, nrow = ncol(fit$coefficients), ncol = 7)
+rownames(L) <- colnames(fit$coefficients)
+colnames(L) <- c("DPNvsCON24", "DPNvsCON48",
+                 "OHTvsCON24", "OHTvsCON48",
+                 "DPNvsCONInt", "OHTvsCONInt",
+                 "OHTvsDPNInt")
+# DPN vs control at 24h
+L[2,"DPNvsCON24"] <- 1
+# DPN vs control at 48h
+L[c(2,8),"DPNvsCON48"] <- 1
+# OHT vs control at 24h
+L[3,"OHTvsCON24"] <- 1
+# OHT vs control at 48h
+L[c(3,9),"OHTvsCON48"] <- 1
+# DPN control interaction
+L[8,"DPNvsCONInt"] <- 1
+# OHT control interaction
+L[9,"OHTvsCONInt"] <- 1
+# OHT DPN interaction
+L[c(9,8),"OHTvsDPNInt"] <- c(1, -1)
+L
+
+fit <- lmFit(v, design)
+fit2 <- contrasts.fit(fit, L)
+fit2 <- eBayes(fit2)
+head(fit2$coefficients) # one coefficient is one contrast
+# loop over all contrasts of interest
+ttList <- list()
+for(cc in 1:ncol(L)){
+  ttList[[cc]] <- topTable(fit2, coef=cc, number=nrow(dge))
+}
+names(ttList) <- colnames(L)
+nDE <- unlist(lapply(ttList, function(x) sum(x$adj.P.Val <= 0.05)))
+nDE
+```
