@@ -53,7 +53,7 @@ Independent filtering has been formalized by [Bourgon *et al.* (2010)](https://w
  - For each feature we calculate two statistics, $S_F$ and $S_T$, respectively used for two stages: filtering and testing (e.g., differential expression).
  - In order for a feature to be deemed significant, both of its statistics must be greater than some cut-off.
  - We want to control the type I error rate of the second stage (testing). But note that **the second stage is conditional on the first stage**, as we only test features passing the filter, and basically ignore the fact that filtering was performed. Indeed, one criticism is that computing and correcting the $p$-values as if filtering had not been performed may lead to overoptimistic adjusted $p$-values.
- - [Bourgon *et al.* (2010)](https://www.pnas.org/content/107/21/9546) show that filtering is only appropriate (i.e., does not inflate type I error rate) if the conditional null distribution of test statistics for features passing the filter is the same as the unconditional null distribution. Therefore, **filtering is appropriate if the statistic used for filtering is independent of the statistic used for testing under the null hypothesis**.
+ - [Bourgon *et al.* (2010)](https://www.pnas.org/content/107/21/9546) show that filtering is only appropriate (i.e., does not inflate type I error rate) if the conditional null distribution of test statistics for features passing the filter is the same as the unconditional null distribution. Therefore, **filtering is appropriate if the statistic used for filtering is independent of the statistic used for testing under the null hypothesis**. A good filtering statistic, however, is also informative under the alternative hypothesis. Indeed, a filtering statistic that is independent of the test statistic under both the null- and alternative hypothesis will amount to a random filter, hence deteriorate the quality of the analysis.
  
 ```{r, echo=FALSE, fig.cap=paste("Figure 2 from Bourgon *et al.* (2010).")}
 # All defaults
@@ -162,9 +162,12 @@ Let's try this, by simulating random data for one gene.
 
 ```{r}
 set.seed(2)
-patient <- factor(rep(letters[1:8], each=2)) # 2 samples per patient
-disease <- factor(c(rep("healthy",8), rep("cancer",8)), levels=c("healthy", "cancer")) # first four are healthy, next four are alcoholic
-time <- factor(rep(c("before", "after"), 8), levels=c("before", "after")) # one before and one after sample for each
+# 2 samples per patient for 8 patients
+patient <- factor(rep(letters[1:8], each=2)) 
+# first four are healthy, next four are diseased
+disease <- factor(c(rep("healthy",8), rep("cancer",8)), levels=c("healthy", "cancer")) 
+# one before and one after sample for each
+time <- factor(rep(c("before", "after"), 8), levels=c("before", "after")) 
 
 table(patient, disease, time)
 
@@ -262,7 +265,7 @@ $$ \log \frac{\mu_{diseased}}{\mu_{healthy}} = \frac{1}{4} (\beta_4 + \beta_5 + 
 
 ## The limma framework for the analysis of microarrays
 
-In the proteomics module, we have previously introduced the powerful linear model based framework `limma`, and how it uses an empirical Bayes strategy to borrow information across proteins to derive a posterior variance estimate. In its default implementation, `limma` cannot be used to model count data, as it can not account for their mean-variance relationship. The developers, however, came up with a creative approach to use the `limma` framework to model coutn data.
+In the proteomics module, we have previously introduced the powerful linear model based framework `limma`, and how it uses an empirical Bayes strategy to borrow information across proteins to derive a posterior variance estimate. In its default implementation, `limma` cannot be used to model count data, as it can not account for their mean-variance relationship. The developers, however, came up with a creative approach to use the `limma` framework to model count data.
 
 ## limma-voom: extending limma for RNA-seq data
 
