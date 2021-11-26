@@ -1,11 +1,11 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021) (preloaded format=xelatex 2021.11.19)  22 NOV 2021 08:21
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021) (preloaded format=xelatex 2021.11.24)  26 NOV 2021 06:29
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
 **sequencing_countData.tex
 (./sequencing_countData.tex
 LaTeX2e <2021-11-15>
-L3 programming layer <2021-11-12> (/Users/runner/Library/TinyTeX/texmf-dist/tex/latex/base/article.cls
+L3 programming layer <2021-11-22> (/Users/runner/Library/TinyTeX/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2021/10/04 v1.4n Standard LaTeX document class
 (/Users/runner/Library/TinyTeX/texmf-dist/tex/latex/base/size10.clo
 File: size10.clo 2021/10/04 v1.4n Standard LaTeX file (size option)
@@ -125,7 +125,7 @@ Package: iftex 2020/03/06 v1.0d TeX engine tests
 )) (/Users/runner/Library/TinyTeX/texmf-dist/tex/generic/iftex/ifluatex.sty
 Package: ifluatex 2019/10/25 v1.5 ifluatex legacy package. Use iftex instead.
 ) (/Users/runner/Library/TinyTeX/texmf-dist/tex/latex/unicode-math/unicode-math.sty (/Users/runner/Library/TinyTeX/texmf-dist/tex/latex/l3kernel/expl3.sty
-Package: expl3 2021-11-12 L3 programming layer (loader) 
+Package: expl3 2021-11-22 L3 programming layer (loader) 
 (/Users/runner/Library/TinyTeX/texmf-dist/tex/latex/l3backend/l3backend-xetex.def
 File: l3backend-xetex.def 2021-10-18 L3 backend support: XeTeX
 (|extractbb --version)
@@ -318,7 +318,7 @@ Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
 \Gm@layoutvoffset=\dimen162
 \Gm@dimlist=\toks23
 ) (/Users/runner/Library/TinyTeX/texmf-dist/tex/latex/fancyvrb/fancyvrb.sty
-Package: fancyvrb 2021/10/15 v3.9 verbatim text (tvz,hv)
+Package: fancyvrb 2021/11/18 v4.0 verbatim text (tvz,hv)
 \FV@CodeLineNo=\count301
 \FV@InFile=\read2
 \FV@TabBox=\box54
@@ -820,10 +820,10 @@ Package rerunfilecheck Info: File `sequencing_countData.out' has not changed.
 (rerunfilecheck)             Checksum: 99011DF42AC0BEC7B3E8B7F22489B3AC;2455.
  ) 
 Here is how much of TeX's memory you used:
- 17027 strings out of 478274
- 320987 string characters out of 5855467
- 779631 words of memory out of 5000000
- 37293 multiletter control sequences out of 15000+600000
+ 17030 strings out of 478256
+ 321045 string characters out of 5855040
+ 779805 words of memory out of 5000000
+ 37314 multiletter control sequences out of 15000+600000
  409897 words of font info for 82 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  86i,8n,121p,466b,535s stack positions out of 5000i,500n,10000p,200000b,80000s
