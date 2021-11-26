@@ -128,6 +128,13 @@ source("https://raw.githubusercontent.com/statOmics/SGA21/master/install.R")
 4. Technical topics in bulk RNA-seq differential expression analysis (DEA).
 
    - Lecture: [Technical topics in DEA](./sequencing_technicalDE.html) [[PDF](./sequencing_technicalDE.pdf)].
+   
+## Module III: Single-cell RNA-sequencing
+
+1. General concepts and analysis workflow of single-cell RNA-seq data.
+
+ - Lecture: [Slides](https://docs.google.com/presentation/d/1sfbtw52qWgA7TcDIrGB3fWksLM0Mu9O7gBqYgGrt9fM/edit?usp=sharing).
+
 
 # Instructors
 

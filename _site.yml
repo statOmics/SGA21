@@ -35,6 +35,8 @@ navbar:
         href: sequencing_rnaseqIntro.html
       - text: 3.4 SDA - Technical topics in DE analysis
         href: sequencing_technicalDE.html
+      - text: 4.1 scRNA-seq - General concepts and workflow
+        href: https://docs.google.com/presentation/d/1sfbtw52qWgA7TcDIrGB3fWksLM0Mu9O7gBqYgGrt9fM/edit?usp=sharing
 
     - text: "Tutorials"
       icon: fa-laptop

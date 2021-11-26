@@ -1,0 +1,16 @@
+---
+title: "Differential Dropout exploration"
+author: "Koen Van den Berge"
+date: "11/24/2021"
+output: html_document
+---
+
+
+```{r}
+library(SingleCellExperiment)
+#  sce <- scRNAseq::KotliarovPBMCData()
+sce <- scRNAseq::ZilionisLungData('mouse')
+
+head(colData(sce))
+```
+
