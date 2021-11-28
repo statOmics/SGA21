@@ -136,6 +136,7 @@ source("https://raw.githubusercontent.com/statOmics/SGA21/master/install.R")
    - Lecture: [Slides](https://docs.google.com/presentation/d/1sfbtw52qWgA7TcDIrGB3fWksLM0Mu9O7gBqYgGrt9fM/edit?usp=sharing).
       - [Variance stabilizing transformation for a Poisson random variable](./singleCell_varStabilization.html) [[PDF](./singleCell_varStabilization.pdf)].
       - [Understanding UMAP](https://pair-code.github.io/understanding-umap/)
+   - [A reproducible workflow on the Macosko Drop-seq dataset](./scripts_singleCell/singleCell_MacoskoWorkflow.html)
 
 
 # Instructors
