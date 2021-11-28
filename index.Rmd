@@ -134,6 +134,7 @@ source("https://raw.githubusercontent.com/statOmics/SGA21/master/install.R")
 1. General concepts and analysis workflow of single-cell RNA-seq data.
 
    - Lecture: [Slides](https://docs.google.com/presentation/d/1sfbtw52qWgA7TcDIrGB3fWksLM0Mu9O7gBqYgGrt9fM/edit?usp=sharing).
+      - [Variance stabilizing transformation for a Poisson random variable](./singleCell_varStabilization.html) [[PDF](./singleCell_varStabilization.pdf)].
 
 
 # Instructors
