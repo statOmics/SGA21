@@ -1,4 +1,5 @@
-
+project*
+project/sc_rnaseq*
 sequencing_hw_solution.Rmd
 *.Rproj
 .Rproj.user
