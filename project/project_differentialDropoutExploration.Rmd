@@ -12,5 +12,67 @@ library(SingleCellExperiment)
 sce <- scRNAseq::ZilionisLungData('mouse')
 
 head(colData(sce))
+table(colData(sce)$Animal)
+table(colData(sce)$Tissue)
+table(colData(sce)$Animal, colData(sce)$Tissue)
+
+# cell type annotations
+table(colData(sce)[,"Major cell type"], 
+      colData(sce)[,"Minor subset"])
+table(colData(sce)[,"Minor subset"], 
+      colData(sce)[,"Most likely Immgen cell type"])
+
+# cell types in each animal
+table(colData(sce)$Animal,
+      colData(sce)[,"Minor subset"])
+
+```
+
+
+# EDA
+
+Visualize the structure of the data using PCA and UMAP on a subset of highly informative genes using their normalized counts.
+Color the cells using the three different resolutions of cell type labels, as well as investigating the healthy/tumor, animal and batch effects.
+
+# Pseudobulk analysis
+
+```{r}
+library(muscat)
+sceMuscat <- prepSCE(sce, 
+    kid = "Minor subset", # cluster_id: subpopulation assignments (cell types)
+    gid = "Tissue",  # group_id: group IDs (healthy / tissue)
+    sid = "Animal",   # sample_id: sample IDs 
+    drop = FALSE)
+
+# create pseudobulk
+pb <- aggregateData(sceMuscat,
+    assay = "counts", fun = "sum",
+    by = c("cluster_id", "sample_id"))
+pbMDS(pb)
+
+# run DS analysis
+res <- pbDS(pb, 
+            verbose = FALSE,
+            filter = "none",
+            min_cells = 1)
+names(res$table$tumor)
+
+unlist(lapply(res$table$tumor, function(x) sum(x$p_adj.loc <= 0.05)))
+```
+
+# Explore differential detection
+
+```{r}
+animalCellType <- paste0(colData(sce)$Animal,
+                         colData(sce)[,"Minor subset"])
+X <- model.matrix(~ -1 + animalCellType)
+colnames(X) <- gsub(colnames(X),
+                    pattern = "animalCellType",
+                    replacement = "")
+
+aggCounts <- counts(sce) %*% X
+aggDetection <- (counts(sce) > 0) %*% X
+avgDetection <- sweep(aggDetection, 2, colSums(X), "/")
+
 ```
 

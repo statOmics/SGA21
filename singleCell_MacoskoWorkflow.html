@@ -556,12 +556,18 @@ div.tocify {
 ##   &#39;BiocSingular&#39;, &#39;scDblFinder&#39;, &#39;glmpca&#39;, &#39;uwot&#39;</code></pre>
 <pre><code>## also installing the dependencies &#39;sparseMatrixStats&#39;, &#39;rhdf5filters&#39;, &#39;R.oo&#39;, &#39;R.methodsS3&#39;, &#39;sitmo&#39;, &#39;RcppHNSW&#39;, &#39;beeswarm&#39;, &#39;vipor&#39;, &#39;DelayedMatrixStats&#39;, &#39;HDF5Array&#39;, &#39;rhdf5&#39;, &#39;R.utils&#39;, &#39;dqrng&#39;, &#39;beachmat&#39;, &#39;Rhdf5lib&#39;, &#39;BiocNeighbors&#39;, &#39;ggbeeswarm&#39;, &#39;viridis&#39;, &#39;Rtsne&#39;, &#39;ggrepel&#39;, &#39;statmod&#39;, &#39;bluster&#39;, &#39;metapod&#39;, &#39;ScaledMatrix&#39;, &#39;irlba&#39;, &#39;rsvd&#39;, &#39;xgboost&#39;, &#39;FNN&#39;, &#39;RSpectra&#39;, &#39;RcppAnnoy&#39;, &#39;RcppProgress&#39;</code></pre>
 <pre><code>## 
+##   There is a binary version available but the source version is later:
+##      binary source needs_compilation
+## uwot 0.1.10 0.1.11              TRUE
+## 
+## 
 ## The downloaded binary packages are in
-##  /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpETFC3s/downloaded_packages</code></pre>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># Code below might ask you to create an ExperimentHub directory. </span></span>
-<span id="cb7-2"><a href="#cb7-2"></a><span class="co"># Type &#39;yes&#39; and hit Enter, to allow this.</span></span>
-<span id="cb7-3"><a href="#cb7-3"></a><span class="kw">suppressPackageStartupMessages</span>(<span class="kw">library</span>(scRNAseq))</span>
-<span id="cb7-4"><a href="#cb7-4"></a>sce &lt;-<span class="st"> </span><span class="kw">MacoskoRetinaData</span>()</span></code></pre></div>
+##  /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpRq735B/downloaded_packages</code></pre>
+<pre><code>## installing the source package &#39;uwot&#39;</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="co"># Code below might ask you to create an ExperimentHub directory. </span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="co"># Type &#39;yes&#39; and hit Enter, to allow this.</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="kw">suppressPackageStartupMessages</span>(<span class="kw">library</span>(scRNAseq))</span>
+<span id="cb8-4"><a href="#cb8-4"></a>sce &lt;-<span class="st"> </span><span class="kw">MacoskoRetinaData</span>()</span></code></pre></div>
 <pre><code>## snapshotDate(): 2021-10-19</code></pre>
 <pre><code>## see ?scRNAseq and browseVignettes(&#39;scRNAseq&#39;) for documentation</code></pre>
 <pre><code>## loading from cache</code></pre>
@@ -570,7 +576,7 @@ div.tocify {
 </div>
 <div id="a-singlecellexperiment-object" class="section level1">
 <h1><span class="header-section-number">2</span> A <code>SingleCellExperiment</code> object</h1>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>sce</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>sce</span></code></pre></div>
 <pre><code>## class: SingleCellExperiment 
 ## dim: 24658 49300 
 ## metadata(0):
@@ -586,11 +592,11 @@ div.tocify {
 <div id="accessing-data-from-a-singlecellexperiment-object" class="section level2">
 <h2><span class="header-section-number">2.1</span> Accessing data from a <code>SingleCellExperiment</code> object</h2>
 <p>Please see <a href="http://bioconductor.org/books/release/OSCA/data-infrastructure.html">Figure 4.1 in OSCA</a> for an overview of a <code>SingleCellExperiment</code> object.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="co"># Data: assays</span></span>
-<span id="cb15-2"><a href="#cb15-2"></a><span class="kw">assays</span>(sce)</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="co"># Data: assays</span></span>
+<span id="cb16-2"><a href="#cb16-2"></a><span class="kw">assays</span>(sce)</span></code></pre></div>
 <pre><code>## List of length 1
 ## names(1): counts</code></pre>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="kw">assays</span>(sce)<span class="op">$</span>counts[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="op">:</span><span class="dv">5</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="kw">assays</span>(sce)<span class="op">$</span>counts[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="op">:</span><span class="dv">5</span>]</span></code></pre></div>
 <pre><code>## 5 x 5 sparse Matrix of class &quot;dgCMatrix&quot;
 ##               r1_GGCCGCAGTCCG r1_CTTGTGCGGGAA r1_GCGCAACTGCTC r1_GATTGGGAGGCA
 ## KITL                        .               .               1               .
@@ -604,11 +610,11 @@ div.tocify {
 ## CEP290                      1
 ## 4930430F08RIK               1
 ## 1700017N19RIK               .</code></pre>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="co"># Feature metadata: rowData</span></span>
-<span id="cb19-2"><a href="#cb19-2"></a><span class="kw">rowData</span>(sce) <span class="co"># empty for now</span></span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="co"># Feature metadata: rowData</span></span>
+<span id="cb20-2"><a href="#cb20-2"></a><span class="kw">rowData</span>(sce) <span class="co"># empty for now</span></span></code></pre></div>
 <pre><code>## DataFrame with 24658 rows and 0 columns</code></pre>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="co"># Cell metadata: colData</span></span>
-<span id="cb21-2"><a href="#cb21-2"></a><span class="kw">colData</span>(sce)</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="co"># Cell metadata: colData</span></span>
+<span id="cb22-2"><a href="#cb22-2"></a><span class="kw">colData</span>(sce)</span></code></pre></div>
 <pre><code>## DataFrame with 49300 rows and 2 columns
 ##                         cell.id   cluster
 ##                     &lt;character&gt; &lt;integer&gt;
@@ -623,15 +629,15 @@ div.tocify {
 ## p1_CTGTCTGAGACC p1_CTGTCTGAGACC         2
 ## p1_TAACGCGCTCCT p1_TAACGCGCTCCT        24
 ## p1_ATTCTTGTTCTT p1_ATTCTTGTTCTT        24</code></pre>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a><span class="co"># Reduced dimensions: reducedDims</span></span>
-<span id="cb23-2"><a href="#cb23-2"></a><span class="kw">reducedDims</span>(sce) <span class="co"># empty for now</span></span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="co"># Reduced dimensions: reducedDims</span></span>
+<span id="cb24-2"><a href="#cb24-2"></a><span class="kw">reducedDims</span>(sce) <span class="co"># empty for now</span></span></code></pre></div>
 <pre><code>## List of length 0
 ## names(0):</code></pre>
 </div>
 <div id="creating-a-new-singlecellexperiment-object" class="section level2">
 <h2><span class="header-section-number">2.2</span> Creating a new <code>SingleCellExperiment</code> object</h2>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a>sceNew &lt;-<span class="st"> </span><span class="kw">SingleCellExperiment</span>(<span class="dt">assays =</span> <span class="kw">list</span>(<span class="dt">counts =</span> <span class="kw">assays</span>(sce)<span class="op">$</span>counts))</span>
-<span id="cb25-2"><a href="#cb25-2"></a>sceNew</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a>sceNew &lt;-<span class="st"> </span><span class="kw">SingleCellExperiment</span>(<span class="dt">assays =</span> <span class="kw">list</span>(<span class="dt">counts =</span> <span class="kw">assays</span>(sce)<span class="op">$</span>counts))</span>
+<span id="cb26-2"><a href="#cb26-2"></a>sceNew</span></code></pre></div>
 <pre><code>## class: SingleCellExperiment 
 ## dim: 24658 49300 
 ## metadata(0):
@@ -644,13 +650,13 @@ div.tocify {
 ## reducedDimNames(0):
 ## mainExpName: NULL
 ## altExpNames(0):</code></pre>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a><span class="kw">rm</span>(sceNew)</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a><span class="kw">rm</span>(sceNew)</span></code></pre></div>
 </div>
 <div id="storing-metadata-in-a-singlecellexperiment-object" class="section level2">
 <h2><span class="header-section-number">2.3</span> Storing (meta)data in a <code>SingleCellExperiment</code> object</h2>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a>fakeGeneNames &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;gene&quot;</span>, <span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(sce))</span>
-<span id="cb28-2"><a href="#cb28-2"></a><span class="kw">rowData</span>(sce)<span class="op">$</span>fakeName &lt;-<span class="st"> </span>fakeGeneNames</span>
-<span id="cb28-3"><a href="#cb28-3"></a><span class="kw">head</span>(<span class="kw">rowData</span>(sce))</span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a>fakeGeneNames &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;gene&quot;</span>, <span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(sce))</span>
+<span id="cb29-2"><a href="#cb29-2"></a><span class="kw">rowData</span>(sce)<span class="op">$</span>fakeName &lt;-<span class="st"> </span>fakeGeneNames</span>
+<span id="cb29-3"><a href="#cb29-3"></a><span class="kw">head</span>(<span class="kw">rowData</span>(sce))</span></code></pre></div>
 <pre><code>## DataFrame with 6 rows and 1 column
 ##                  fakeName
 ##               &lt;character&gt;
@@ -660,14 +666,14 @@ div.tocify {
 ## 4930430F08RIK       gene4
 ## 1700017N19RIK       gene5
 ## MGAT4C              gene6</code></pre>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a><span class="co"># Remove again by setting to NULL</span></span>
-<span id="cb30-2"><a href="#cb30-2"></a><span class="kw">rowData</span>(sce)<span class="op">$</span>fakeName &lt;-<span class="st"> </span><span class="ot">NULL</span></span>
-<span id="cb30-3"><a href="#cb30-3"></a></span>
-<span id="cb30-4"><a href="#cb30-4"></a><span class="kw">assays</span>(sce)<span class="op">$</span>logCounts &lt;-<span class="st"> </span><span class="kw">log1p</span>(<span class="kw">assays</span>(sce)<span class="op">$</span>counts)</span>
-<span id="cb30-5"><a href="#cb30-5"></a><span class="kw">assays</span>(sce)</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="co"># Remove again by setting to NULL</span></span>
+<span id="cb31-2"><a href="#cb31-2"></a><span class="kw">rowData</span>(sce)<span class="op">$</span>fakeName &lt;-<span class="st"> </span><span class="ot">NULL</span></span>
+<span id="cb31-3"><a href="#cb31-3"></a></span>
+<span id="cb31-4"><a href="#cb31-4"></a><span class="kw">assays</span>(sce)<span class="op">$</span>logCounts &lt;-<span class="st"> </span><span class="kw">log1p</span>(<span class="kw">assays</span>(sce)<span class="op">$</span>counts)</span>
+<span id="cb31-5"><a href="#cb31-5"></a><span class="kw">assays</span>(sce)</span></code></pre></div>
 <pre><code>## List of length 2
 ## names(2): counts logCounts</code></pre>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a><span class="kw">assays</span>(sce)<span class="op">$</span>logCounts[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="op">:</span><span class="dv">5</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a><span class="kw">assays</span>(sce)<span class="op">$</span>logCounts[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="op">:</span><span class="dv">5</span>]</span></code></pre></div>
 <pre><code>## 5 x 5 sparse Matrix of class &quot;dgCMatrix&quot;
 ##               r1_GGCCGCAGTCCG r1_CTTGTGCGGGAA r1_GCGCAACTGCTC r1_GATTGGGAGGCA
 ## KITL                .               .               0.6931472        .       
@@ -681,33 +687,33 @@ div.tocify {
 ## CEP290              0.6931472
 ## 4930430F08RIK       0.6931472
 ## 1700017N19RIK       .</code></pre>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a><span class="kw">assays</span>(sce)<span class="op">$</span>logCounts &lt;-<span class="st"> </span><span class="ot">NULL</span></span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a><span class="kw">assays</span>(sce)<span class="op">$</span>logCounts &lt;-<span class="st"> </span><span class="ot">NULL</span></span></code></pre></div>
 </div>
 </div>
 <div id="filtering-non-informative-genes" class="section level1">
 <h1><span class="header-section-number">3</span> Filtering non-informative genes</h1>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a>keep &lt;-<span class="st"> </span><span class="kw">rowSums</span>(<span class="kw">assays</span>(sce)<span class="op">$</span>counts <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) <span class="op">&gt;</span><span class="st"> </span><span class="dv">10</span></span>
-<span id="cb35-2"><a href="#cb35-2"></a><span class="kw">table</span>(keep)</span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a>keep &lt;-<span class="st"> </span><span class="kw">rowSums</span>(<span class="kw">assays</span>(sce)<span class="op">$</span>counts <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) <span class="op">&gt;</span><span class="st"> </span><span class="dv">10</span></span>
+<span id="cb36-2"><a href="#cb36-2"></a><span class="kw">table</span>(keep)</span></code></pre></div>
 <pre><code>## keep
 ## FALSE  TRUE 
 ##  6771 17887</code></pre>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a>sce &lt;-<span class="st"> </span>sce[keep,]</span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a>sce &lt;-<span class="st"> </span>sce[keep,]</span></code></pre></div>
 </div>
 <div id="quality-control" class="section level1">
 <h1><span class="header-section-number">4</span> Quality control</h1>
 <div id="calculate-qc-variables" class="section level2">
 <h2><span class="header-section-number">4.1</span> Calculate QC variables</h2>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a><span class="kw">library</span>(scater)</span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a><span class="kw">library</span>(scater)</span></code></pre></div>
 <pre><code>## Loading required package: scuttle</code></pre>
 <pre><code>## Loading required package: ggplot2</code></pre>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a>is.mito &lt;-<span class="st"> </span><span class="kw">grepl</span>(<span class="st">&quot;^MT-&quot;</span>, <span class="kw">rownames</span>(sce))</span>
-<span id="cb41-2"><a href="#cb41-2"></a><span class="kw">sum</span>(is.mito) <span class="co"># 28 mitochondrial genes</span></span></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1"></a>is.mito &lt;-<span class="st"> </span><span class="kw">grepl</span>(<span class="st">&quot;^MT-&quot;</span>, <span class="kw">rownames</span>(sce))</span>
+<span id="cb42-2"><a href="#cb42-2"></a><span class="kw">sum</span>(is.mito) <span class="co"># 28 mitochondrial genes</span></span></code></pre></div>
 <pre><code>## [1] 28</code></pre>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a>df &lt;-<span class="st"> </span><span class="kw">perCellQCMetrics</span>(sce, <span class="dt">subsets=</span><span class="kw">list</span>(<span class="dt">Mito=</span>is.mito))</span>
-<span id="cb43-2"><a href="#cb43-2"></a><span class="co">## add the QC variables to sce object</span></span>
-<span id="cb43-3"><a href="#cb43-3"></a><span class="kw">colData</span>(sce) &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">colData</span>(sce), df)</span>
-<span id="cb43-4"><a href="#cb43-4"></a><span class="co"># the QC variables have now been added to the colData of our SCE object.</span></span>
-<span id="cb43-5"><a href="#cb43-5"></a><span class="kw">colData</span>(sce)</span></code></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1"></a>df &lt;-<span class="st"> </span><span class="kw">perCellQCMetrics</span>(sce, <span class="dt">subsets=</span><span class="kw">list</span>(<span class="dt">Mito=</span>is.mito))</span>
+<span id="cb44-2"><a href="#cb44-2"></a><span class="co">## add the QC variables to sce object</span></span>
+<span id="cb44-3"><a href="#cb44-3"></a><span class="kw">colData</span>(sce) &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">colData</span>(sce), df)</span>
+<span id="cb44-4"><a href="#cb44-4"></a><span class="co"># the QC variables have now been added to the colData of our SCE object.</span></span>
+<span id="cb44-5"><a href="#cb44-5"></a><span class="kw">colData</span>(sce)</span></code></pre></div>
 <pre><code>## DataFrame with 49300 rows and 8 columns
 ##                         cell.id   cluster       sum  detected subsets_Mito_sum
 ##                     &lt;character&gt; &lt;integer&gt; &lt;numeric&gt; &lt;integer&gt;        &lt;numeric&gt;
@@ -739,11 +745,11 @@ div.tocify {
 <div id="eda" class="section level2">
 <h2><span class="header-section-number">4.2</span> EDA</h2>
 <p>High-quality cells should have many features expressed, and a low contribution of mitochondrial genes. Here, we see that several cells have a very low number of expressed genes, and where most of the molecules are derived from mitochondrial genes. This indicates likely damaged cells, presumably because of loss of cytoplasmic RNA from perforated cells, so we’d want to remove these for the downstream analysis.</p>
-<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1"></a><span class="co"># Number of genes vs library size</span></span>
-<span id="cb45-2"><a href="#cb45-2"></a><span class="kw">plotColData</span>(sce, <span class="dt">x =</span> <span class="st">&quot;sum&quot;</span>, <span class="dt">y=</span><span class="st">&quot;detected&quot;</span>, <span class="dt">colour_by=</span><span class="st">&quot;cluster&quot;</span>) </span></code></pre></div>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1"></a><span class="co"># Number of genes vs library size</span></span>
+<span id="cb46-2"><a href="#cb46-2"></a><span class="kw">plotColData</span>(sce, <span class="dt">x =</span> <span class="st">&quot;sum&quot;</span>, <span class="dt">y=</span><span class="st">&quot;detected&quot;</span>, <span class="dt">colour_by=</span><span class="st">&quot;cluster&quot;</span>) </span></code></pre></div>
 <p><img src="singleCell_MacoskoWorkflow_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
-<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1"></a><span class="co"># Mitochondrial genes</span></span>
-<span id="cb46-2"><a href="#cb46-2"></a><span class="kw">plotColData</span>(sce, <span class="dt">x =</span> <span class="st">&quot;detected&quot;</span>, <span class="dt">y=</span><span class="st">&quot;subsets_Mito_percent&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a><span class="co"># Mitochondrial genes</span></span>
+<span id="cb47-2"><a href="#cb47-2"></a><span class="kw">plotColData</span>(sce, <span class="dt">x =</span> <span class="st">&quot;detected&quot;</span>, <span class="dt">y=</span><span class="st">&quot;subsets_Mito_percent&quot;</span>)</span></code></pre></div>
 <p><img src="singleCell_MacoskoWorkflow_files/figure-html/unnamed-chunk-8-2.png" width="672" /></p>
 </div>
 <div id="qc-using-adaptive-thresholds" class="section level2">
@@ -755,91 +761,91 @@ div.tocify {
 <li>A high percentage of reads from mitochondrial genes.</li>
 </ol>
 <p>We remove a total of <span class="math inline">\(3423\)</span> cells, most of which because of an outlyingly high percentage of reads from mitochondrial genes.</p>
-<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a>lowLib &lt;-<span class="st"> </span><span class="kw">isOutlier</span>(df<span class="op">$</span>sum, <span class="dt">type=</span><span class="st">&quot;lower&quot;</span>, <span class="dt">log=</span><span class="ot">TRUE</span>)</span>
-<span id="cb47-2"><a href="#cb47-2"></a>lowFeatures &lt;-<span class="st"> </span><span class="kw">isOutlier</span>(df<span class="op">$</span>detected, <span class="dt">type=</span><span class="st">&quot;lower&quot;</span>, <span class="dt">log=</span><span class="ot">TRUE</span>)</span>
-<span id="cb47-3"><a href="#cb47-3"></a>highMito &lt;-<span class="st"> </span><span class="kw">isOutlier</span>(df<span class="op">$</span>subsets_Mito_percent, <span class="dt">type=</span><span class="st">&quot;higher&quot;</span>)</span>
-<span id="cb47-4"><a href="#cb47-4"></a></span>
-<span id="cb47-5"><a href="#cb47-5"></a><span class="kw">table</span>(lowLib)</span></code></pre></div>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1"></a>lowLib &lt;-<span class="st"> </span><span class="kw">isOutlier</span>(df<span class="op">$</span>sum, <span class="dt">type=</span><span class="st">&quot;lower&quot;</span>, <span class="dt">log=</span><span class="ot">TRUE</span>)</span>
+<span id="cb48-2"><a href="#cb48-2"></a>lowFeatures &lt;-<span class="st"> </span><span class="kw">isOutlier</span>(df<span class="op">$</span>detected, <span class="dt">type=</span><span class="st">&quot;lower&quot;</span>, <span class="dt">log=</span><span class="ot">TRUE</span>)</span>
+<span id="cb48-3"><a href="#cb48-3"></a>highMito &lt;-<span class="st"> </span><span class="kw">isOutlier</span>(df<span class="op">$</span>subsets_Mito_percent, <span class="dt">type=</span><span class="st">&quot;higher&quot;</span>)</span>
+<span id="cb48-4"><a href="#cb48-4"></a></span>
+<span id="cb48-5"><a href="#cb48-5"></a><span class="kw">table</span>(lowLib)</span></code></pre></div>
 <pre><code>## lowLib
 ## FALSE 
 ## 49300</code></pre>
-<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1"></a><span class="kw">table</span>(lowFeatures)</span></code></pre></div>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1"></a><span class="kw">table</span>(lowFeatures)</span></code></pre></div>
 <pre><code>## lowFeatures
 ## FALSE  TRUE 
 ## 49287    13</code></pre>
-<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1"></a><span class="kw">table</span>(highMito)</span></code></pre></div>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1"></a><span class="kw">table</span>(highMito)</span></code></pre></div>
 <pre><code>## highMito
 ## FALSE  TRUE 
 ## 45890  3410</code></pre>
-<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1"></a>discardCells &lt;-<span class="st"> </span>(lowLib <span class="op">|</span><span class="st"> </span>lowFeatures <span class="op">|</span><span class="st"> </span>highMito)</span>
-<span id="cb53-2"><a href="#cb53-2"></a><span class="kw">table</span>(discardCells)</span></code></pre></div>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1"></a>discardCells &lt;-<span class="st"> </span>(lowLib <span class="op">|</span><span class="st"> </span>lowFeatures <span class="op">|</span><span class="st"> </span>highMito)</span>
+<span id="cb54-2"><a href="#cb54-2"></a><span class="kw">table</span>(discardCells)</span></code></pre></div>
 <pre><code>## discardCells
 ## FALSE  TRUE 
 ## 45877  3423</code></pre>
-<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1"></a><span class="kw">colData</span>(sce)<span class="op">$</span>discardCells &lt;-<span class="st"> </span>discardCells</span>
-<span id="cb55-2"><a href="#cb55-2"></a></span>
-<span id="cb55-3"><a href="#cb55-3"></a><span class="co"># visualize cells to be removed</span></span>
-<span id="cb55-4"><a href="#cb55-4"></a><span class="kw">plotColData</span>(sce, <span class="dt">x =</span> <span class="st">&quot;detected&quot;</span>, <span class="dt">y=</span><span class="st">&quot;subsets_Mito_percent&quot;</span>, <span class="dt">colour_by =</span> <span class="st">&quot;discardCells&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1"></a><span class="kw">colData</span>(sce)<span class="op">$</span>discardCells &lt;-<span class="st"> </span>discardCells</span>
+<span id="cb56-2"><a href="#cb56-2"></a></span>
+<span id="cb56-3"><a href="#cb56-3"></a><span class="co"># visualize cells to be removed</span></span>
+<span id="cb56-4"><a href="#cb56-4"></a><span class="kw">plotColData</span>(sce, <span class="dt">x =</span> <span class="st">&quot;detected&quot;</span>, <span class="dt">y=</span><span class="st">&quot;subsets_Mito_percent&quot;</span>, <span class="dt">colour_by =</span> <span class="st">&quot;discardCells&quot;</span>)</span></code></pre></div>
 <p><img src="singleCell_MacoskoWorkflow_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 <div id="identifying-and-removing-empty-droplets" class="section level2">
 <h2><span class="header-section-number">4.4</span> Identifying and removing empty droplets</h2>
 <p>Note that the removal of cells with low sequencing depth using the adaptive threshold procedure above is a way of removing empty droplets. Other approaches are possible, e.g., removing cells by statistical testing using <code>emtpyDrops</code>. This does require us to specify a lower bound on the total number of UMIs, below which all cells are considered to correspond to empty droplets. This lower bound may not be trivial to derive, but the <code>barcodeRanks</code> function can be useful to identify an elbow/knee point.</p>
-<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1"></a><span class="kw">library</span>(DropletUtils)</span>
-<span id="cb56-2"><a href="#cb56-2"></a>bcrank &lt;-<span class="st"> </span><span class="kw">barcodeRanks</span>(<span class="kw">counts</span>(sce))</span>
-<span id="cb56-3"><a href="#cb56-3"></a></span>
-<span id="cb56-4"><a href="#cb56-4"></a><span class="co"># Only showing unique points for plotting speed.</span></span>
-<span id="cb56-5"><a href="#cb56-5"></a>uniq &lt;-<span class="st"> </span><span class="op">!</span><span class="kw">duplicated</span>(bcrank<span class="op">$</span>rank)</span>
-<span id="cb56-6"><a href="#cb56-6"></a><span class="kw">plot</span>(bcrank<span class="op">$</span>rank[uniq], bcrank<span class="op">$</span>total[uniq], <span class="dt">log=</span><span class="st">&quot;xy&quot;</span>,</span>
-<span id="cb56-7"><a href="#cb56-7"></a>    <span class="dt">xlab=</span><span class="st">&quot;Rank&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;Total UMI count&quot;</span>, <span class="dt">cex.lab=</span><span class="fl">1.2</span>)</span>
-<span id="cb56-8"><a href="#cb56-8"></a></span>
-<span id="cb56-9"><a href="#cb56-9"></a><span class="kw">abline</span>(<span class="dt">h=</span><span class="kw">metadata</span>(bcrank)<span class="op">$</span>inflection, <span class="dt">col=</span><span class="st">&quot;darkgreen&quot;</span>, <span class="dt">lty=</span><span class="dv">2</span>)</span>
-<span id="cb56-10"><a href="#cb56-10"></a><span class="kw">abline</span>(<span class="dt">h=</span><span class="kw">metadata</span>(bcrank)<span class="op">$</span>knee, <span class="dt">col=</span><span class="st">&quot;dodgerblue&quot;</span>, <span class="dt">lty=</span><span class="dv">2</span>)</span>
-<span id="cb56-11"><a href="#cb56-11"></a><span class="kw">abline</span>(<span class="dt">h=</span><span class="dv">350</span>, <span class="dt">col=</span><span class="st">&quot;orange&quot;</span>, <span class="dt">lty=</span><span class="dv">2</span>) <span class="co"># picked visually myself</span></span>
-<span id="cb56-12"><a href="#cb56-12"></a></span>
-<span id="cb56-13"><a href="#cb56-13"></a><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="dt">legend=</span><span class="kw">c</span>(<span class="st">&quot;Inflection&quot;</span>, <span class="st">&quot;Knee&quot;</span>, <span class="st">&quot;Empirical knee point&quot;</span>), </span>
-<span id="cb56-14"><a href="#cb56-14"></a>        <span class="dt">col=</span><span class="kw">c</span>(<span class="st">&quot;darkgreen&quot;</span>, <span class="st">&quot;dodgerblue&quot;</span>, <span class="st">&quot;orange&quot;</span>), <span class="dt">lty=</span><span class="dv">2</span>, <span class="dt">cex=</span><span class="fl">1.2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1"></a><span class="kw">library</span>(DropletUtils)</span>
+<span id="cb57-2"><a href="#cb57-2"></a>bcrank &lt;-<span class="st"> </span><span class="kw">barcodeRanks</span>(<span class="kw">counts</span>(sce))</span>
+<span id="cb57-3"><a href="#cb57-3"></a></span>
+<span id="cb57-4"><a href="#cb57-4"></a><span class="co"># Only showing unique points for plotting speed.</span></span>
+<span id="cb57-5"><a href="#cb57-5"></a>uniq &lt;-<span class="st"> </span><span class="op">!</span><span class="kw">duplicated</span>(bcrank<span class="op">$</span>rank)</span>
+<span id="cb57-6"><a href="#cb57-6"></a><span class="kw">plot</span>(bcrank<span class="op">$</span>rank[uniq], bcrank<span class="op">$</span>total[uniq], <span class="dt">log=</span><span class="st">&quot;xy&quot;</span>,</span>
+<span id="cb57-7"><a href="#cb57-7"></a>    <span class="dt">xlab=</span><span class="st">&quot;Rank&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;Total UMI count&quot;</span>, <span class="dt">cex.lab=</span><span class="fl">1.2</span>)</span>
+<span id="cb57-8"><a href="#cb57-8"></a></span>
+<span id="cb57-9"><a href="#cb57-9"></a><span class="kw">abline</span>(<span class="dt">h=</span><span class="kw">metadata</span>(bcrank)<span class="op">$</span>inflection, <span class="dt">col=</span><span class="st">&quot;darkgreen&quot;</span>, <span class="dt">lty=</span><span class="dv">2</span>)</span>
+<span id="cb57-10"><a href="#cb57-10"></a><span class="kw">abline</span>(<span class="dt">h=</span><span class="kw">metadata</span>(bcrank)<span class="op">$</span>knee, <span class="dt">col=</span><span class="st">&quot;dodgerblue&quot;</span>, <span class="dt">lty=</span><span class="dv">2</span>)</span>
+<span id="cb57-11"><a href="#cb57-11"></a><span class="kw">abline</span>(<span class="dt">h=</span><span class="dv">350</span>, <span class="dt">col=</span><span class="st">&quot;orange&quot;</span>, <span class="dt">lty=</span><span class="dv">2</span>) <span class="co"># picked visually myself</span></span>
+<span id="cb57-12"><a href="#cb57-12"></a></span>
+<span id="cb57-13"><a href="#cb57-13"></a><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="dt">legend=</span><span class="kw">c</span>(<span class="st">&quot;Inflection&quot;</span>, <span class="st">&quot;Knee&quot;</span>, <span class="st">&quot;Empirical knee point&quot;</span>), </span>
+<span id="cb57-14"><a href="#cb57-14"></a>        <span class="dt">col=</span><span class="kw">c</span>(<span class="st">&quot;darkgreen&quot;</span>, <span class="st">&quot;dodgerblue&quot;</span>, <span class="st">&quot;orange&quot;</span>), <span class="dt">lty=</span><span class="dv">2</span>, <span class="dt">cex=</span><span class="fl">1.2</span>)</span></code></pre></div>
 <p><img src="singleCell_MacoskoWorkflow_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
-<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1"></a><span class="kw">set.seed</span>(<span class="dv">100</span>)</span>
-<span id="cb57-2"><a href="#cb57-2"></a>limit &lt;-<span class="st"> </span><span class="dv">350</span>   </span>
-<span id="cb57-3"><a href="#cb57-3"></a>all.out &lt;-<span class="st"> </span><span class="kw">emptyDrops</span>(<span class="kw">counts</span>(sce), <span class="dt">lower=</span>limit, <span class="dt">test.ambient=</span><span class="ot">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1"></a><span class="kw">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb58-2"><a href="#cb58-2"></a>limit &lt;-<span class="st"> </span><span class="dv">350</span>   </span>
+<span id="cb58-3"><a href="#cb58-3"></a>all.out &lt;-<span class="st"> </span><span class="kw">emptyDrops</span>(<span class="kw">counts</span>(sce), <span class="dt">lower=</span>limit, <span class="dt">test.ambient=</span><span class="ot">TRUE</span>)</span></code></pre></div>
 <pre><code>## Warning in smooth.spline(x[new.keep], y[new.keep], df = df, ...): not using
 ## invalid df; must have 1 &lt; df &lt;= n := #{unique x} = 9</code></pre>
-<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1"></a><span class="co"># p-values for cells with total UMI count under the lower bound.</span></span>
-<span id="cb59-2"><a href="#cb59-2"></a><span class="kw">hist</span>(all.out<span class="op">$</span>PValue[all.out<span class="op">$</span>Total <span class="op">&lt;=</span><span class="st"> </span>limit <span class="op">&amp;</span><span class="st"> </span>all.out<span class="op">$</span>Total <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>],</span>
-<span id="cb59-3"><a href="#cb59-3"></a>    <span class="dt">xlab=</span><span class="st">&quot;P-value&quot;</span>, <span class="dt">main=</span><span class="st">&quot;&quot;</span>, <span class="dt">col=</span><span class="st">&quot;grey80&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1"></a><span class="co"># p-values for cells with total UMI count under the lower bound.</span></span>
+<span id="cb60-2"><a href="#cb60-2"></a><span class="kw">hist</span>(all.out<span class="op">$</span>PValue[all.out<span class="op">$</span>Total <span class="op">&lt;=</span><span class="st"> </span>limit <span class="op">&amp;</span><span class="st"> </span>all.out<span class="op">$</span>Total <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>],</span>
+<span id="cb60-3"><a href="#cb60-3"></a>    <span class="dt">xlab=</span><span class="st">&quot;P-value&quot;</span>, <span class="dt">main=</span><span class="st">&quot;&quot;</span>, <span class="dt">col=</span><span class="st">&quot;grey80&quot;</span>)</span></code></pre></div>
 <p><img src="singleCell_MacoskoWorkflow_files/figure-html/unnamed-chunk-10-2.png" width="672" /></p>
-<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1"></a><span class="co"># but note that it would remove a very high number of cells</span></span>
-<span id="cb60-2"><a href="#cb60-2"></a><span class="kw">length</span>(<span class="kw">which</span>(all.out<span class="op">$</span>FDR <span class="op">&lt;=</span><span class="st"> </span><span class="fl">0.001</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1"></a><span class="co"># but note that it would remove a very high number of cells</span></span>
+<span id="cb61-2"><a href="#cb61-2"></a><span class="kw">length</span>(<span class="kw">which</span>(all.out<span class="op">$</span>FDR <span class="op">&lt;=</span><span class="st"> </span><span class="fl">0.001</span>))</span></code></pre></div>
 <pre><code>## [1] 25080</code></pre>
-<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1"></a><span class="co"># so we stick to the more lenient adaptive filtering strategy</span></span>
-<span id="cb62-2"><a href="#cb62-2"></a><span class="co"># remove cells identified using adaptive thresholds</span></span>
-<span id="cb62-3"><a href="#cb62-3"></a>sce &lt;-<span class="st"> </span>sce[, <span class="op">!</span><span class="kw">colData</span>(sce)<span class="op">$</span>discardCells]</span></code></pre></div>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1"></a><span class="co"># so we stick to the more lenient adaptive filtering strategy</span></span>
+<span id="cb63-2"><a href="#cb63-2"></a><span class="co"># remove cells identified using adaptive thresholds</span></span>
+<span id="cb63-3"><a href="#cb63-3"></a>sce &lt;-<span class="st"> </span>sce[, <span class="op">!</span><span class="kw">colData</span>(sce)<span class="op">$</span>discardCells]</span></code></pre></div>
 </div>
 <div id="identifying-and-removing-doublets" class="section level2">
 <h2><span class="header-section-number">4.5</span> Identifying and removing doublets</h2>
 <p>We will use <a href="https://bioconductor.org/packages/3.14/bioc/html/scDblFinder.html">scDblFinder</a> to detect doublet cells.</p>
-<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1"></a><span class="co">## perform doublet detection</span></span>
-<span id="cb63-2"><a href="#cb63-2"></a><span class="kw">library</span>(scDblFinder)</span>
-<span id="cb63-3"><a href="#cb63-3"></a><span class="kw">set.seed</span>(<span class="dv">211103</span>)</span>
-<span id="cb63-4"><a href="#cb63-4"></a>sampleID &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">lapply</span>(<span class="kw">strsplit</span>(<span class="kw">colData</span>(sce)<span class="op">$</span>cell.id, <span class="dt">split=</span><span class="st">&quot;_&quot;</span>), <span class="st">&quot;[[&quot;</span>, <span class="dv">1</span>))</span>
-<span id="cb63-5"><a href="#cb63-5"></a><span class="kw">table</span>(sampleID)</span></code></pre></div>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1"></a><span class="co">## perform doublet detection</span></span>
+<span id="cb64-2"><a href="#cb64-2"></a><span class="kw">library</span>(scDblFinder)</span>
+<span id="cb64-3"><a href="#cb64-3"></a><span class="kw">set.seed</span>(<span class="dv">211103</span>)</span>
+<span id="cb64-4"><a href="#cb64-4"></a>sampleID &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">lapply</span>(<span class="kw">strsplit</span>(<span class="kw">colData</span>(sce)<span class="op">$</span>cell.id, <span class="dt">split=</span><span class="st">&quot;_&quot;</span>), <span class="st">&quot;[[&quot;</span>, <span class="dv">1</span>))</span>
+<span id="cb64-5"><a href="#cb64-5"></a><span class="kw">table</span>(sampleID)</span></code></pre></div>
 <pre><code>## sampleID
 ##   p1   r1   r2   r3   r4   r5   r6 
 ## 3942 5953 8414 5319 7015 7487 7747</code></pre>
-<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1"></a>sce &lt;-<span class="st"> </span><span class="kw">scDblFinder</span>(sce, <span class="dt">returnType=</span><span class="st">&quot;table&quot;</span>,</span>
-<span id="cb65-2"><a href="#cb65-2"></a>                 <span class="dt">samples =</span> <span class="kw">factor</span>(sampleID))</span>
-<span id="cb65-3"><a href="#cb65-3"></a><span class="kw">table</span>(sce<span class="op">$</span>scDblFinder.class)</span></code></pre></div>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1"></a>sce &lt;-<span class="st"> </span><span class="kw">scDblFinder</span>(sce, <span class="dt">returnType=</span><span class="st">&quot;table&quot;</span>,</span>
+<span id="cb66-2"><a href="#cb66-2"></a>                 <span class="dt">samples =</span> <span class="kw">factor</span>(sampleID))</span>
+<span id="cb66-3"><a href="#cb66-3"></a><span class="kw">table</span>(sce<span class="op">$</span>scDblFinder.class)</span></code></pre></div>
 <pre><code>## 
 ## singlet doublet 
 ##   41220    4657</code></pre>
-<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1"></a><span class="co">## visualize these scores</span></span>
-<span id="cb67-2"><a href="#cb67-2"></a><span class="co">## explore doublet score wrt original cluster labels</span></span>
-<span id="cb67-3"><a href="#cb67-3"></a><span class="kw">boxplot</span>(<span class="kw">log1p</span>(sce<span class="op">$</span>scDblFinder.score) <span class="op">~</span><span class="st"> </span><span class="kw">factor</span>(<span class="kw">colData</span>(sce)<span class="op">$</span>cluster, <span class="dt">exclude=</span><span class="ot">NULL</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1"></a><span class="co">## visualize these scores</span></span>
+<span id="cb68-2"><a href="#cb68-2"></a><span class="co">## explore doublet score wrt original cluster labels</span></span>
+<span id="cb68-3"><a href="#cb68-3"></a><span class="kw">boxplot</span>(<span class="kw">log1p</span>(sce<span class="op">$</span>scDblFinder.score) <span class="op">~</span><span class="st"> </span><span class="kw">factor</span>(<span class="kw">colData</span>(sce)<span class="op">$</span>cluster, <span class="dt">exclude=</span><span class="ot">NULL</span>))</span></code></pre></div>
 <p><img src="singleCell_MacoskoWorkflow_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
-<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1"></a>tab &lt;-<span class="st"> </span><span class="kw">table</span>(sce<span class="op">$</span>scDblFinder.class, sce<span class="op">$</span>cluster, </span>
-<span id="cb68-2"><a href="#cb68-2"></a>      <span class="dt">exclude=</span><span class="ot">NULL</span>)</span>
-<span id="cb68-3"><a href="#cb68-3"></a>tab</span></code></pre></div>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1"></a>tab &lt;-<span class="st"> </span><span class="kw">table</span>(sce<span class="op">$</span>scDblFinder.class, sce<span class="op">$</span>cluster, </span>
+<span id="cb69-2"><a href="#cb69-2"></a>      <span class="dt">exclude=</span><span class="ot">NULL</span>)</span>
+<span id="cb69-3"><a href="#cb69-3"></a>tab</span></code></pre></div>
 <pre><code>##          
 ##               1     2     3     4     5     6     7     8     9    10    11
 ##   singlet   213   370   253    63    69   177   264   141   305   165   180
@@ -856,7 +862,7 @@ div.tocify {
 ##              34    35    36    37    38    39  &lt;NA&gt;
 ##   singlet  1431    36    42   231    56    64  3475
 ##   doublet   133     7     3     9     3     2   677</code></pre>
-<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1"></a><span class="kw">t</span>(<span class="kw">t</span>(tab) <span class="op">/</span><span class="st"> </span><span class="kw">colSums</span>(tab))</span></code></pre></div>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1"></a><span class="kw">t</span>(<span class="kw">t</span>(tab) <span class="op">/</span><span class="st"> </span><span class="kw">colSums</span>(tab))</span></code></pre></div>
 <pre><code>##          
 ##                     1           2           3           4           5
 ##   singlet 0.990697674 0.981432361 0.920000000 0.875000000 0.932432432
@@ -889,20 +895,20 @@ div.tocify {
 ##                    36          37          38          39        &lt;NA&gt;
 ##   singlet 0.933333333 0.962500000 0.949152542 0.969696970 0.836946050
 ##   doublet 0.066666667 0.037500000 0.050847458 0.030303030 0.163053950</code></pre>
-<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1"></a><span class="kw">barplot</span>(<span class="kw">t</span>(<span class="kw">t</span>(tab) <span class="op">/</span><span class="st"> </span><span class="kw">colSums</span>(tab))[<span class="dv">2</span>,],</span>
-<span id="cb72-2"><a href="#cb72-2"></a>        <span class="dt">xlab =</span> <span class="st">&quot;Cluster&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Fraction of doublets&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1"></a><span class="kw">barplot</span>(<span class="kw">t</span>(<span class="kw">t</span>(tab) <span class="op">/</span><span class="st"> </span><span class="kw">colSums</span>(tab))[<span class="dv">2</span>,],</span>
+<span id="cb73-2"><a href="#cb73-2"></a>        <span class="dt">xlab =</span> <span class="st">&quot;Cluster&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Fraction of doublets&quot;</span>)</span></code></pre></div>
 <p><img src="singleCell_MacoskoWorkflow_files/figure-html/unnamed-chunk-11-2.png" width="672" /></p>
-<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1"></a><span class="co"># remove doublets</span></span>
-<span id="cb73-2"><a href="#cb73-2"></a>sce &lt;-<span class="st"> </span>sce[,<span class="op">!</span>sce<span class="op">$</span>scDblFinder.class <span class="op">==</span><span class="st"> &quot;doublet&quot;</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1"></a><span class="co"># remove doublets</span></span>
+<span id="cb74-2"><a href="#cb74-2"></a>sce &lt;-<span class="st"> </span>sce[,<span class="op">!</span>sce<span class="op">$</span>scDblFinder.class <span class="op">==</span><span class="st"> &quot;doublet&quot;</span>]</span></code></pre></div>
 </div>
 </div>
 <div id="normalization" class="section level1">
 <h1><span class="header-section-number">5</span> Normalization</h1>
 <p>For normalization, the size factors <span class="math inline">\(s_i\)</span> computed here are simply scaled library sizes: <span class="math display">\[ N_i = \sum_g Y_{gi} \]</span> <span class="math display">\[ s_i = N_i / \bar{N}_i \]</span></p>
-<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1"></a>sce &lt;-<span class="st"> </span><span class="kw">logNormCounts</span>(sce)</span>
-<span id="cb74-2"><a href="#cb74-2"></a></span>
-<span id="cb74-3"><a href="#cb74-3"></a><span class="co"># note we also returned log counts: see the additional logcounts assay.</span></span>
-<span id="cb74-4"><a href="#cb74-4"></a>sce</span></code></pre></div>
+<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1"></a>sce &lt;-<span class="st"> </span><span class="kw">logNormCounts</span>(sce)</span>
+<span id="cb75-2"><a href="#cb75-2"></a></span>
+<span id="cb75-3"><a href="#cb75-3"></a><span class="co"># note we also returned log counts: see the additional logcounts assay.</span></span>
+<span id="cb75-4"><a href="#cb75-4"></a>sce</span></code></pre></div>
 <pre><code>## class: SingleCellExperiment 
 ## dim: 17887 41220 
 ## metadata(0):
@@ -916,39 +922,39 @@ div.tocify {
 ## reducedDimNames(0):
 ## mainExpName: NULL
 ## altExpNames(0):</code></pre>
-<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1"></a><span class="co"># you can extract size factors using</span></span>
-<span id="cb76-2"><a href="#cb76-2"></a>sf &lt;-<span class="st"> </span><span class="kw">librarySizeFactors</span>(sce)</span>
-<span id="cb76-3"><a href="#cb76-3"></a><span class="kw">mean</span>(sf) <span class="co"># equal to 1 due to scaling.</span></span></code></pre></div>
+<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1"></a><span class="co"># you can extract size factors using</span></span>
+<span id="cb77-2"><a href="#cb77-2"></a>sf &lt;-<span class="st"> </span><span class="kw">librarySizeFactors</span>(sce)</span>
+<span id="cb77-3"><a href="#cb77-3"></a><span class="kw">mean</span>(sf) <span class="co"># equal to 1 due to scaling.</span></span></code></pre></div>
 <pre><code>## [1] 1</code></pre>
-<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1"></a><span class="kw">plot</span>(<span class="dt">x=</span> <span class="kw">log</span>(<span class="kw">colSums</span>(<span class="kw">assays</span>(sce)<span class="op">$</span>counts)), </span>
-<span id="cb78-2"><a href="#cb78-2"></a>     <span class="dt">y=</span>sf)</span></code></pre></div>
+<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1"></a><span class="kw">plot</span>(<span class="dt">x=</span> <span class="kw">log</span>(<span class="kw">colSums</span>(<span class="kw">assays</span>(sce)<span class="op">$</span>counts)), </span>
+<span id="cb79-2"><a href="#cb79-2"></a>     <span class="dt">y=</span>sf)</span></code></pre></div>
 <p><img src="singleCell_MacoskoWorkflow_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 </div>
 <div id="feature-selection" class="section level1">
 <h1><span class="header-section-number">6</span> Feature selection</h1>
-<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1"></a><span class="kw">library</span>(scran)</span>
-<span id="cb79-2"><a href="#cb79-2"></a>dec &lt;-<span class="st"> </span><span class="kw">modelGeneVar</span>(sce)</span>
-<span id="cb79-3"><a href="#cb79-3"></a>fitRetina &lt;-<span class="st"> </span><span class="kw">metadata</span>(dec)</span>
-<span id="cb79-4"><a href="#cb79-4"></a><span class="kw">plot</span>(fitRetina<span class="op">$</span>mean, fitRetina<span class="op">$</span>var, </span>
-<span id="cb79-5"><a href="#cb79-5"></a>     <span class="dt">xlab=</span><span class="st">&quot;Mean of log-expression&quot;</span>,</span>
-<span id="cb79-6"><a href="#cb79-6"></a>    <span class="dt">ylab=</span><span class="st">&quot;Variance of log-expression&quot;</span>)</span>
-<span id="cb79-7"><a href="#cb79-7"></a><span class="kw">curve</span>(fitRetina<span class="op">$</span><span class="kw">trend</span>(x), <span class="dt">col=</span><span class="st">&quot;dodgerblue&quot;</span>, <span class="dt">add=</span><span class="ot">TRUE</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1"></a><span class="kw">library</span>(scran)</span>
+<span id="cb80-2"><a href="#cb80-2"></a>dec &lt;-<span class="st"> </span><span class="kw">modelGeneVar</span>(sce)</span>
+<span id="cb80-3"><a href="#cb80-3"></a>fitRetina &lt;-<span class="st"> </span><span class="kw">metadata</span>(dec)</span>
+<span id="cb80-4"><a href="#cb80-4"></a><span class="kw">plot</span>(fitRetina<span class="op">$</span>mean, fitRetina<span class="op">$</span>var, </span>
+<span id="cb80-5"><a href="#cb80-5"></a>     <span class="dt">xlab=</span><span class="st">&quot;Mean of log-expression&quot;</span>,</span>
+<span id="cb80-6"><a href="#cb80-6"></a>    <span class="dt">ylab=</span><span class="st">&quot;Variance of log-expression&quot;</span>)</span>
+<span id="cb80-7"><a href="#cb80-7"></a><span class="kw">curve</span>(fitRetina<span class="op">$</span><span class="kw">trend</span>(x), <span class="dt">col=</span><span class="st">&quot;dodgerblue&quot;</span>, <span class="dt">add=</span><span class="ot">TRUE</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</span></code></pre></div>
 <p><img src="singleCell_MacoskoWorkflow_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
-<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1"></a><span class="co"># get 10% highly variable genes</span></span>
-<span id="cb80-2"><a href="#cb80-2"></a>hvg &lt;-<span class="st"> </span><span class="kw">getTopHVGs</span>(dec, <span class="dt">prop=</span><span class="fl">0.1</span>)</span>
-<span id="cb80-3"><a href="#cb80-3"></a><span class="kw">head</span>(hvg)</span></code></pre></div>
+<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1"></a><span class="co"># get 10% highly variable genes</span></span>
+<span id="cb81-2"><a href="#cb81-2"></a>hvg &lt;-<span class="st"> </span><span class="kw">getTopHVGs</span>(dec, <span class="dt">prop=</span><span class="fl">0.1</span>)</span>
+<span id="cb81-3"><a href="#cb81-3"></a><span class="kw">head</span>(hvg)</span></code></pre></div>
 <pre><code>## [1] &quot;RHO&quot;     &quot;CALM1&quot;   &quot;MEG3&quot;    &quot;GNGT1&quot;   &quot;RPGRIP1&quot; &quot;SAG&quot;</code></pre>
-<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1"></a><span class="co"># plot these </span></span>
-<span id="cb82-2"><a href="#cb82-2"></a><span class="kw">plot</span>(fitRetina<span class="op">$</span>mean, fitRetina<span class="op">$</span>var, </span>
-<span id="cb82-3"><a href="#cb82-3"></a>     <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;orange&quot;</span>, <span class="st">&quot;darkseagreen3&quot;</span>)[(<span class="kw">names</span>(fitRetina<span class="op">$</span>mean) <span class="op">%in%</span><span class="st"> </span>hvg)<span class="op">+</span><span class="dv">1</span>],</span>
-<span id="cb82-4"><a href="#cb82-4"></a>     <span class="dt">xlab=</span><span class="st">&quot;Mean of log-expression&quot;</span>,</span>
-<span id="cb82-5"><a href="#cb82-5"></a>    <span class="dt">ylab=</span><span class="st">&quot;Variance of log-expression&quot;</span>)</span>
-<span id="cb82-6"><a href="#cb82-6"></a><span class="kw">curve</span>(fitRetina<span class="op">$</span><span class="kw">trend</span>(x), <span class="dt">col=</span><span class="st">&quot;dodgerblue&quot;</span>, <span class="dt">add=</span><span class="ot">TRUE</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</span>
-<span id="cb82-7"><a href="#cb82-7"></a><span class="kw">legend</span>(<span class="st">&quot;topleft&quot;</span>, </span>
-<span id="cb82-8"><a href="#cb82-8"></a>       <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;Selected&quot;</span>, <span class="st">&quot;Not selected&quot;</span>), </span>
-<span id="cb82-9"><a href="#cb82-9"></a>       <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;darkseagreen3&quot;</span>, <span class="st">&quot;orange&quot;</span>),</span>
-<span id="cb82-10"><a href="#cb82-10"></a>       <span class="dt">pch =</span> <span class="dv">16</span>,</span>
-<span id="cb82-11"><a href="#cb82-11"></a>       <span class="dt">bty=</span><span class="st">&#39;n&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1"></a><span class="co"># plot these </span></span>
+<span id="cb83-2"><a href="#cb83-2"></a><span class="kw">plot</span>(fitRetina<span class="op">$</span>mean, fitRetina<span class="op">$</span>var, </span>
+<span id="cb83-3"><a href="#cb83-3"></a>     <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;orange&quot;</span>, <span class="st">&quot;darkseagreen3&quot;</span>)[(<span class="kw">names</span>(fitRetina<span class="op">$</span>mean) <span class="op">%in%</span><span class="st"> </span>hvg)<span class="op">+</span><span class="dv">1</span>],</span>
+<span id="cb83-4"><a href="#cb83-4"></a>     <span class="dt">xlab=</span><span class="st">&quot;Mean of log-expression&quot;</span>,</span>
+<span id="cb83-5"><a href="#cb83-5"></a>    <span class="dt">ylab=</span><span class="st">&quot;Variance of log-expression&quot;</span>)</span>
+<span id="cb83-6"><a href="#cb83-6"></a><span class="kw">curve</span>(fitRetina<span class="op">$</span><span class="kw">trend</span>(x), <span class="dt">col=</span><span class="st">&quot;dodgerblue&quot;</span>, <span class="dt">add=</span><span class="ot">TRUE</span>, <span class="dt">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb83-7"><a href="#cb83-7"></a><span class="kw">legend</span>(<span class="st">&quot;topleft&quot;</span>, </span>
+<span id="cb83-8"><a href="#cb83-8"></a>       <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;Selected&quot;</span>, <span class="st">&quot;Not selected&quot;</span>), </span>
+<span id="cb83-9"><a href="#cb83-9"></a>       <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;darkseagreen3&quot;</span>, <span class="st">&quot;orange&quot;</span>),</span>
+<span id="cb83-10"><a href="#cb83-10"></a>       <span class="dt">pch =</span> <span class="dv">16</span>,</span>
+<span id="cb83-11"><a href="#cb83-11"></a>       <span class="dt">bty=</span><span class="st">&#39;n&#39;</span>)</span></code></pre></div>
 <p><img src="singleCell_MacoskoWorkflow_files/figure-html/unnamed-chunk-13-2.png" width="672" /></p>
 </div>
 <div id="dimensionality-reduction" class="section level1">
@@ -957,69 +963,69 @@ div.tocify {
 <div id="the-most-basic-dr" class="section level2">
 <h2><span class="header-section-number">7.1</span> The most basic DR</h2>
 <p>Just by looking at the top two genes based on our feature selection criterion, we can already see some separation according to the cell type!</p>
-<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1"></a><span class="kw">colData</span>(sce)<span class="op">$</span>cluster &lt;-<span class="st"> </span><span class="kw">as.factor</span>(<span class="kw">colData</span>(sce)<span class="op">$</span>cluster)</span>
-<span id="cb83-2"><a href="#cb83-2"></a>cl &lt;-<span class="st"> </span><span class="kw">colData</span>(sce)<span class="op">$</span>cluster</span>
-<span id="cb83-3"><a href="#cb83-3"></a></span>
-<span id="cb83-4"><a href="#cb83-4"></a><span class="kw">par</span>(<span class="dt">bty=</span><span class="st">&#39;l&#39;</span>)</span>
-<span id="cb83-5"><a href="#cb83-5"></a><span class="kw">plot</span>(<span class="dt">x =</span> <span class="kw">assays</span>(sce)<span class="op">$</span>counts[hvg[<span class="dv">1</span>],],</span>
-<span id="cb83-6"><a href="#cb83-6"></a>     <span class="dt">y =</span> <span class="kw">assays</span>(sce)<span class="op">$</span>counts[hvg[<span class="dv">2</span>],],</span>
-<span id="cb83-7"><a href="#cb83-7"></a>     <span class="dt">col =</span> <span class="kw">as.numeric</span>(cl),</span>
-<span id="cb83-8"><a href="#cb83-8"></a>     <span class="dt">pch =</span> <span class="dv">16</span>, <span class="dt">cex =</span> <span class="dv">1</span><span class="op">/</span><span class="dv">3</span>,</span>
-<span id="cb83-9"><a href="#cb83-9"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Most informative gene&quot;</span>,</span>
-<span id="cb83-10"><a href="#cb83-10"></a>     <span class="dt">ylab =</span> <span class="st">&quot;Second most informative gene&quot;</span>,</span>
-<span id="cb83-11"><a href="#cb83-11"></a>     <span class="dt">main =</span> <span class="st">&quot;Cells colored acc to cell type&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1"></a><span class="kw">colData</span>(sce)<span class="op">$</span>cluster &lt;-<span class="st"> </span><span class="kw">as.factor</span>(<span class="kw">colData</span>(sce)<span class="op">$</span>cluster)</span>
+<span id="cb84-2"><a href="#cb84-2"></a>cl &lt;-<span class="st"> </span><span class="kw">colData</span>(sce)<span class="op">$</span>cluster</span>
+<span id="cb84-3"><a href="#cb84-3"></a></span>
+<span id="cb84-4"><a href="#cb84-4"></a><span class="kw">par</span>(<span class="dt">bty=</span><span class="st">&#39;l&#39;</span>)</span>
+<span id="cb84-5"><a href="#cb84-5"></a><span class="kw">plot</span>(<span class="dt">x =</span> <span class="kw">assays</span>(sce)<span class="op">$</span>counts[hvg[<span class="dv">1</span>],],</span>
+<span id="cb84-6"><a href="#cb84-6"></a>     <span class="dt">y =</span> <span class="kw">assays</span>(sce)<span class="op">$</span>counts[hvg[<span class="dv">2</span>],],</span>
+<span id="cb84-7"><a href="#cb84-7"></a>     <span class="dt">col =</span> <span class="kw">as.numeric</span>(cl),</span>
+<span id="cb84-8"><a href="#cb84-8"></a>     <span class="dt">pch =</span> <span class="dv">16</span>, <span class="dt">cex =</span> <span class="dv">1</span><span class="op">/</span><span class="dv">3</span>,</span>
+<span id="cb84-9"><a href="#cb84-9"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Most informative gene&quot;</span>,</span>
+<span id="cb84-10"><a href="#cb84-10"></a>     <span class="dt">ylab =</span> <span class="st">&quot;Second most informative gene&quot;</span>,</span>
+<span id="cb84-11"><a href="#cb84-11"></a>     <span class="dt">main =</span> <span class="st">&quot;Cells colored acc to cell type&quot;</span>)</span></code></pre></div>
 <p><img src="singleCell_MacoskoWorkflow_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 </div>
 <div id="linear-dimensionality-reduction-pca" class="section level2">
 <h2><span class="header-section-number">7.2</span> Linear dimensionality reduction: PCA</h2>
 <p>We are able to recover quite some structure. However, many cell populations remain obscure, and the plot is overcrowded.</p>
-<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1"></a><span class="kw">set.seed</span>(<span class="dv">1234</span>)</span>
-<span id="cb84-2"><a href="#cb84-2"></a>sce &lt;-<span class="st"> </span><span class="kw">runPCA</span>(sce, <span class="dt">ncomponents=</span><span class="dv">30</span>, <span class="dt">subset_row=</span>hvg)</span>
-<span id="cb84-3"><a href="#cb84-3"></a><span class="kw">plotPCA</span>(sce, <span class="dt">colour_by =</span> <span class="st">&quot;cluster&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1"></a><span class="kw">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb85-2"><a href="#cb85-2"></a>sce &lt;-<span class="st"> </span><span class="kw">runPCA</span>(sce, <span class="dt">ncomponents=</span><span class="dv">30</span>, <span class="dt">subset_row=</span>hvg)</span>
+<span id="cb85-3"><a href="#cb85-3"></a><span class="kw">plotPCA</span>(sce, <span class="dt">colour_by =</span> <span class="st">&quot;cluster&quot;</span>)</span></code></pre></div>
 <pre><code>## Warning: Removed 3475 rows containing missing values (geom_point).</code></pre>
 <p><img src="singleCell_MacoskoWorkflow_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 <div id="pca-without-feature-selection" class="section level3">
 <h3><span class="header-section-number">7.2.1</span> PCA without feature selection</h3>
-<div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1"></a><span class="kw">set.seed</span>(<span class="dv">1234</span>)</span>
-<span id="cb86-2"><a href="#cb86-2"></a>sceNoFS &lt;-<span class="st"> </span><span class="kw">runPCA</span>(sce, <span class="dt">ncomponents=</span><span class="dv">30</span>, <span class="dt">subset_row=</span><span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(sce))</span>
-<span id="cb86-3"><a href="#cb86-3"></a><span class="kw">plotPCA</span>(sceNoFS, <span class="dt">colour_by =</span> <span class="st">&quot;cluster&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1"></a><span class="kw">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb87-2"><a href="#cb87-2"></a>sceNoFS &lt;-<span class="st"> </span><span class="kw">runPCA</span>(sce, <span class="dt">ncomponents=</span><span class="dv">30</span>, <span class="dt">subset_row=</span><span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(sce))</span>
+<span id="cb87-3"><a href="#cb87-3"></a><span class="kw">plotPCA</span>(sceNoFS, <span class="dt">colour_by =</span> <span class="st">&quot;cluster&quot;</span>)</span></code></pre></div>
 <pre><code>## Warning: Removed 3475 rows containing missing values (geom_point).</code></pre>
 <p><img src="singleCell_MacoskoWorkflow_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
-<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1"></a><span class="kw">rm</span>(sceNoFS)</span></code></pre></div>
+<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1"></a><span class="kw">rm</span>(sceNoFS)</span></code></pre></div>
 </div>
 </div>
 <div id="a-generalization-of-pca-for-exponential-family-distributions." class="section level2">
 <h2><span class="header-section-number">7.3</span> A generalization of PCA for exponential family distributions.</h2>
-<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1"></a><span class="kw">library</span>(glmpca)</span>
-<span id="cb89-2"><a href="#cb89-2"></a><span class="kw">set.seed</span>(<span class="dv">211103</span>)</span>
-<span id="cb89-3"><a href="#cb89-3"></a>poipca &lt;-<span class="st"> </span><span class="kw">glmpca</span>(<span class="kw">assays</span>(sce)<span class="op">$</span>counts[hvg,],</span>
-<span id="cb89-4"><a href="#cb89-4"></a>                 <span class="dt">L=</span><span class="dv">2</span>, <span class="dt">fam=</span><span class="st">&quot;poi&quot;</span>,</span>
-<span id="cb89-5"><a href="#cb89-5"></a>                 <span class="dt">minibatch=</span><span class="st">&quot;stochastic&quot;</span>)</span>
-<span id="cb89-6"><a href="#cb89-6"></a><span class="kw">reducedDim</span>(sce, <span class="st">&quot;PoiPCA&quot;</span>) &lt;-<span class="st"> </span>poipca<span class="op">$</span>factors</span>
-<span id="cb89-7"><a href="#cb89-7"></a><span class="kw">plotReducedDim</span>(sce, </span>
-<span id="cb89-8"><a href="#cb89-8"></a>               <span class="dt">dimred=</span><span class="st">&quot;PoiPCA&quot;</span>,</span>
-<span id="cb89-9"><a href="#cb89-9"></a>               <span class="dt">colour_by =</span> <span class="st">&quot;cluster&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1"></a><span class="kw">library</span>(glmpca)</span>
+<span id="cb90-2"><a href="#cb90-2"></a><span class="kw">set.seed</span>(<span class="dv">211103</span>)</span>
+<span id="cb90-3"><a href="#cb90-3"></a>poipca &lt;-<span class="st"> </span><span class="kw">glmpca</span>(<span class="kw">assays</span>(sce)<span class="op">$</span>counts[hvg,],</span>
+<span id="cb90-4"><a href="#cb90-4"></a>                 <span class="dt">L=</span><span class="dv">2</span>, <span class="dt">fam=</span><span class="st">&quot;poi&quot;</span>,</span>
+<span id="cb90-5"><a href="#cb90-5"></a>                 <span class="dt">minibatch=</span><span class="st">&quot;stochastic&quot;</span>)</span>
+<span id="cb90-6"><a href="#cb90-6"></a><span class="kw">reducedDim</span>(sce, <span class="st">&quot;PoiPCA&quot;</span>) &lt;-<span class="st"> </span>poipca<span class="op">$</span>factors</span>
+<span id="cb90-7"><a href="#cb90-7"></a><span class="kw">plotReducedDim</span>(sce, </span>
+<span id="cb90-8"><a href="#cb90-8"></a>               <span class="dt">dimred=</span><span class="st">&quot;PoiPCA&quot;</span>,</span>
+<span id="cb90-9"><a href="#cb90-9"></a>               <span class="dt">colour_by =</span> <span class="st">&quot;cluster&quot;</span>)</span></code></pre></div>
 <pre><code>## Warning: Removed 3475 rows containing missing values (geom_point).</code></pre>
 <p><img src="singleCell_MacoskoWorkflow_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 </div>
 <div id="non-linear-dimensionality-reduction-umap" class="section level2">
 <h2><span class="header-section-number">7.4</span> Non-linear dimensionality reduction: UMAP</h2>
-<div class="sourceCode" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1"></a>sce &lt;-<span class="st"> </span><span class="kw">runUMAP</span>(sce, <span class="dt">dimred =</span> <span class="st">&#39;PCA&#39;</span>, <span class="dt">external_neighbors=</span><span class="ot">TRUE</span>)</span>
-<span id="cb91-2"><a href="#cb91-2"></a><span class="kw">plotUMAP</span>(sce,</span>
-<span id="cb91-3"><a href="#cb91-3"></a>         <span class="dt">colour_by =</span> <span class="st">&quot;cluster&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1"></a>sce &lt;-<span class="st"> </span><span class="kw">runUMAP</span>(sce, <span class="dt">dimred =</span> <span class="st">&#39;PCA&#39;</span>, <span class="dt">external_neighbors=</span><span class="ot">TRUE</span>)</span>
+<span id="cb92-2"><a href="#cb92-2"></a><span class="kw">plotUMAP</span>(sce,</span>
+<span id="cb92-3"><a href="#cb92-3"></a>         <span class="dt">colour_by =</span> <span class="st">&quot;cluster&quot;</span>)</span></code></pre></div>
 <pre><code>## Warning: Removed 3475 rows containing missing values (geom_point).</code></pre>
 <p><img src="singleCell_MacoskoWorkflow_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 </div>
 </div>
 <div id="clustering" class="section level1">
 <h1><span class="header-section-number">8</span> Clustering</h1>
-<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1"></a><span class="co"># Build a shared nearest-neighbor graph from PCA space</span></span>
-<span id="cb93-2"><a href="#cb93-2"></a>g &lt;-<span class="st"> </span><span class="kw">buildSNNGraph</span>(sce, <span class="dt">use.dimred =</span> <span class="st">&#39;PCA&#39;</span>)</span>
-<span id="cb93-3"><a href="#cb93-3"></a><span class="co"># Louvain clustering on the SNN graph, and add to sce</span></span>
-<span id="cb93-4"><a href="#cb93-4"></a><span class="kw">colData</span>(sce)<span class="op">$</span>label &lt;-<span class="st"> </span><span class="kw">factor</span>(igraph<span class="op">::</span><span class="kw">cluster_louvain</span>(g)<span class="op">$</span>membership)</span>
-<span id="cb93-5"><a href="#cb93-5"></a></span>
-<span id="cb93-6"><a href="#cb93-6"></a><span class="co"># Visualization.</span></span>
-<span id="cb93-7"><a href="#cb93-7"></a><span class="kw">plotUMAP</span>(sce, <span class="dt">colour_by=</span><span class="st">&quot;label&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1"></a><span class="co"># Build a shared nearest-neighbor graph from PCA space</span></span>
+<span id="cb94-2"><a href="#cb94-2"></a>g &lt;-<span class="st"> </span><span class="kw">buildSNNGraph</span>(sce, <span class="dt">use.dimred =</span> <span class="st">&#39;PCA&#39;</span>)</span>
+<span id="cb94-3"><a href="#cb94-3"></a><span class="co"># Louvain clustering on the SNN graph, and add to sce</span></span>
+<span id="cb94-4"><a href="#cb94-4"></a><span class="kw">colData</span>(sce)<span class="op">$</span>label &lt;-<span class="st"> </span><span class="kw">factor</span>(igraph<span class="op">::</span><span class="kw">cluster_louvain</span>(g)<span class="op">$</span>membership)</span>
+<span id="cb94-5"><a href="#cb94-5"></a></span>
+<span id="cb94-6"><a href="#cb94-6"></a><span class="co"># Visualization.</span></span>
+<span id="cb94-7"><a href="#cb94-7"></a><span class="kw">plotUMAP</span>(sce, <span class="dt">colour_by=</span><span class="st">&quot;label&quot;</span>)</span></code></pre></div>
 <p><img src="singleCell_MacoskoWorkflow_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 </div>
 
